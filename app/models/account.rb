@@ -47,6 +47,9 @@
 #  devices_url                   :string
 #  suspension_origin             :integer
 #  sensitized_at                 :datetime
+#  access_token                  :string
+#  refresh_token                 :string
+#  liker_id                      :string
 #
 
 class Account < ApplicationRecord
