@@ -175,6 +175,7 @@
     "@testing-library/react": "^11.2.6",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.6.3",
+    "cz-conventional-changelog": "3.3.0",
     "eslint": "^7.26.0",
     "eslint-plugin-import": "~2.22.1",
     "eslint-plugin-jsx-a11y": "~6.4.1",
@@ -194,5 +195,10 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.3",
     "utf-8-validate": "^5.0.5"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

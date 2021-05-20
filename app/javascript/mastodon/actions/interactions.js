@@ -170,6 +170,42 @@ export function favouriteFail(status, error) {
   };
 };
 
+
+export function like(status,location,callback) {
+  return (dispatch, getState) => {
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/like`,{ origin:location.href,path:location.origin }).then(response => {
+      callback(response)
+    }).catch(error => {
+      dispatch(unlikeSuccess(status, error));
+    });
+  };
+};
+
+export function getLikeCount(likerId,encodedURL,callback){
+  // https://api.like.co/like/likebutton/:contentOwnerLikeCoinId/total?referrer={{encodedURL}}
+  return (dispatch, getState) => {
+    api(getState).get(`https://api.like.co/like/likebutton/${likerId}/total?referrer=${encodedURL}`).then(response => {
+      callback(response)
+    }).catch(error => {
+      dispatch(unlikeSuccess(status, error));
+    });
+  };
+}
+
+
+export function superlike(status) {
+  return (dispatch, getState) => {
+    dispatch(unfavouriteRequest(status));
+
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/superlike`).then(response => {
+      dispatch(importFetchedStatus(response.data));
+      dispatch(unfavouriteSuccess(status));
+    }).catch(error => {
+      dispatch(unfavouriteFail(status, error));
+    });
+  };
+};
+
 export function unfavouriteRequest(status) {
   return {
     type: UNFAVOURITE_REQUEST,

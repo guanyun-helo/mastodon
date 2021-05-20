@@ -8,6 +8,7 @@ import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { me, isStaff } from '../initial_state';
 import classNames from 'classnames';
+import LikeButton from '../../images/likebutton/like-clap'
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -62,6 +63,8 @@ class StatusActionBar extends ImmutablePureComponent {
     onFavourite: PropTypes.func,
     onReblog: PropTypes.func,
     onDelete: PropTypes.func,
+    onLike: PropTypes.func,
+    onSuperlike: PropTypes.func,
     onDirect: PropTypes.func,
     onMention: PropTypes.func,
     onMute: PropTypes.func,
@@ -87,6 +90,11 @@ class StatusActionBar extends ImmutablePureComponent {
     'relationship',
     'withDismiss',
   ]
+
+  state = {
+    selfLike: 0,
+    totalLike: 0
+  }
 
   handleReplyClick = () => {
     if (me) {
@@ -183,6 +191,35 @@ class StatusActionBar extends ImmutablePureComponent {
     const account = status.get('account');
 
     onUnblockDomain(account.get('acct').split('@')[1]);
+  }
+
+  componentDidMount(){
+    const { status } = this.props;
+
+    const account = status.get('account');
+    const id = status.get('id')
+    const liker_id = account.get('liker_id')
+    const url = `${location.origin}/web/statuses/${id}`
+    this.props.getLikeCount(liker_id,url,(count)=>{
+      this.setState({
+        totalLike: count.data.total
+      })
+    })
+  }
+
+  handleLikeContent = () =>{
+    if(this.state.selfLike >= 5) return
+    this.setState({
+      selfLike: this.state.selfLike + 1
+    },()=>{
+      this.props.onLike(this.props.status,this.state,location,(res)=>{
+        if(res.data.code === 301){
+          window.location.href = `https://like.co${res.data.url}`
+        }
+        console.log(res)
+      })
+    })
+    console.log('clicked')
   }
 
   handleOpen = () => {
@@ -316,7 +353,8 @@ class StatusActionBar extends ImmutablePureComponent {
     } else {
       reblogTitle = intl.formatMessage(messages.cannot_reblog);
     }
-
+    const liker_id = account.get('liker_id')
+    const {totalLike} = this.state
     const shareButton = ('share' in navigator) && publicStatus && (
       <IconButton className='status__action-bar-button' title={intl.formatMessage(messages.share)} icon='share-alt' onClick={this.handleShareClick} />
     );
@@ -326,7 +364,13 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className='status__action-bar-button' title={replyTitle} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} onClick={this.handleReplyClick} counter={status.get('replies_count')} obfuscateCount />
         <IconButton className={classNames('status__action-bar-button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate}  active={status.get('reblogged')} pressed={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} />
         <IconButton className='status__action-bar-button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} />
-
+        {liker_id.length > 0 ? (
+                <div className="like-button" onClick={this.handleLikeContent}>
+                  <img src={LikeButton}/>
+                  <div className="count">{totalLike}</div>
+                </div>
+        ) :　null }
+        {shareButton}
         {shareButton}
 
         <div className='status__action-bar-dropdown'>

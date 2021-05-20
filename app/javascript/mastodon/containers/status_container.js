@@ -16,6 +16,9 @@ import {
   unbookmark,
   pin,
   unpin,
+  like,
+  superlike,
+  getLikeCount
 } from '../actions/interactions';
 import {
   muteStatus,
@@ -161,6 +164,18 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
   onBlock (status) {
     const account = status.get('account');
     dispatch(initBlockModal(account));
+  },
+  onLike (status,location,callback) {
+    return dispatch(like(status,location,callback));
+  },
+
+
+  onSuperLiked (status) {
+    return dispatch(superlike(status));
+  },
+
+  getLikeCount(likerId,encodedURL,callback){
+    return dispatch(getLikeCount(likerId,encodedURL,callback));
   },
 
   onUnblock (account) {

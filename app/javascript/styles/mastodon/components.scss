@@ -1164,6 +1164,23 @@
   align-items: center;
   display: flex;
   margin-top: 8px;
+  .like-button{
+    width: 23px;
+    height: 23px;
+    margin-right: 28px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    img{
+      width: 23px;
+      height: 23px;
+    }
+    .count{
+      height: 23px;
+      line-height: 23px;
+      margin-left: 4px;
+    }
+  }
 }
 
 .status__action-bar-button {
