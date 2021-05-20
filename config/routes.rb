@@ -329,6 +329,10 @@ Rails.application.routes.draw do
           resource :favourite, only: :create
           post :unfavourite, to: 'favourites#destroy'
 
+          resource :like, only: :create
+          resource :superlike, only: :create
+          post :count, to: 'likes#like_count'
+
           resource :bookmark, only: :create
           post :unbookmark, to: 'bookmarks#destroy'
 

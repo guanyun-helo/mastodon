@@ -1174,11 +1174,18 @@
     img{
       width: 23px;
       height: 23px;
+      transition: all .1s ease-in-out;
+    }
+    img:hover{
+      width: 26px;
+      height: 26px;
+      transition: all .1s ease-in-out;
     }
     .count{
       height: 23px;
       line-height: 23px;
       margin-left: 4px;
+      color: #606984;
     }
   }
 }

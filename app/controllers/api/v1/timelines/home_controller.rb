@@ -28,12 +28,16 @@ class Api::V1::Timelines::HomeController < Api::BaseController
     https.use_ssl = true
     request = Net::HTTP::Post.new(url)
     response = https.request(request)
-    case response
-      when Net::HTTPSuccess
+    @data = 'SUCCESS'
+    if response.code == '200'
+        puts '=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..'
+        puts Account.find(current_user&.account_id).liker_id
         Account.find(current_user&.account_id).update_attribute(:access_token, JSON.parse(response.body)['access_token'])
         Account.find(current_user&.account_id).update_attribute(:refresh_token, JSON.parse(response.body)['refresh_token'])
+    else
+        @data = 'ERROR'
     end
-    response
+    @data
   end
 
   private

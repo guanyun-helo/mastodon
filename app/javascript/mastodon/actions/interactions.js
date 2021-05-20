@@ -173,11 +173,17 @@ export function favouriteFail(status, error) {
 
 export function like(status,location,callback) {
   return (dispatch, getState) => {
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/like`,{ origin:location.href,path:location.origin }).then(response => {
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/like?origin=${location.href}&path=${location.origin}`).then(response => {
       callback(response)
-    }).catch(error => {
-      dispatch(unlikeSuccess(status, error));
-    });
+    })
+  };
+};
+
+export function getUserlikeCount(status,location,callback) {
+  return (dispatch, getState) => {
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/count?origin=${location.href}&path=${location.origin}`).then(response => {
+      callback(response)
+    })
   };
 };
 

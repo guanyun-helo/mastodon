@@ -9,6 +9,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { me, isStaff } from '../initial_state';
 import classNames from 'classnames';
 import LikeButton from '../../images/likebutton/like-clap'
+import { toast } from 'material-react-toastify';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -205,18 +206,38 @@ class StatusActionBar extends ImmutablePureComponent {
         totalLike: count.data.total
       })
     })
+
+    this.props.getUserLikeCount(this.props.status,location,(res)=>{
+      let data = {}
+      try {
+        data = JSON.parse(res.data.data)
+        this.setState({
+          selfLike: data.count
+        })
+      } catch (error) {
+      }
+    })
   }
 
   handleLikeContent = () =>{
-    if(this.state.selfLike >= 5) return
+    if(this.state.selfLike >= 5) {
+      toast.info("鄉民，你已經讚好讚滿了！.");
+      return
+    }
     this.setState({
-      selfLike: this.state.selfLike + 1
+      selfLike: this.state.selfLike + 1,
+      totalLike: this.state.totalLike + 1
     },()=>{
-      this.props.onLike(this.props.status,this.state,location,(res)=>{
+      this.props.onLike(this.props.status,location,(res)=>{
         if(res.data.code === 301){
           window.location.href = `https://like.co${res.data.url}`
         }
-        console.log(res)
+        if(res.data.data === 'INVALID_LIKE'){
+          this.setState({
+            selfLike: this.state.selfLike - 1,
+            totalLike: this.state.totalLike - 1
+          })
+        }
       })
     })
     console.log('clicked')

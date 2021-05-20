@@ -7,50 +7,53 @@ class Api::V1::Statuses::LikesController < Api::BaseController
   
     before_action -> { doorkeeper_authorize! :write, :'write:favourites' }
     before_action :require_user!
-    before_action :set_status, only: [:create]
+    before_action :set_status, only: [:create,:like_count]
     print ENV['LIKE_CLIENT_ID']
     def create
-        query = {:client_id => ENV['LIKECOIN_CLIENT_ID'],:scope => 'profile read:like write:like',:redirect_uri => params['origin']}
         @path = params['path']
-
+        response = 'ok'
         if current_account['refresh_token']
-          response = like_content(@path,count)
+          puts current_account['refresh_token']
+          response = like_content(@path,params['count'])
           if response.code != '200'
             access_token_response = access_token()
-            Account.find(current_account.id).update_attribute(:access_token, JSON.parse(access_token_response.body)['access_token'])
-            response = like_content(@path,count)
-          else
-            @data = response.body
+            if access_token_response.code == '200'
+              response = like_content(@path,params['count'])
+            end
           end
-          render json: {:data=>@data,:code => 200}, status: 200
         else
-          like_coin_auth()
+          response = like_coin_auth()
+        end
+        if current_account['refresh_token']
+          render json: {:data=> response.body,:code => 200}, status: 200
+        else
+          render json: {:url => response['location'],:data=>@status,:code => 301}, status: 200
         end
     end
 
     def like_coin_auth
+      query = {:client_id => ENV['LIKECOIN_CLIENT_ID'],:scope => 'profile read:like write:like',:redirect_uri => params['origin']}
+
       uri = URI('https://like.co/in/oauth/')
       uri.query = URI.encode_www_form(query)
       
       res = Net::HTTP.get_response(uri)
 
       case res
-      when Net::HTTPSuccess     then puts 'res =>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      when Net::HTTPSuccess     then puts 'get url'
       when Net::HTTPRedirection then @status.url = res['location']
-      else
-        res
       end
-      render json: {:url => res['location'],:data=>@status,:code => 301}, status: 200
+      # render json: {:url => res['location'],:data=>@status,:code => 301}, status: 200
+      res
     end
     
     def like_content(path,count)
-      @referrer = "#@path/web/statuses/#@status_id"
+      @referrer = "#@path/web/statuses/#{params[:status_id]}"
       url = URI("https://api.like.co/like/likebutton/#{Account.find(@status['account_id'])['liker_id']}/#{count}?client_id=#{ENV['LIKECOIN_CLIENT_ID']}&client_secret=#{ENV['LIKECOIN_CLIENT_SECRET']}&referrer=#@referrer")
 
       https = Net::HTTP.new(url.host, url.port)
       https.use_ssl = true
-      request = Net::HTTP::Post.new(url, {'Authorization' => "Bearer #{access_token}"})
-
+      request = Net::HTTP::Post.new(url, {'Authorization' => "Bearer #{current_account['access_token']}"})
       response = https.request(request)
       response
     end
@@ -66,6 +69,7 @@ class Api::V1::Statuses::LikesController < Api::BaseController
       request.body = "client_id=#{ENV['LIKECOIN_CLIENT_ID']}&client_secret=#{ENV['LIKECOIN_CLIENT_SECRET']}&grant_type=refresh_token&refresh_token=#{current_account.refresh_token}"
 
       response = https.request(request)
+      Account.find(current_account.id).update_attribute(:access_token, JSON.parse(response.body)['access_token'])
       response
     end
 
@@ -83,6 +87,26 @@ class Api::V1::Statuses::LikesController < Api::BaseController
         else
           response
         end
+    end
+
+    def like_count
+      @path = params['path']
+      @referrer = "#@path/web/statuses/#{params[:status_id]}"
+      url = URI("https://api.like.co/like/likebutton/#{Account.find(@status['account_id'])['liker_id']}/self?client_id=#{ENV['LIKECOIN_CLIENT_ID']}&client_secret=#{ENV['LIKECOIN_CLIENT_SECRET']}&referrer=#@referrer")
+
+      https = Net::HTTP.new(url.host, url.port)
+      https.use_ssl = true
+      request = Net::HTTP::Get.new(url, {'Authorization' => "Bearer #{current_account['access_token']}"})
+
+      response = https.request(request)
+
+      if response.code != '200'
+        access_token_response = access_token()
+        if access_token_response.code == '200'
+          response = like_content(@path,params['count'])
+        end
+      end
+      render json: {:data=> response.body,:code => 200}, status: 200
     end
   
     def destroy

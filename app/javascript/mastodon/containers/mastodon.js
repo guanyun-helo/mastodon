@@ -14,7 +14,6 @@ import { previewState as previewMediaState } from 'mastodon/features/ui/componen
 import { previewState as previewVideoState } from 'mastodon/features/ui/components/video_modal';
 import initialState from '../initial_state';
 import ErrorBoundary from '../components/error_boundary';
-
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
 
@@ -34,18 +33,18 @@ export default class Mastodon extends React.PureComponent {
     this.disconnect = store.dispatch(connectUserStream());
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.disconnect) {
       this.disconnect();
       this.disconnect = null;
     }
   }
 
-  shouldUpdateScroll (_, { location }) {
+  shouldUpdateScroll(_, { location }) {
     return location.state !== previewMediaState && location.state !== previewVideoState;
   }
 
-  render () {
+  render() {
     const { locale } = this.props;
 
     return (

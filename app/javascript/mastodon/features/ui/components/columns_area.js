@@ -33,6 +33,8 @@ import NavigationPanel from './navigation_panel';
 
 import { supportsPassiveEvents } from 'detect-passive-events';
 import { scrollRight } from '../../../scroll';
+import queryString from "query-string"
+import api from '../../../api'
 
 const componentMap = {
   'COMPOSE': Compose,
@@ -70,8 +72,8 @@ class ColumnsArea extends ImmutablePureComponent {
     children: PropTypes.node,
   };
 
-   // Corresponds to (max-width: 600px + (285px * 1) + (10px * 1)) in SCSS
-   mediaQuery = 'matchMedia' in window && window.matchMedia('(max-width: 895px)');
+  // Corresponds to (max-width: 600px + (285px * 1) + (10px * 1)) in SCSS
+  mediaQuery = 'matchMedia' in window && window.matchMedia('(max-width: 895px)');
 
   state = {
     shouldAnimate: false,
@@ -85,6 +87,19 @@ class ColumnsArea extends ImmutablePureComponent {
   }
 
   componentDidMount() {
+    const code = queryString.parse(location.search).code
+
+    if (code && code.length > 0) {
+      const params = new URLSearchParams()
+      params.append("code", code)
+      console.log('params', params)
+      api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
+        console.log(response)
+        // dispatch(unblockAccountSuccess(response.data));
+      }).catch(error => {
+        // dispatch(unblockAccountFail(id, error));
+      });
+    }
     if (!this.props.singleColumn) {
       this.node.addEventListener('wheel', this.handleWheel, supportsPassiveEvents ? { passive: true } : false);
     }
@@ -98,7 +113,7 @@ class ColumnsArea extends ImmutablePureComponent {
       this.setState({ renderComposePanel: !this.mediaQuery.matches });
     }
 
-    this.lastIndex   = getIndex(this.context.router.history.location.pathname);
+    this.lastIndex = getIndex(this.context.router.history.location.pathname);
     this.isRtlLayout = document.getElementsByTagName('body')[0].classList.contains('rtl');
 
     this.setState({ shouldAnimate: true });
@@ -123,7 +138,7 @@ class ColumnsArea extends ImmutablePureComponent {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (!this.props.singleColumn) {
       this.node.removeEventListener('wheel', this.handleWheel);
     }
@@ -209,7 +224,7 @@ class ColumnsArea extends ImmutablePureComponent {
     return <BundleColumnError {...props} />;
   }
 
-  render () {
+  render() {
     const { columns, children, singleColumn, isModalOpen, intl } = this.props;
     const { shouldAnimate, renderComposePanel } = this.state;
 
@@ -251,10 +266,10 @@ class ColumnsArea extends ImmutablePureComponent {
     }
 
     return (
-      <div className={`columns-area ${ isModalOpen ? 'unscrollable' : '' }`} ref={this.setRef}>
+      <div className={`columns-area ${isModalOpen ? 'unscrollable' : ''}`} ref={this.setRef}>
         {columns.map(column => {
           const params = column.get('params', null) === null ? null : column.get('params').toJS();
-          const other  = params && params.other ? params.other : {};
+          const other = params && params.other ? params.other : {};
 
           return (
             <BundleContainer key={column.get('uuid')} fetchComponent={componentMap[column.get('id')]} loading={this.renderLoading(column.get('id'))} error={this.renderError}>

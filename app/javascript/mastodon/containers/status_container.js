@@ -18,7 +18,8 @@ import {
   unpin,
   like,
   superlike,
-  getLikeCount
+  getLikeCount,
+  getUserlikeCount
 } from '../actions/interactions';
 import {
   muteStatus,
@@ -169,6 +170,9 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     return dispatch(like(status,location,callback));
   },
 
+  getUserLikeCount(status,location,callback){
+    return dispatch(getUserlikeCount(status,location,callback))
+  },
 
   onSuperLiked (status) {
     return dispatch(superlike(status));
