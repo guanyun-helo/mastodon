@@ -2983,6 +2983,16 @@ a.account__display-name {
 
 .getting-started__wrapper {
   flex: 0 0 auto;
+  .liker-id{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    img{
+      width: 21px;
+      height: 21px;
+      margin-right: 5px;
+    }
+  }
 }
 
 .flex-spacer {

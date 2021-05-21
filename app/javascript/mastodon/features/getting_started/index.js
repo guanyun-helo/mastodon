@@ -8,12 +8,13 @@ import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { me, profile_directory, showTrends } from '../../initial_state';
-import { fetchFollowRequests } from 'mastodon/actions/accounts';
+import { fetchFollowRequests,getLikeAuth } from 'mastodon/actions/accounts';
 import { List as ImmutableList } from 'immutable';
 import NavigationContainer from '../compose/containers/navigation_container';
 import Icon from 'mastodon/components/icon';
 import LinkFooter from 'mastodon/features/ui/components/link_footer';
 import TrendsContainer from './containers/trends_container';
+import LikeCoinClapDark from '.././../../images/likebutton/like-calp-dark.svg'
 
 const messages = defineMessages({
   home_timeline: { id: 'tabs_bar.home', defaultMessage: 'Home' },
@@ -46,6 +47,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   fetchFollowRequests: () => dispatch(fetchFollowRequests()),
+  getLikeAuth: (location,callback)=>dispatch(getLikeAuth(location,callback))
 });
 
 const badgeDisplay = (number, limit) => {
@@ -74,12 +76,13 @@ class GettingStarted extends ImmutablePureComponent {
     columns: ImmutablePropTypes.list,
     multiColumn: PropTypes.bool,
     fetchFollowRequests: PropTypes.func.isRequired,
+    getLikeAuth: PropTypes.func,
     unreadFollowRequests: PropTypes.number,
     unreadNotifications: PropTypes.number,
   };
 
   componentDidMount () {
-    const { fetchFollowRequests, multiColumn } = this.props;
+    const { fetchFollowRequests, multiColumn} = this.props;
 
     if (!multiColumn && window.innerWidth >= NAVIGATION_PANEL_BREAKPOINT) {
       this.context.router.history.replace('/timelines/home');
@@ -88,12 +91,22 @@ class GettingStarted extends ImmutablePureComponent {
 
     fetchFollowRequests();
   }
+  bindLikeCoinId(){
+    const {getLikeAuth} = this.props;
+    getLikeAuth(window.location,(res)=>{
+      if(res.data.code === 301){
+        location.href = 'https://like.co' + res.data.url
+      }
+    })
+  }
 
   render () {
     const { intl, myAccount, columns, multiColumn, unreadFollowRequests } = this.props;
 
     const navItems = [];
     let height = (multiColumn) ? 0 : 60;
+
+    const liker_id = myAccount.get('liker_id') || 'Click to bind'
 
     if (multiColumn) {
       navItems.push(
@@ -137,6 +150,10 @@ class GettingStarted extends ImmutablePureComponent {
       <ColumnLink key='bookmark' icon='bookmark' text={intl.formatMessage(messages.bookmarks)} to='/bookmarks' />,
       <ColumnLink key='favourites' icon='star' text={intl.formatMessage(messages.favourites)} to='/favourites' />,
       <ColumnLink key='lists' icon='list-ul' text={intl.formatMessage(messages.lists)} to='/lists' />,
+      <div key="liker-id" onClick={this.bindLikeCoinId.bind(this)} className="liker-id column-link">
+        <img src={LikeCoinClapDark}/>
+        <div className="bind">Liker Id ({liker_id})</div>
+      </div>
     );
 
     height += 48*4;
@@ -152,7 +169,7 @@ class GettingStarted extends ImmutablePureComponent {
         <ColumnLink key='preferences' icon='gears' text={intl.formatMessage(messages.preferences)} href='/settings/preferences' />,
       );
 
-      height += 34 + 48;
+      height += 34 + 48 + 48;
     }
 
     return (

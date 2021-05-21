@@ -46,6 +46,9 @@ class Api::V1::Statuses::LikesController < Api::BaseController
       # render json: {:url => res['location'],:data=>@status,:code => 301}, status: 200
       res
     end
+
+    def bind_like_coin_id
+    end
     
     def like_content(path,count)
       @referrer = "#@path/web/statuses/#{params[:status_id]}"

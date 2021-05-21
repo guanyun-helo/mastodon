@@ -109,6 +109,14 @@ export function fetchAccountFail(id, error) {
   };
 };
 
+export function getLikeAuth(location,callback) {
+  return (dispatch, getState) => {
+    api(getState).get(`/api/v1/accounts/like_auth?origin=${location.href}`).then(response => {
+      callback(response)
+    })
+  };
+};
+
 export function followAccount(id, options = { reblogs: true }) {
   return (dispatch, getState) => {
     const alreadyFollowing = getState().getIn(['relationships', id, 'following']);

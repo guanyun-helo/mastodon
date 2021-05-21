@@ -221,7 +221,7 @@ class StatusActionBar extends ImmutablePureComponent {
 
   handleLikeContent = () =>{
     if(this.state.selfLike >= 5) {
-      toast.info("鄉民，你已經讚好讚滿了！.");
+      toast.info("鄉民，你已經讚好讚滿了！");
       return
     }
     this.setState({
@@ -238,9 +238,15 @@ class StatusActionBar extends ImmutablePureComponent {
             totalLike: this.state.totalLike - 1
           })
         }
+        if(res.data.data === 'CANNOT_SELF_LIKE'){
+          toast.info("鄉民，不能讚自己唷！");
+          this.setState({
+            selfLike: this.state.selfLike - 1,
+            totalLike: this.state.totalLike - 1
+          })
+        }
       })
     })
-    console.log('clicked')
   }
 
   handleOpen = () => {
@@ -391,7 +397,6 @@ class StatusActionBar extends ImmutablePureComponent {
                   <div className="count">{totalLike}</div>
                 </div>
         ) :　null }
-        {shareButton}
         {shareButton}
 
         <div className='status__action-bar-dropdown'>

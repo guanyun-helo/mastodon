@@ -92,9 +92,7 @@ class ColumnsArea extends ImmutablePureComponent {
     if (code && code.length > 0) {
       const params = new URLSearchParams()
       params.append("code", code)
-      console.log('params', params)
       api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
-        console.log(response)
         // dispatch(unblockAccountSuccess(response.data));
       }).catch(error => {
         // dispatch(unblockAccountFail(id, error));

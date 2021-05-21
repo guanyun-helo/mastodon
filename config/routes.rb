@@ -447,6 +447,7 @@ Rails.application.routes.draw do
         resource :search, only: :show, controller: :search
         resource :lookup, only: :show, controller: :lookup
         resources :relationships, only: :index
+        resources :like_auth, only: :index, controller: :like_identitys
       end
 
       resources :accounts, only: [:create, :show] do
@@ -456,6 +457,7 @@ Rails.application.routes.draw do
         resources :lists, only: :index, controller: 'accounts/lists'
         resources :identity_proofs, only: :index, controller: 'accounts/identity_proofs'
         resources :featured_tags, only: :index, controller: 'accounts/featured_tags'
+
 
         member do
           post :follow
