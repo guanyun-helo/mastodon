@@ -17,7 +17,7 @@ class Api::V1::Accounts::LikeIdentitysController < Api::BaseController
   end
 
   def like_coin_auth
-    query = {:client_id => ENV['LIKECOIN_CLIENT_ID'],:scope => 'profile read:like write:like',:redirect_uri => params['origin']}
+    query = {:client_id => ENV['LIKECOIN_CLIENT_ID'],:scope => 'profile read:like.button write:like.button',:redirect_uri => params['origin']}
 
     uri = URI('https://like.co/in/oauth/')
     uri.query = URI.encode_www_form(query)

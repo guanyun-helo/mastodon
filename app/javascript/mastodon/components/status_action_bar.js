@@ -198,7 +198,6 @@ class StatusActionBar extends ImmutablePureComponent {
 
   componentDidMount(){
     const { status } = this.props;
-    console.log(this)
     const account = status.get('account');
     const id = status.get('id')
     const liker_id = account.get('liker_id')
