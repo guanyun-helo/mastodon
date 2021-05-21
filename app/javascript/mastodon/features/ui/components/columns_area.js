@@ -9,7 +9,9 @@ import TabsBar, { links, getIndex, getLink } from './tabs_bar';
 import { Link } from 'react-router-dom';
 
 import { disableSwiping } from 'mastodon/initial_state';
-
+import queryString from "query-string"
+import LikeCoinClapDark from '../../../../images/likebutton/like-calp-dark.svg'
+import LikeCoinClap from '../../../../images/likebutton/like-clap-white.svg'
 import BundleContainer from '../containers/bundle_container';
 import ColumnLoading from './column_loading';
 import DrawerLoading from './drawer_loading';
@@ -33,6 +35,7 @@ import NavigationPanel from './navigation_panel';
 
 import { supportsPassiveEvents } from 'detect-passive-events';
 import { scrollRight } from '../../../scroll';
+import api from '../.././../api'
 
 const componentMap = {
   'COMPOSE': Compose,
@@ -76,6 +79,9 @@ class ColumnsArea extends ImmutablePureComponent {
   state = {
     shouldAnimate: false,
     renderComposePanel: !(this.mediaQuery && this.mediaQuery.matches),
+    liker_id: "Click to bind",
+    clapImg: LikeCoinClap,
+
   }
 
   componentWillReceiveProps() {
@@ -102,6 +108,45 @@ class ColumnsArea extends ImmutablePureComponent {
     this.isRtlLayout = document.getElementsByTagName('body')[0].classList.contains('rtl');
 
     this.setState({ shouldAnimate: true });
+    if(document.body && document.body.classList.contains('theme-mastodon-light')){
+      this.setState({
+        clapImg: LikeCoinClapDark
+      })
+    }
+
+    this.getLikerId()
+
+    const code = queryString.parse(location.search).code
+
+    if (code && code.length > 0) {
+      const params = new URLSearchParams()
+      params.append("code", code)
+      api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
+        // dispatch(unblockAccountSuccess(response.data));
+        if (response.data.code === 200) {
+            this.setState({
+              liker_id: response.data.user
+            })
+        }
+        this.getLikerId()
+      }).catch(error => {
+        // dispatch(unblockAccountFail(id, error));
+      });
+    }
+  }
+
+  getLikerId(){
+    api().get(`/api/v1/accounts/liker_id`).then(response => {
+      if (response.data.code === 200) {
+        if (response.data.liker_id) {
+          this.setState({
+            liker_id: response.data.liker_id
+          })
+        }
+      }
+    }).catch(error => {
+      // dispatch(unblockAccountFail(id, error));
+    });
   }
 
   componentWillUpdate(nextProps) {
@@ -209,6 +254,15 @@ class ColumnsArea extends ImmutablePureComponent {
     return <BundleColumnError {...props} />;
   }
 
+  bindLikeCoinId() {
+    const { getLikeAuth } = this.props;
+    getLikeAuth(window.location, (res) => {
+      if (res.data.code === 301) {
+        location.href = 'https://like.co' + res.data.url
+      }
+    })
+  }
+
   render() {
     const { columns, children, singleColumn, isModalOpen, intl } = this.props;
     const { shouldAnimate, renderComposePanel } = this.state;
@@ -241,7 +295,7 @@ class ColumnsArea extends ImmutablePureComponent {
 
           <div className='columns-area__panels__pane columns-area__panels__pane--start columns-area__panels__pane--navigational'>
             <div className='columns-area__panels__pane__inner'>
-              <NavigationPanel />
+              <NavigationPanel bindLikeCoinId={this.bindLikeCoinId.bind(this)} clapImg={this.state.clapImg} liker_id={this.state.liker_id} />
             </div>
           </div>
 

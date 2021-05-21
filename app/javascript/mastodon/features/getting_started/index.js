@@ -75,7 +75,8 @@ class GettingStarted extends ImmutablePureComponent {
   };
 
   state = {
-    clapImg: LikeCoinClap
+    clapImg: LikeCoinClap,
+    liker_id: "Click to bind"
   }
 
   static propTypes = {
@@ -110,15 +111,29 @@ class GettingStarted extends ImmutablePureComponent {
       params.append("code", code)
       api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
         // dispatch(unblockAccountSuccess(response.data));
-        if(response.data.data === 'SUCCESS'){
+        if(response.data.code === 200){
           this.props.myAccount.set('liker_id',response.data.user)
-          this.forceUpdate()
+          if(response.data.user){
+            this.setState({
+              liker_id: response.data.user
+            })
+          }
         }
+        this.getLikerId()
       }).catch(error => {
         // dispatch(unblockAccountFail(id, error));
       });
     }
     fetchFollowRequests();
+
+    const liker_id = this.props.myAccount.get('liker_id')
+    if(liker_id){
+      this.setState({
+        liker_id: liker_id
+      })
+    }
+
+
   }
   bindLikeCoinId(){
     const {getLikeAuth} = this.props;
@@ -129,12 +144,24 @@ class GettingStarted extends ImmutablePureComponent {
     })
   }
 
+  getLikerId(){
+    api().get(`/api/v1/accounts/liker_id`).then(response => {
+      if (response.data.code === 200) {
+        if (response.data.liker_id) {
+          this.setState({
+            liker_id: response.data.liker_id
+          })
+        }
+      }
+    }).catch(error => {
+      // dispatch(unblockAccountFail(id, error));
+    });
+  }
+
   render () {
     const { intl, myAccount, columns, multiColumn, unreadFollowRequests } = this.props;
     const navItems = [];
     let height = (multiColumn) ? 0 : 60;
-
-    const liker_id = myAccount.get('liker_id') || 'Click to bind'
 
     if (multiColumn) {
       navItems.push(
@@ -180,7 +207,7 @@ class GettingStarted extends ImmutablePureComponent {
       <ColumnLink key='lists' icon='list-ul' text={intl.formatMessage(messages.lists)} to='/lists' />,
       <div key="liker-id" onClick={this.bindLikeCoinId.bind(this)} className="liker-id column-link">
         <img src={this.state.clapImg}/>
-        <div className="bind">Liker Id ({liker_id})</div>
+        <div className="bind">Liker Id ({this.state.liker_id})</div>
       </div>
     );
 

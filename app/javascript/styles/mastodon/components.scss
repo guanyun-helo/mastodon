@@ -1176,7 +1176,7 @@
       height: 23px;
       transition: all .1s ease-in-out;
     }
-    img:hover{
+    img:active{
       width: 26px;
       height: 26px;
       transition: all .1s ease-in-out;
@@ -2624,7 +2624,18 @@ a.account__display-name {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-
+  .liker-id{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    img{
+      width: 25px;
+      height: 25px;
+    }
+  }
+  .liker-id:hover{
+    cursor: pointer;
+  }
   & > a {
     flex: 0 0 auto;
   }

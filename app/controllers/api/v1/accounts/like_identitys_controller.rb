@@ -16,6 +16,10 @@ class Api::V1::Accounts::LikeIdentitysController < Api::BaseController
     render json: {:url => response['location'],:data=>@status,:code => 301}, status: 200
   end
 
+  def show
+    render json: {:liker_id => current_account['liker_id'],:data=>@status,:code => 200}, status: 200
+  end
+
   def like_coin_auth
     query = {:client_id => ENV['LIKECOIN_CLIENT_ID'],:scope => 'profile read:like.button write:like.button',:redirect_uri => params['origin']}
 
@@ -41,7 +45,7 @@ class Api::V1::Accounts::LikeIdentitysController < Api::BaseController
     request.body = "client_id=#{ENV['LIKECOIN_CLIENT_ID']}&client_secret=#{ENV['LIKECOIN_CLIENT_SECRET']}&grant_type=refresh_token&refresh_token=#{current_account.refresh_token}"
 
     response = https.request(request)
-    Account.find(current_account.id).update_attribute(:access_token, JSON.parse(response.body)['access_token'])
+    current_account.update_attribute(:access_token, JSON.parse(response.body)['access_token'])
     response
   end
 

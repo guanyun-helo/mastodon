@@ -22,12 +22,12 @@ class Api::V1::Statuses::LikesController < Api::BaseController
             end
           end
         else
-          response = like_coin_auth()
+          response = nil
         end
         if current_account['refresh_token']
           render json: {:data=> response.body,:code => 200}, status: 200
         else
-          render json: {:url => response['location'],:data=>@status,:code => 301}, status: 200
+          render json: {:url => response,:data=>@status,:code => 401}, status: 200
         end
     end
 

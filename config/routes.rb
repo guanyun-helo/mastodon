@@ -448,6 +448,7 @@ Rails.application.routes.draw do
         resource :lookup, only: :show, controller: :lookup
         resources :relationships, only: :index
         resources :like_auth, only: :index, controller: :like_identitys
+        resources :liker_id, to: 'like_identitys#show'
       end
 
       resources :accounts, only: [:create, :show] do

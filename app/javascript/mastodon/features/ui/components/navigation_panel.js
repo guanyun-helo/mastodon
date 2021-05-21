@@ -8,7 +8,7 @@ import FollowRequestsNavLink from './follow_requests_nav_link';
 import ListPanel from './list_panel';
 import TrendsContainer from 'mastodon/features/getting_started/containers/trends_container';
 
-const NavigationPanel = () => (
+const NavigationPanel = (props) => (
   <div className='navigation-panel'>
     <NavLink className='column-link column-link--transparent' to='/timelines/home' data-preview-title-id='column.home' data-preview-icon='home' ><Icon className='column-link__icon' id='home' fixedWidth /><FormattedMessage id='tabs_bar.home' defaultMessage='Home' /></NavLink>
     <NavLink className='column-link column-link--transparent' to='/notifications' data-preview-title-id='column.notifications' data-preview-icon='bell' ><NotificationsCounterIcon className='column-link__icon' /><FormattedMessage id='tabs_bar.notifications' defaultMessage='Notifications' /></NavLink>
@@ -20,7 +20,10 @@ const NavigationPanel = () => (
     <NavLink className='column-link column-link--transparent' to='/bookmarks'><Icon className='column-link__icon' id='bookmark' fixedWidth /><FormattedMessage id='navigation_bar.bookmarks' defaultMessage='Bookmarks' /></NavLink>
     <NavLink className='column-link column-link--transparent' to='/lists'><Icon className='column-link__icon' id='list-ul' fixedWidth /><FormattedMessage id='navigation_bar.lists' defaultMessage='Lists' /></NavLink>
     {profile_directory && <NavLink className='column-link column-link--transparent' to='/directory'><Icon className='column-link__icon' id='address-book-o' fixedWidth /><FormattedMessage id='getting_started.directory' defaultMessage='Profile directory' /></NavLink>}
-
+    <div key="liker-id" onClick={props.bindLikeCoinId} className="liker-id column-link column-link--transparent">
+      <img className='column-link__icon' src={props.clapImg} />
+      <div className="bind">Liker Id ({props.liker_id})</div>
+    </div>
     <ListPanel />
 
     <hr />

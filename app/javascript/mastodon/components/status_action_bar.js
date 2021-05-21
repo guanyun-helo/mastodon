@@ -232,8 +232,12 @@ class StatusActionBar extends ImmutablePureComponent {
       totalLike: this.state.totalLike + 1
     },()=>{
       this.props.onLike(this.props.status,location,(res)=>{
-        if(res.data.code === 301){
-          window.location.href = `https://like.co${res.data.url}`
+        if(res.data.code === 401){
+          toast.info("鄉民，請先綁定 LikeCoin Id！");
+          this.setState({
+            selfLike: this.state.selfLike - 1,
+            totalLike: this.state.totalLike - 1
+          })
         }
         if(res.data.data === 'INVALID_LIKE'){
           this.setState({
