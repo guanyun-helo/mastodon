@@ -10,6 +10,7 @@ import { me, isStaff } from '../initial_state';
 import classNames from 'classnames';
 import LikeButton from '../../images/likebutton/like-clap'
 import { toast } from 'material-react-toastify';
+import { COMPOSE_SPOILER_TEXT_CHANGE } from '../actions/compose';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -194,29 +195,32 @@ class StatusActionBar extends ImmutablePureComponent {
     onUnblockDomain(account.get('acct').split('@')[1]);
   }
 
+
   componentDidMount(){
     const { status } = this.props;
-
+    console.log(this)
     const account = status.get('account');
     const id = status.get('id')
     const liker_id = account.get('liker_id')
     const url = `${location.origin}/web/statuses/${id}`
-    this.props.getLikeCount(liker_id,url,(count)=>{
-      this.setState({
-        totalLike: count.data.total
-      })
-    })
-
-    this.props.getUserLikeCount(this.props.status,location,(res)=>{
-      let data = {}
-      try {
-        data = JSON.parse(res.data.data)
+    if(this.props.hidden === false){
+      this.props.getLikeCount(liker_id,url,(count)=>{
         this.setState({
-          selfLike: data.count
+          totalLike: count.data.total
         })
-      } catch (error) {
-      }
-    })
+      })
+  
+      this.props.getUserLikeCount(this.props.status,location,(res)=>{
+        let data = {}
+        try {
+          data = JSON.parse(res.data.data)
+          this.setState({
+            selfLike: data.count
+          })
+        } catch (error) {
+        }
+      })
+    }
   }
 
   handleLikeContent = () =>{

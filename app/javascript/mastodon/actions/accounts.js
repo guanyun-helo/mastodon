@@ -111,7 +111,7 @@ export function fetchAccountFail(id, error) {
 
 export function getLikeAuth(location,callback) {
   return (dispatch, getState) => {
-    api(getState).get(`/api/v1/accounts/like_auth?origin=${location.href}`).then(response => {
+    api(getState).get(`/api/v1/accounts/like_auth?origin=${location.origin}${location.pathname}`).then(response => {
       callback(response)
     })
   };

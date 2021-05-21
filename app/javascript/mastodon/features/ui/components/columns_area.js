@@ -33,8 +33,6 @@ import NavigationPanel from './navigation_panel';
 
 import { supportsPassiveEvents } from 'detect-passive-events';
 import { scrollRight } from '../../../scroll';
-import queryString from "query-string"
-import api from '../../../api'
 
 const componentMap = {
   'COMPOSE': Compose,
@@ -87,17 +85,6 @@ class ColumnsArea extends ImmutablePureComponent {
   }
 
   componentDidMount() {
-    const code = queryString.parse(location.search).code
-
-    if (code && code.length > 0) {
-      const params = new URLSearchParams()
-      params.append("code", code)
-      api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
-        // dispatch(unblockAccountSuccess(response.data));
-      }).catch(error => {
-        // dispatch(unblockAccountFail(id, error));
-      });
-    }
     if (!this.props.singleColumn) {
       this.node.addEventListener('wheel', this.handleWheel, supportsPassiveEvents ? { passive: true } : false);
     }

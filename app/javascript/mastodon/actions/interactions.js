@@ -193,7 +193,7 @@ export function getLikeCount(likerId,encodedURL,callback){
     api(getState).get(`https://api.like.co/like/likebutton/${likerId}/total?referrer=${encodedURL}`).then(response => {
       callback(response)
     }).catch(error => {
-      dispatch(unlikeSuccess(status, error));
+      // dispatch(unlikeSuccess(status, error));
     });
   };
 }

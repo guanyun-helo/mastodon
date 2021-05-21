@@ -15,6 +15,10 @@ import Icon from 'mastodon/components/icon';
 import LinkFooter from 'mastodon/features/ui/components/link_footer';
 import TrendsContainer from './containers/trends_container';
 import LikeCoinClapDark from '.././../../images/likebutton/like-calp-dark.svg'
+import LikeCoinClap from '.././../../images/likebutton/like-clap-white.svg'
+import queryString from "query-string"
+import api from '../../api'
+
 
 const messages = defineMessages({
   home_timeline: { id: 'tabs_bar.home', defaultMessage: 'Home' },
@@ -70,6 +74,10 @@ class GettingStarted extends ImmutablePureComponent {
     router: PropTypes.object.isRequired,
   };
 
+  state = {
+    clapImg: LikeCoinClap
+  }
+
   static propTypes = {
     intl: PropTypes.object.isRequired,
     myAccount: ImmutablePropTypes.map.isRequired,
@@ -82,6 +90,12 @@ class GettingStarted extends ImmutablePureComponent {
   };
 
   componentDidMount () {
+
+    if(document.body && document.body.classList.contains('theme-mastodon-light')){
+      this.setState({
+        clapImg: LikeCoinClapDark
+      })
+    }
     const { fetchFollowRequests, multiColumn} = this.props;
 
     if (!multiColumn && window.innerWidth >= NAVIGATION_PANEL_BREAKPOINT) {
@@ -89,6 +103,21 @@ class GettingStarted extends ImmutablePureComponent {
       return;
     }
 
+    const code = queryString.parse(location.search).code
+
+    if (code && code.length > 0) {
+      const params = new URLSearchParams()
+      params.append("code", code)
+      api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
+        // dispatch(unblockAccountSuccess(response.data));
+        if(response.data.data === 'SUCCESS'){
+          this.props.myAccount.set('liker_id',response.data.user)
+          this.forceUpdate()
+        }
+      }).catch(error => {
+        // dispatch(unblockAccountFail(id, error));
+      });
+    }
     fetchFollowRequests();
   }
   bindLikeCoinId(){
@@ -102,7 +131,6 @@ class GettingStarted extends ImmutablePureComponent {
 
   render () {
     const { intl, myAccount, columns, multiColumn, unreadFollowRequests } = this.props;
-
     const navItems = [];
     let height = (multiColumn) ? 0 : 60;
 
@@ -151,7 +179,7 @@ class GettingStarted extends ImmutablePureComponent {
       <ColumnLink key='favourites' icon='star' text={intl.formatMessage(messages.favourites)} to='/favourites' />,
       <ColumnLink key='lists' icon='list-ul' text={intl.formatMessage(messages.lists)} to='/lists' />,
       <div key="liker-id" onClick={this.bindLikeCoinId.bind(this)} className="liker-id column-link">
-        <img src={LikeCoinClapDark}/>
+        <img src={this.state.clapImg}/>
         <div className="bind">Liker Id ({liker_id})</div>
       </div>
     );

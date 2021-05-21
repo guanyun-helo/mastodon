@@ -13,7 +13,7 @@ class Api::V1::Timelines::HomeController < Api::BaseController
     end
 
     if params['code']
-      render json: {:data => @response,:code => 200}, status: 200
+      render json: {:data => @response,:user=>Account.find(current_user&.account_id).liker_id,:code => 200}, status: 200
     else 
       render json: @statuses,
            each_serializer: REST::StatusSerializer,
@@ -28,10 +28,11 @@ class Api::V1::Timelines::HomeController < Api::BaseController
     https.use_ssl = true
     request = Net::HTTP::Post.new(url)
     response = https.request(request)
+    puts '=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..'
+    puts response.body
     @data = 'SUCCESS'
     if response.code == '200'
-        puts '=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..'
-        puts Account.find(current_user&.account_id).liker_id
+        Account.find(current_user&.account_id).update_attribute(:liker_id, JSON.parse(response.body)['user'])
         Account.find(current_user&.account_id).update_attribute(:access_token, JSON.parse(response.body)['access_token'])
         Account.find(current_user&.account_id).update_attribute(:refresh_token, JSON.parse(response.body)['refresh_token'])
     else
