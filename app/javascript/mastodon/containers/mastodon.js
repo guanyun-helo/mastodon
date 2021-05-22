@@ -31,6 +31,12 @@ export default class Mastodon extends React.PureComponent {
 
   componentDidMount() {
     this.disconnect = store.dispatch(connectUserStream());
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  
+    gtag('config', 'G-H8BRZ52MG8');
   }
 
   componentWillUnmount() {
