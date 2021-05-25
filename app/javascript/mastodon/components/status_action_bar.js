@@ -227,7 +227,7 @@ class StatusActionBar extends ImmutablePureComponent {
     if(this.state.selfLike >= 5) {
       return
     }
-    if (me && this.state.selfLike === 4) {
+    if (me && this.state.selfLike === 4 && !this.props.status.get('favourited')) {
       this.props.onFavourite(this.props.status);
     }
     this.setState({
@@ -242,12 +242,8 @@ class StatusActionBar extends ImmutablePureComponent {
             totalLike: this.state.totalLike - 1
           })
         }
-        if(res.data.data === 'INVALID_LIKE'){
-          this.setState({
-            selfLike: this.state.selfLike - 1,
-            totalLike: this.state.totalLike - 1
-          })
-        }
+        // if(res.data.data === 'INVALID_LIKE'){
+        // }
       })
     })
   }

@@ -197,7 +197,7 @@ class ActionBar extends React.PureComponent {
       // toast.info("鄉民，你已經讚好讚滿了！");
       return
     }
-    if (me && this.state.selfLike === 4) {
+    if (me && this.state.selfLike === 4 && !this.props.status.get('favourited')) {
       this.props.onFavourite(this.props.status);
     }
     this.setState({
@@ -218,12 +218,12 @@ class ActionBar extends React.PureComponent {
             totalLike: this.state.totalLike - 1
           })
         }
-        if (res.data.data === 'CANNOT_SELF_LIKE') {
-          this.setState({
-            selfLike: this.state.selfLike - 1,
-            totalLike: this.state.totalLike - 1
-          })
-        }
+        // if (res.data.data === 'CANNOT_SELF_LIKE') {
+        //   this.setState({
+        //     selfLike: this.state.selfLike - 1,
+        //     totalLike: this.state.totalLike - 1
+        //   })
+        // }
       })
     })
   }
