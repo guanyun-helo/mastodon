@@ -255,6 +255,9 @@ class ColumnsArea extends ImmutablePureComponent {
   }
 
   bindLikeCoinId() {
+    if(location.href !== 'https://liker.social/web/timelines/home') {
+      this.context.router.history.push('/timelines/home')
+    }
     const { getLikeAuth } = this.props;
     getLikeAuth(window.location, (res) => {
       if (res.data.code === 301) {

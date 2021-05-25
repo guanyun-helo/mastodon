@@ -542,8 +542,9 @@ class UI extends React.PureComponent {
           {layout !== 'mobile' && <PictureInPicture />}
           <NotificationsContainer />
           <ToastContainer
+            limit={2}
             position="top-center"
-            autoClose={3000}
+            autoClose={700}
             hideProgressBar
             newestOnTop={false}
             closeOnClick

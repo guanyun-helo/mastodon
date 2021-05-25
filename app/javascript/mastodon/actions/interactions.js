@@ -3,43 +3,43 @@ import { importFetchedAccounts, importFetchedStatus } from './importer';
 
 export const REBLOG_REQUEST = 'REBLOG_REQUEST';
 export const REBLOG_SUCCESS = 'REBLOG_SUCCESS';
-export const REBLOG_FAIL    = 'REBLOG_FAIL';
+export const REBLOG_FAIL = 'REBLOG_FAIL';
 
 export const FAVOURITE_REQUEST = 'FAVOURITE_REQUEST';
 export const FAVOURITE_SUCCESS = 'FAVOURITE_SUCCESS';
-export const FAVOURITE_FAIL    = 'FAVOURITE_FAIL';
+export const FAVOURITE_FAIL = 'FAVOURITE_FAIL';
 
 export const UNREBLOG_REQUEST = 'UNREBLOG_REQUEST';
 export const UNREBLOG_SUCCESS = 'UNREBLOG_SUCCESS';
-export const UNREBLOG_FAIL    = 'UNREBLOG_FAIL';
+export const UNREBLOG_FAIL = 'UNREBLOG_FAIL';
 
 export const UNFAVOURITE_REQUEST = 'UNFAVOURITE_REQUEST';
 export const UNFAVOURITE_SUCCESS = 'UNFAVOURITE_SUCCESS';
-export const UNFAVOURITE_FAIL    = 'UNFAVOURITE_FAIL';
+export const UNFAVOURITE_FAIL = 'UNFAVOURITE_FAIL';
 
 export const REBLOGS_FETCH_REQUEST = 'REBLOGS_FETCH_REQUEST';
 export const REBLOGS_FETCH_SUCCESS = 'REBLOGS_FETCH_SUCCESS';
-export const REBLOGS_FETCH_FAIL    = 'REBLOGS_FETCH_FAIL';
+export const REBLOGS_FETCH_FAIL = 'REBLOGS_FETCH_FAIL';
 
 export const FAVOURITES_FETCH_REQUEST = 'FAVOURITES_FETCH_REQUEST';
 export const FAVOURITES_FETCH_SUCCESS = 'FAVOURITES_FETCH_SUCCESS';
-export const FAVOURITES_FETCH_FAIL    = 'FAVOURITES_FETCH_FAIL';
+export const FAVOURITES_FETCH_FAIL = 'FAVOURITES_FETCH_FAIL';
 
 export const PIN_REQUEST = 'PIN_REQUEST';
 export const PIN_SUCCESS = 'PIN_SUCCESS';
-export const PIN_FAIL    = 'PIN_FAIL';
+export const PIN_FAIL = 'PIN_FAIL';
 
 export const UNPIN_REQUEST = 'UNPIN_REQUEST';
 export const UNPIN_SUCCESS = 'UNPIN_SUCCESS';
-export const UNPIN_FAIL    = 'UNPIN_FAIL';
+export const UNPIN_FAIL = 'UNPIN_FAIL';
 
 export const BOOKMARK_REQUEST = 'BOOKMARK_REQUEST';
 export const BOOKMARK_SUCCESS = 'BOOKMARKED_SUCCESS';
-export const BOOKMARK_FAIL    = 'BOOKMARKED_FAIL';
+export const BOOKMARK_FAIL = 'BOOKMARKED_FAIL';
 
 export const UNBOOKMARK_REQUEST = 'UNBOOKMARKED_REQUEST';
 export const UNBOOKMARK_SUCCESS = 'UNBOOKMARKED_SUCCESS';
-export const UNBOOKMARK_FAIL    = 'UNBOOKMARKED_FAIL';
+export const UNBOOKMARK_FAIL = 'UNBOOKMARKED_FAIL';
 
 export function reblog(status, visibility) {
   return function (dispatch, getState) {
@@ -171,7 +171,7 @@ export function favouriteFail(status, error) {
 };
 
 
-export function like(status,location,callback) {
+export function like(status, location, callback) {
   return (dispatch, getState) => {
     api(getState).post(`/api/v1/statuses/${status.get('id')}/like?origin=${location.href}&path=${location.origin}`).then(response => {
       callback(response)
@@ -179,15 +179,26 @@ export function like(status,location,callback) {
   };
 };
 
-export function getUserlikeCount(status,location,callback) {
+export function getSelfLikeCount(id, href, origin, callback) {
   return (dispatch, getState) => {
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/count?origin=${location.href}&path=${location.origin}`).then(response => {
+    api(getState).post(`/api/v1/statuses/${id}/count?origin=${href}&path=${origin}`).then((res) => {
+      callback(res)
+    }).catch(err=>{
+      
+    })
+  }
+}
+
+export function getUserlikeCount(id, href, origin, callback) {
+  return (dispatch, getState) => {
+    api(getState).post(`/api/v1/statuses/${id}/count?origin=${href}&path=${origin}`).then(response => {
       callback(response)
+    }).catch(err => {
     })
   };
 };
 
-export function getLikeCount(likerId,encodedURL,callback){
+export function getLikeCount(likerId, encodedURL, callback) {
   // https://api.like.co/like/likebutton/:contentOwnerLikeCoinId/total?referrer={{encodedURL}}
   return (dispatch, getState) => {
     api(getState).get(`https://api.like.co/like/likebutton/${likerId}/total?referrer=${encodedURL}`).then(response => {
@@ -417,7 +428,7 @@ export function pinFail(status, error) {
   };
 };
 
-export function unpin (status) {
+export function unpin(status) {
   return (dispatch, getState) => {
     dispatch(unpinRequest(status));
 

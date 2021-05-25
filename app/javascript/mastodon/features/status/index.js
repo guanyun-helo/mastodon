@@ -19,6 +19,9 @@ import {
   unreblog,
   pin,
   unpin,
+  getLikeCount,
+  getSelfLikeCount,
+  like
 } from '../../actions/interactions';
 import {
   replyCompose,
@@ -101,7 +104,7 @@ const makeMapStateToProps = () => {
     const ids = [statusId];
 
     while (ids.length > 0) {
-      let id        = ids.shift();
+      let id = ids.shift();
       const replies = contextReplies.get(id);
 
       if (statusId !== id) {
@@ -132,11 +135,11 @@ const makeMapStateToProps = () => {
   const mapStateToProps = (state, props) => {
     const status = getStatus(state, { id: props.params.statusId });
 
-    let ancestorsIds   = Immutable.List();
+    let ancestorsIds = Immutable.List();
     let descendantsIds = Immutable.List();
 
     if (status) {
-      ancestorsIds   = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
+      ancestorsIds = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
       descendantsIds = getDescendantsIds(state, { id: status.get('id') });
     }
 
@@ -183,15 +186,16 @@ class Status extends ImmutablePureComponent {
     loadedStatusId: undefined,
   };
 
-  componentWillMount () {
+  componentWillMount() {
     this.props.dispatch(fetchStatus(this.props.params.statusId));
   }
 
-  componentDidMount () {
+  componentDidMount() {
+    console.log(this)
     attachFullscreenListener(this.onFullScreenChange);
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.params.statusId !== this.props.params.statusId && nextProps.params.statusId) {
       this._scrolledIntoView = false;
       this.props.dispatch(fetchStatus(nextProps.params.statusId));
@@ -212,6 +216,20 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(favourite(status));
     }
+  }
+
+  handleLike = (status, location, callback) =>{
+    this.props.dispatch(like(status, location, callback))
+  }
+
+  handleLikeCount = (likerId, encodedURL, callback) => {
+    this.props.dispatch(getLikeCount(likerId, encodedURL, callback));
+  }
+
+  handleUserLikeCount = (id, href, origin, callback) => {
+    this.props.dispatch(()=>{
+      getSelfLikeCount(id, href, origin, callback)
+    });
   }
 
   handlePin = (status) => {
@@ -441,7 +459,7 @@ class Status extends ImmutablePureComponent {
     }
   }
 
-  _selectChild (index, align_top) {
+  _selectChild(index, align_top) {
     const container = this.node;
     const element = container.querySelectorAll('.focusable')[index];
 
@@ -455,7 +473,7 @@ class Status extends ImmutablePureComponent {
     }
   }
 
-  renderChildren (list) {
+  renderChildren(list) {
     return list.map(id => (
       <StatusContainer
         key={id}
@@ -471,7 +489,7 @@ class Status extends ImmutablePureComponent {
     this.node = c;
   }
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     if (this._scrolledIntoView) {
       return;
     }
@@ -488,7 +506,7 @@ class Status extends ImmutablePureComponent {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     detachFullscreenListener(this.onFullScreenChange);
   }
 
@@ -496,7 +514,7 @@ class Status extends ImmutablePureComponent {
     this.setState({ fullscreen: isFullscreen() });
   }
 
-  render () {
+  render() {
     let ancestors, descendants;
     const { shouldUpdateScroll, status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
     const { fullscreen } = this.state;
@@ -579,6 +597,9 @@ class Status extends ImmutablePureComponent {
                   onReport={this.handleReport}
                   onPin={this.handlePin}
                   onEmbed={this.handleEmbed}
+                  onLike={this.handleLike}
+                  getLikeCount={this.handleLikeCount}
+                  getUserLikeCount={this.handleUserLikeCount}
                 />
               </div>
             </HotKeys>

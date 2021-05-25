@@ -71,7 +71,7 @@ const makeMapStateToProps = () => {
 
 const mapDispatchToProps = (dispatch, { intl }) => ({
 
-  onReply (status, router) {
+  onReply(status, router) {
     dispatch((_, getState) => {
       let state = getState();
 
@@ -87,7 +87,7 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     });
   },
 
-  onModalReblog (status, privacy) {
+  onModalReblog(status, privacy) {
     if (status.get('reblogged')) {
       dispatch(unreblog(status));
     } else {
@@ -95,7 +95,7 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }
   },
 
-  onReblog (status, e) {
+  onReblog(status, e) {
     if ((e && e.shiftKey) || !boostModal) {
       this.onModalReblog(status);
     } else {
@@ -103,7 +103,7 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }
   },
 
-  onFavourite (status) {
+  onFavourite(status) {
     if (status.get('favourited')) {
       dispatch(unfavourite(status));
     } else {
@@ -111,7 +111,7 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }
   },
 
-  onBookmark (status) {
+  onBookmark(status) {
     if (status.get('bookmarked')) {
       dispatch(unbookmark(status));
     } else {
@@ -119,7 +119,7 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }
   },
 
-  onPin (status) {
+  onPin(status) {
     if (status.get('pinned')) {
       dispatch(unpin(status));
     } else {
@@ -127,14 +127,14 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }
   },
 
-  onEmbed (status) {
+  onEmbed(status) {
     dispatch(openModal('EMBED', {
       url: status.get('url'),
       onError: error => dispatch(showAlertForError(error)),
     }));
   },
 
-  onDelete (status, history, withRedraft = false) {
+  onDelete(status, history, withRedraft = false) {
     if (!deleteModal) {
       dispatch(deleteStatus(status.get('id'), history, withRedraft));
     } else {
@@ -146,59 +146,59 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }
   },
 
-  onDirect (account, router) {
+  onDirect(account, router) {
     dispatch(directCompose(account, router));
   },
 
-  onMention (account, router) {
+  onMention(account, router) {
     dispatch(mentionCompose(account, router));
   },
 
-  onOpenMedia (statusId, media, index) {
+  onOpenMedia(statusId, media, index) {
     dispatch(openModal('MEDIA', { statusId, media, index }));
   },
 
-  onOpenVideo (statusId, media, options) {
+  onOpenVideo(statusId, media, options) {
     dispatch(openModal('VIDEO', { statusId, media, options }));
   },
 
-  onBlock (status) {
+  onBlock(status) {
     const account = status.get('account');
     dispatch(initBlockModal(account));
   },
-  onLike (status,location,callback) {
-    return dispatch(like(status,location,callback));
+  onLike(status, location, callback) {
+    return dispatch(like(status, location, callback));
   },
 
-  getUserLikeCount(status,location,callback){
-    return dispatch(getUserlikeCount(status,location,callback))
+  getUserLikeCount(id, href, origin, callback) {
+    return dispatch(getUserlikeCount(id, href, origin, callback))
   },
 
-  onSuperLiked (status) {
+  onSuperLiked(status) {
     return dispatch(superlike(status));
   },
 
-  getLikeCount(likerId,encodedURL,callback){
-    return dispatch(getLikeCount(likerId,encodedURL,callback));
+  getLikeCount(likerId, encodedURL, callback) {
+    return dispatch(getLikeCount(likerId, encodedURL, callback));
   },
 
-  onUnblock (account) {
+  onUnblock(account) {
     dispatch(unblockAccount(account.get('id')));
   },
 
-  onReport (status) {
+  onReport(status) {
     dispatch(initReport(status.get('account'), status));
   },
 
-  onMute (account) {
+  onMute(account) {
     dispatch(initMuteModal(account));
   },
 
-  onUnmute (account) {
+  onUnmute(account) {
     dispatch(unmuteAccount(account.get('id')));
   },
 
-  onMuteConversation (status) {
+  onMuteConversation(status) {
     if (status.get('muted')) {
       dispatch(unmuteStatus(status.get('id')));
     } else {
@@ -206,7 +206,7 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }
   },
 
-  onToggleHidden (status) {
+  onToggleHidden(status) {
     if (status.get('hidden')) {
       dispatch(revealStatus(status.get('id')));
     } else {
@@ -214,11 +214,11 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }
   },
 
-  onToggleCollapsed (status, isCollapsed) {
+  onToggleCollapsed(status, isCollapsed) {
     dispatch(toggleStatusCollapse(status.get('id'), isCollapsed));
   },
 
-  onBlockDomain (domain) {
+  onBlockDomain(domain) {
     dispatch(openModal('CONFIRM', {
       message: <FormattedMessage id='confirmations.domain_block.message' defaultMessage='Are you really, really sure you want to block the entire {domain}? In most cases a few targeted blocks or mutes are sufficient and preferable. You will not see content from that domain in any public timelines or your notifications. Your followers from that domain will be removed.' values={{ domain: <strong>{domain}</strong> }} />,
       confirm: intl.formatMessage(messages.blockDomainConfirm),
@@ -226,11 +226,11 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     }));
   },
 
-  onUnblockDomain (domain) {
+  onUnblockDomain(domain) {
     dispatch(unblockDomain(domain));
   },
 
-  deployPictureInPicture (status, type, mediaProps) {
+  deployPictureInPicture(status, type, mediaProps) {
     dispatch(deployPictureInPicture(status.get('id'), status.getIn(['account', 'id']), type, mediaProps));
   },
 

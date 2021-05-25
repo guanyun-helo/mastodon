@@ -202,14 +202,14 @@ class StatusActionBar extends ImmutablePureComponent {
     const id = status.get('id')
     const liker_id = account.get('liker_id')
     const url = `${location.origin}/web/statuses/${id}`
-    if(this.props.hidden === false){
+    if(this.props.hidden === false || this.props.contextType === 'thread'){
       this.props.getLikeCount(liker_id,url,(count)=>{
         this.setState({
           totalLike: count.data.total
         })
       })
   
-      this.props.getUserLikeCount(this.props.status,location,(res)=>{
+      this.props.getUserLikeCount(id,location.href,location.origin,(res)=>{
         let data = {}
         try {
           data = JSON.parse(res.data.data)
@@ -223,9 +223,12 @@ class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleLikeContent = () =>{
+
     if(this.state.selfLike >= 5) {
-      toast.info("鄉民，你已經讚好讚滿了！");
       return
+    }
+    if (me && this.state.selfLike === 4) {
+      this.props.onFavourite(this.props.status);
     }
     this.setState({
       selfLike: this.state.selfLike + 1,
@@ -240,13 +243,6 @@ class StatusActionBar extends ImmutablePureComponent {
           })
         }
         if(res.data.data === 'INVALID_LIKE'){
-          this.setState({
-            selfLike: this.state.selfLike - 1,
-            totalLike: this.state.totalLike - 1
-          })
-        }
-        if(res.data.data === 'CANNOT_SELF_LIKE'){
-          toast.info("鄉民，不能讚自己唷！");
           this.setState({
             selfLike: this.state.selfLike - 1,
             totalLike: this.state.totalLike - 1

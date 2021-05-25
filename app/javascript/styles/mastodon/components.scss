@@ -1177,9 +1177,10 @@
       transition: all .1s ease-in-out;
     }
     img:active{
-      width: 26px;
-      height: 26px;
+      width: 30px;
+      height: 30px;
       transition: all .1s ease-in-out;
+      transform: rotate(35deg);
     }
     .count{
       height: 23px;
@@ -1263,6 +1264,28 @@
   display: flex;
   flex-direction: row;
   padding: 10px 0;
+  .like-button{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    img{
+      margin-right: 5px;
+      width: 25px;
+      height: 25px;
+      transition: all .1s ease-in-out;
+
+    }
+    img:active{
+      width: 30px;
+      height: 30px;
+      transition: all .1s ease-in-out;
+      transform: rotate(35deg);
+    }
+    .count{
+      color: #606984;
+    }
+  }
 }
 
 .detailed-status__link {
