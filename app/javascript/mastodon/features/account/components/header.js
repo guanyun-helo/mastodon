@@ -16,6 +16,8 @@ import DropdownMenuContainer from 'mastodon/containers/dropdown_menu_container';
 import AccountNoteContainer from '../containers/account_note_container';
 import civic from '../../../../images/likebutton/civic-liker.svg'
 import api from '../../../api'
+import storage from 'localforage'
+
 const messages = defineMessages({
   unfollow: { id: 'account.unfollow', defaultMessage: 'Unfollow' },
   follow: { id: 'account.follow', defaultMessage: 'Follow' },
@@ -130,10 +132,21 @@ class Header extends ImmutablePureComponent {
   componentDidMount() {
     const account = this.props.account;
     const liker_id = account.get('liker_id')
-    api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
-      if (res.data.isSubscribedCivicLiker) {
+    storage.getItem(liker_id, (err, value) => {
+      if (value) {
         this.setState({
-          isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
+          isSubscribedCivicLiker: value
+        })
+      }
+      if (!value || value === null) {
+        api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+          if (res.data.isSubscribedCivicLiker) {
+            this.setState({
+              isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
+            }, () => {
+              storage.setItem(liker_id, true)
+            })
+          }
         })
       }
     })

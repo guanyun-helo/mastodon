@@ -14,6 +14,8 @@ import { previewState as previewMediaState } from 'mastodon/features/ui/componen
 import { previewState as previewVideoState } from 'mastodon/features/ui/components/video_modal';
 import initialState from '../initial_state';
 import ErrorBoundary from '../components/error_boundary';
+import storage from 'localforage'
+import { COMPOSE_SPOILER_TEXT_CHANGE } from '../actions/compose';
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
 
@@ -30,6 +32,23 @@ export default class Mastodon extends React.PureComponent {
   };
 
   componentDidMount() {
+    storage.getItem('times', (err, value) => {
+      if (value >= 8) {
+        storage.clear().then(() => {
+          console.log('Database is now empty.');
+        }).catch(function (err) {
+          // This code runs if there were any errors
+          console.log(err);
+        });
+        return
+      }
+
+      if (value === null) {
+        storage.setItem('times', 0)
+      } else if (typeof value === 'number') {
+        storage.setItem('times', value + 1)
+      }
+    })
     this.disconnect = store.dispatch(connectUserStream());
   }
 

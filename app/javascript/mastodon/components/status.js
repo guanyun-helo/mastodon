@@ -23,7 +23,7 @@ import civic from '../../images/likebutton/civic-liker.svg'
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
 import Bundle from '../features/ui/components/bundle';
-
+import storage from 'localforage'
 export const textForScreenReader = (intl, status, rebloggedByText = false) => {
   const displayName = status.getIn(['account', 'display_name']);
 
@@ -234,10 +234,22 @@ class Status extends ImmutablePureComponent {
     const status = this._properStatus()
     const account = status.get('account');
     const liker_id = account.get('liker_id')
-    api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
-      if (res.data.isSubscribedCivicLiker) {
+
+    storage.getItem(liker_id, (err, value) => {
+      if (value) {
         this.setState({
-          isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
+          isSubscribedCivicLiker: value
+        })
+      }
+      if (!value ||　value === null) {
+        api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+          if (res.data.isSubscribedCivicLiker) {
+            this.setState({
+              isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
+            }, () => {
+              storage.setItem(liker_id, true)
+            })
+          }
         })
       }
     })
