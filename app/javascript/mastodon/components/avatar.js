@@ -45,7 +45,6 @@ export default class Avatar extends React.PureComponent {
     if (inline) {
       className = className + ' account__avatar-inline';
     }
-
     const style = {
       ...this.props.style,
       width: `${size}px`,

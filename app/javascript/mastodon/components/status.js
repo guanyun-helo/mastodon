@@ -18,7 +18,8 @@ import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
 import { displayMedia } from '../initial_state';
 import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
-
+import api from '../api'
+import civic from '../../images/likebutton/civic-liker.svg'
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
 import Bundle from '../features/ui/components/bundle';
@@ -117,6 +118,7 @@ class Status extends ImmutablePureComponent {
   state = {
     showMedia: defaultMediaVisibility(this.props.status),
     statusId: undefined,
+    isSubscribedCivicLiker: false
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -180,15 +182,15 @@ class Status extends ImmutablePureComponent {
     this.props.onToggleCollapsed(this._properStatus(), isCollapsed);
   }
 
-  renderLoadingMediaGallery () {
+  renderLoadingMediaGallery() {
     return <div className='media-gallery' style={{ height: '110px' }} />;
   }
 
-  renderLoadingVideoPlayer () {
+  renderLoadingVideoPlayer() {
     return <div className='video-player' style={{ height: '110px' }} />;
   }
 
-  renderLoadingAudioPlayer () {
+  renderLoadingAudioPlayer() {
     return <div className='audio-player' style={{ height: '110px' }} />;
   }
 
@@ -228,6 +230,19 @@ class Status extends ImmutablePureComponent {
     this.props.onReply(this._properStatus(), this.context.router.history);
   }
 
+  componentDidMount() {
+    const status = this._properStatus()
+    const account = status.get('account');
+    const liker_id = account.get('liker_id')
+    api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+      if (res.data.isSubscribedCivicLiker) {
+        this.setState({
+          isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
+        })
+      }
+    })
+  }
+
   handleHotkeyFavourite = () => {
     this.props.onFavourite(this._properStatus());
   }
@@ -265,7 +280,7 @@ class Status extends ImmutablePureComponent {
     this.handleToggleMediaVisibility();
   }
 
-  _properStatus () {
+  _properStatus() {
     const { status } = this.props;
 
     if (status.get('reblog', null) !== null && typeof status.get('reblog') === 'object') {
@@ -279,7 +294,7 @@ class Status extends ImmutablePureComponent {
     this.node = c;
   }
 
-  render () {
+  render() {
     let media = null;
     let statusAvatar, prepend, rebloggedByText;
 
@@ -351,7 +366,7 @@ class Status extends ImmutablePureComponent {
       rebloggedByText = intl.formatMessage({ id: 'status.reblogged_by', defaultMessage: '{name} boosted' }, { name: status.getIn(['account', 'acct']) });
 
       account = status.get('account');
-      status  = status.get('reblog');
+      status = status.get('reblog');
     }
 
     if (pictureInPicture.get('inUse')) {
@@ -443,9 +458,9 @@ class Status extends ImmutablePureComponent {
     }
 
     if (otherAccounts && otherAccounts.size > 0) {
-      statusAvatar = <AvatarComposite accounts={otherAccounts} size={48} />;
+      statusAvatar = <AvatarComposite accounts={otherAccounts} size={40} />;
     } else if (account === undefined || account === null) {
-      statusAvatar = <Avatar account={status.get('account')} size={48} />;
+      statusAvatar = <Avatar account={status.get('account')} size={40} />;
     } else {
       statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
@@ -473,7 +488,15 @@ class Status extends ImmutablePureComponent {
               </a>
 
               <a onClick={this.handleAccountClick} data-id={status.getIn(['account', 'id'])} href={status.getIn(['account', 'url'])} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
-                <div className='status__avatar'>
+                <div className='status__avatar' style={{
+                  backgroundImage: this.state.isSubscribedCivicLiker ? `url(${civic})` : null,
+                  backgroundSize: '50px 50px',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}>
                   {statusAvatar}
                 </div>
 

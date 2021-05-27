@@ -14,7 +14,8 @@ import ShortNumber from 'mastodon/components/short_number';
 import { NavLink } from 'react-router-dom';
 import DropdownMenuContainer from 'mastodon/containers/dropdown_menu_container';
 import AccountNoteContainer from '../containers/account_note_container';
-
+import civic from '../../../../images/likebutton/civic-liker.svg'
+import api from '../../../api'
 const messages = defineMessages({
   unfollow: { id: 'account.unfollow', defaultMessage: 'Unfollow' },
   follow: { id: 'account.follow', defaultMessage: 'Follow' },
@@ -84,6 +85,10 @@ class Header extends ImmutablePureComponent {
     domain: PropTypes.string.isRequired,
   };
 
+  state = {
+    isSubscribedCivicLiker: false
+  }
+
   openEditProfile = () => {
     window.open('/settings/profile', '_blank');
   }
@@ -122,7 +127,19 @@ class Header extends ImmutablePureComponent {
     }
   }
 
-  render () {
+  componentDidMount() {
+    const account = this.props.account;
+    const liker_id = account.get('liker_id')
+    api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+      if (res.data.isSubscribedCivicLiker) {
+        this.setState({
+          isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
+        })
+      }
+    })
+  }
+
+  render() {
     const { account, intl, domain, identity_proofs } = this.props;
 
     if (!account) {
@@ -131,11 +148,11 @@ class Header extends ImmutablePureComponent {
 
     const suspended = account.get('suspended');
 
-    let info        = [];
-    let actionBtn   = '';
-    let bellBtn     = '';
-    let lockedIcon  = '';
-    let menu        = [];
+    let info = [];
+    let actionBtn = '';
+    let bellBtn = '';
+    let lockedIcon = '';
+    let menu = [];
 
     if (me !== account.get('id') && account.getIn(['relationship', 'followed_by'])) {
       info.push(<span key='followed_by' className='relationship-tag'><FormattedMessage id='account.follows_you' defaultMessage='Follows you' /></span>);
@@ -245,10 +262,10 @@ class Header extends ImmutablePureComponent {
       menu.push({ text: intl.formatMessage(messages.admin_account, { name: account.get('username') }), href: `/admin/accounts/${account.get('id')}` });
     }
 
-    const content         = { __html: account.get('note_emojified') };
+    const content = { __html: account.get('note_emojified') };
     const displayNameHtml = { __html: account.get('display_name_html') };
-    const fields          = account.get('fields');
-    const acct            = account.get('acct').indexOf('@') === -1 && domain ? `${account.get('acct')}@${domain}` : account.get('acct');
+    const fields = account.get('fields');
+    const acct = account.get('acct').indexOf('@') === -1 && domain ? `${account.get('acct')}@${domain}` : account.get('acct');
 
     let badge;
 
@@ -272,8 +289,16 @@ class Header extends ImmutablePureComponent {
 
         <div className='account__header__bar'>
           <div className='account__header__tabs'>
-            <a className='avatar' href={account.get('url')} rel='noopener noreferrer' target='_blank'>
-              <Avatar account={account} size={90} />
+            <a className='avatar' style={{
+              backgroundImage: this.state.isSubscribedCivicLiker ? `url(${civic})` : null,
+              backgroundSize: '95px 95px',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundRepeat: 'no-repeat'
+            }} href={account.get('url')} rel='noopener noreferrer' target='_blank'>
+              <Avatar account={account} size={74} />
             </a>
 
             <div className='spacer' />
@@ -307,7 +332,7 @@ class Header extends ImmutablePureComponent {
                         <a href={proof.get('proof_url')} target='_blank' rel='noopener noreferrer'><span title={intl.formatMessage(messages.linkVerifiedOn, { date: intl.formatDate(proof.get('updated_at'), dateFormatOptions) })}>
                           <Icon id='check' className='verified__mark' />
                         </span></a>
-                        <a href={proof.get('profile_url')} target='_blank' rel='noopener noreferrer'><span dangerouslySetInnerHTML={{ __html: ' '+proof.get('provider_username') }} /></a>
+                        <a href={proof.get('profile_url')} target='_blank' rel='noopener noreferrer'><span dangerouslySetInnerHTML={{ __html: ' ' + proof.get('provider_username') }} /></a>
                       </dd>
                     </dl>
                   ))}
