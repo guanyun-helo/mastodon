@@ -213,16 +213,18 @@ class StatusActionBar extends ImmutablePureComponent {
         })
       })
 
-      this.props.getUserLikeCount(id, location.href, location.origin, (res) => {
-        let data = {}
-        try {
-          data = JSON.parse(res.data.data)
-          this.setState({
-            selfLike: data.count
-          })
-        } catch (error) {
-        }
-      })
+      setTimeout(()=>{
+        this.props.getUserLikeCount(id, location.href, location.origin, (res) => {
+          let data = {}
+          try {
+            data = JSON.parse(res.data.data)
+            this.setState({
+              selfLike: data.count
+            })
+          } catch (error) {
+          }
+        })
+      },2500)
     }
   }
 
