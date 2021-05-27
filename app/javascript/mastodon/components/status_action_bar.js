@@ -11,6 +11,7 @@ import classNames from 'classnames';
 import LikeButton from '../../images/likebutton/like-clap'
 import { toast } from 'material-react-toastify';
 import { COMPOSE_SPOILER_TEXT_CHANGE } from '../actions/compose';
+import { debounce } from 'lodash'
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -196,20 +197,23 @@ class StatusActionBar extends ImmutablePureComponent {
   }
 
 
-  componentDidMount(){
+  componentDidMount() {
     const { status } = this.props;
     const account = status.get('account');
     const id = status.get('id')
     const liker_id = account.get('liker_id')
+    this.setState({
+      liker_id: liker_id
+    })
     const url = `${location.origin}/web/statuses/${id}`
-    if(this.props.hidden === false || this.props.contextType === 'thread'){
-      this.props.getLikeCount(liker_id,url,(count)=>{
+    if (this.props.hidden === false || this.props.contextType === 'thread') {
+      this.props.getLikeCount(liker_id, url, (count) => {
         this.setState({
           totalLike: count.data.total
         })
       })
-  
-      this.props.getUserLikeCount(id,location.href,location.origin,(res)=>{
+
+      this.props.getUserLikeCount(id, location.href, location.origin, (res) => {
         let data = {}
         try {
           data = JSON.parse(res.data.data)
@@ -222,31 +226,58 @@ class StatusActionBar extends ImmutablePureComponent {
     }
   }
 
-  handleLikeContent = () =>{
+  handleLikeContent = () => {
+    if (this.state.selfLike >= 5) {
+      if (me && this.state.selfLike === 5 && !this.props.status.get('favourited')) {
 
-    if(this.state.selfLike >= 5) {
+        const params = {
+          tz: -(new Date().getTimezoneOffset() / 60),
+          parentSuperLikeID: this.state.liker_id
+        }
+        this.props.onSuperLiked(this.props.status, location, params, res => {
+          if (res.data.data !== "SUPERLIKE_ON_COOLDOWN") {
+            this.props.onFavourite(this.props.status);
+          } else {
+            this.setState({
+              selfLike: this.state.selfLike - 1,
+              totalLike: this.state.totalLike - 1
+            })
+          }
+        })
+      }
       return
-    }
-    if (me && this.state.selfLike === 4 && !this.props.status.get('favourited')) {
-      this.props.onFavourite(this.props.status);
     }
     this.setState({
       selfLike: this.state.selfLike + 1,
       totalLike: this.state.totalLike + 1
-    },()=>{
-      this.props.onLike(this.props.status,location,(res)=>{
-        if(res.data.code === 401){
-          toast.info("鄉民，請先綁定 LikeCoin Id！");
-          this.setState({
-            selfLike: this.state.selfLike - 1,
-            totalLike: this.state.totalLike - 1
-          })
-        }
-        // if(res.data.data === 'INVALID_LIKE'){
-        // }
-      })
+    }, () => {
+      this.sendLike()
     })
   }
+
+  sendLike = debounce(() => {
+    this.props.onLike(this.props.status, this.state.selfLike === 6 ? 5 : this.state.selfLike, location, (res) => {
+      if (res.data.code === 401) {
+        toast.info("鄉民，請先綁定 LikeCoin Id！");
+        this.setState({
+          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        })
+      }
+      if (res.data.data === 'INVALID_LIKE') {
+        this.setState({
+          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        })
+      }
+      if (res.data.data === 'CANNOT_SELF_LIKE') {
+        this.setState({
+          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        })
+      }
+    })
+  }, 1300)
 
   handleOpen = () => {
     this.context.router.history.push(`/statuses/${this.props.status.get('id')}`);
@@ -265,10 +296,10 @@ class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleCopy = () => {
-    const url      = this.props.status.get('url');
+    const url = this.props.status.get('url');
     const textarea = document.createElement('textarea');
 
-    textarea.textContent    = url;
+    textarea.textContent = url;
     textarea.style.position = 'fixed';
 
     document.body.appendChild(textarea);
@@ -283,14 +314,14 @@ class StatusActionBar extends ImmutablePureComponent {
     }
   }
 
-  render () {
+  render() {
     const { status, relationship, intl, withDismiss, scrollKey } = this.props;
 
-    const anonymousAccess    = !me;
-    const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
+    const anonymousAccess = !me;
+    const publicStatus = ['public', 'unlisted'].includes(status.get('visibility'));
     const mutingConversation = status.get('muted');
-    const account            = status.get('account');
-    const writtenByMe        = status.getIn(['account', 'id']) === me;
+    const account = status.get('account');
+    const writtenByMe = status.getIn(['account', 'id']) === me;
 
     let menu = [];
 
@@ -380,22 +411,22 @@ class StatusActionBar extends ImmutablePureComponent {
       reblogTitle = intl.formatMessage(messages.cannot_reblog);
     }
     const liker_id = account.get('liker_id') || ''
-    const {totalLike} = this.state
+    const { totalLike } = this.state
     const shareButton = ('share' in navigator) && publicStatus && (
       <IconButton className='status__action-bar-button' title={intl.formatMessage(messages.share)} icon='share-alt' onClick={this.handleShareClick} />
     );
-
     return (
       <div className='status__action-bar'>
         <IconButton className='status__action-bar-button' title={replyTitle} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} onClick={this.handleReplyClick} counter={status.get('replies_count')} obfuscateCount />
-        <IconButton className={classNames('status__action-bar-button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate}  active={status.get('reblogged')} pressed={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} />
+        <IconButton className={classNames('status__action-bar-button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} pressed={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} />
         <IconButton className='status__action-bar-button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} />
-        {liker_id.length > 0 ? (
-                <div className="like-button" onClick={this.handleLikeContent}>
-                  <img src={LikeButton}/>
-                  <div className="count">{totalLike}</div>
-                </div>
-        ) :　null }
+        
+        {publicStatus === true ? liker_id.length > 0 ? (
+          <div className="like-button" onClick={this.handleLikeContent}>
+            <img src={LikeButton} />
+            <div className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+          </div>
+        ) : null : null}
         {shareButton}
 
         <div className='status__action-bar-dropdown'>

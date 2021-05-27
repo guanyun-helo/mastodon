@@ -17,7 +17,7 @@ import {
   pin,
   unpin,
   like,
-  superlike,
+  superLiked,
   getLikeCount,
   getUserlikeCount
 } from '../actions/interactions';
@@ -166,16 +166,16 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     const account = status.get('account');
     dispatch(initBlockModal(account));
   },
-  onLike(status, location, callback) {
-    return dispatch(like(status, location, callback));
+  onLike(status, count, location, callback) {
+    return dispatch(like(status, count, location, callback));
   },
 
   getUserLikeCount(id, href, origin, callback) {
     return dispatch(getUserlikeCount(id, href, origin, callback))
   },
 
-  onSuperLiked(status) {
-    return dispatch(superlike(status));
+  onSuperLiked(status, location, params, callBack) {
+    return dispatch(superLiked(status, location, params, callBack));
   },
 
   getLikeCount(likerId, encodedURL, callback) {

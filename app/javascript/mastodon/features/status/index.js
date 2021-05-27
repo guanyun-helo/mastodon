@@ -21,7 +21,8 @@ import {
   unpin,
   getLikeCount,
   getSelfLikeCount,
-  like
+  like,
+  superLiked
 } from '../../actions/interactions';
 import {
   replyCompose,
@@ -218,16 +219,21 @@ class Status extends ImmutablePureComponent {
     }
   }
 
-  handleLike = (status, location, callback) =>{
-    this.props.dispatch(like(status, location, callback))
+  handleLike = (status, count, location, callback) => {
+    this.props.dispatch(like(status, count, location, callback))
   }
+
+  handleSuperLike = (status, location, params, callback) => {
+    this.props.dispatch(superLiked(status, location, params, callback))
+  }
+
 
   handleLikeCount = (likerId, encodedURL, callback) => {
     this.props.dispatch(getLikeCount(likerId, encodedURL, callback));
   }
 
   handleUserLikeCount = (id, href, origin, callback) => {
-    this.props.dispatch(()=>{
+    this.props.dispatch(() => {
       getSelfLikeCount(id, href, origin, callback)
     });
   }
@@ -597,6 +603,7 @@ class Status extends ImmutablePureComponent {
                   onReport={this.handleReport}
                   onPin={this.handlePin}
                   onEmbed={this.handleEmbed}
+                  onSuperLiked={this.handleSuperLike}
                   onLike={this.handleLike}
                   getLikeCount={this.handleLikeCount}
                   getUserLikeCount={this.handleUserLikeCount}

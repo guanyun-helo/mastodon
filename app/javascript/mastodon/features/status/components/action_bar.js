@@ -9,6 +9,7 @@ import { me, isStaff } from '../../../initial_state';
 import classNames from 'classnames';
 import LikeButton from '../../../../images/likebutton/like-clap'
 import { toast } from 'material-react-toastify';
+import { debounce } from 'lodash'
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -194,39 +195,59 @@ class ActionBar extends React.PureComponent {
 
   handleLikeContent = () => {
     if (this.state.selfLike >= 5) {
-      // toast.info("鄉民，你已經讚好讚滿了！");
+      if (me && this.state.selfLike === 5 && !this.props.status.get('favourited')) {
+        const params = {
+          tz: -(new Date().getTimezoneOffset() / 60),
+          parentSuperLikeID: this.state.liker_id
+        }
+        this.props.onSuperLiked(this.props.status, location, params, res => {
+          if (res.data.data !== "SUPERLIKE_ON_COOLDOWN") {
+            this.props.onFavourite(this.props.status);
+          } else {
+            this.setState({
+              selfLike: this.state.selfLike - 1,
+              totalLike: this.state.totalLike - 1
+            })
+          }
+        })
+      }
       return
     }
-    if (me && this.state.selfLike === 4 && !this.props.status.get('favourited')) {
-      this.props.onFavourite(this.props.status);
-    }
+    // if (me && this.state.selfLike === 4 && !this.props.status.get('favourited')) {
+    //   this.props.onFavourite(this.props.status);
+    // }
     this.setState({
       selfLike: this.state.selfLike + 1,
       totalLike: this.state.totalLike + 1
     }, () => {
-      this.props.onLike(this.props.status, location, (res) => {
-        if (res.data.code === 401) {
-          toast.info("鄉民，請先綁定 LikeCoin Id！");
-          this.setState({
-            selfLike: this.state.selfLike - 1,
-            totalLike: this.state.totalLike - 1
-          })
-        }
-        if (res.data.data === 'INVALID_LIKE') {
-          this.setState({
-            selfLike: this.state.selfLike - 1,
-            totalLike: this.state.totalLike - 1
-          })
-        }
-        // if (res.data.data === 'CANNOT_SELF_LIKE') {
-        //   this.setState({
-        //     selfLike: this.state.selfLike - 1,
-        //     totalLike: this.state.totalLike - 1
-        //   })
-        // }
-      })
+      this.sendLike()
     })
   }
+
+
+  sendLike = debounce(() => {
+    this.props.onLike(this.props.status, this.state.selfLike === 6 ? 5 : this.state.selfLike, location, (res) => {
+      if (res.data.code === 401) {
+        toast.info("鄉民，請先綁定 LikeCoin Id！");
+        this.setState({
+          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        })
+      }
+      if (res.data.data === 'INVALID_LIKE') {
+        this.setState({
+          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        })
+      }
+      if (res.data.data === 'CANNOT_SELF_LIKE') {
+        this.setState({
+          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        })
+      }
+    })
+  }, 1300)
 
   componentDidMount() {
     const { status } = this.props;
@@ -352,10 +373,10 @@ class ActionBar extends React.PureComponent {
         <div className='detailed-status__button'><IconButton title={intl.formatMessage(messages.reply)} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} onClick={this.handleReplyClick} /></div>
         <div className='detailed-status__button' ><IconButton className={classNames({ reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} /></div>
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} /></div>
-        <div className="detailed-status__button like-button animate__animated animate__fadeIn" onClick={this.handleLikeContent}>
+        {publicStatus === true ? liker_id.length > 0 ? <div className="detailed-status__button like-button animate__animated animate__fadeIn" onClick={this.handleLikeContent}>
           <img src={LikeButton} />
-          <div className="count">{totalLike}</div>
-        </div>
+          <div className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+        </div> : null : null}
         {shareButton}
         <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
 

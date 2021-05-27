@@ -1163,7 +1163,7 @@
 .status__action-bar {
   align-items: center;
   display: flex;
-  margin-top: 8px;
+  margin-top: 5px;
   .like-button{
     width: 23px;
     height: 23px;
@@ -1180,7 +1180,7 @@
       width: 30px;
       height: 30px;
       transition: all .1s ease-in-out;
-      transform: rotate(35deg);
+      transform: rotate(15deg);
     }
     .count{
       height: 23px;
@@ -1195,7 +1195,7 @@
   margin-right: 18px;
 
   &.icon-button--with-counter {
-    margin-right: 14px;
+    margin-right: 18px;
   }
 }
 
@@ -1280,7 +1280,7 @@
       width: 30px;
       height: 30px;
       transition: all .1s ease-in-out;
-      transform: rotate(35deg);
+      transform: rotate(15deg);
     }
     .count{
       color: #606984;

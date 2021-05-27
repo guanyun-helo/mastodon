@@ -171,11 +171,28 @@ export function favouriteFail(status, error) {
 };
 
 
-export function like(status, location, callback) {
+export function like(status, count, location, callback) {
   return (dispatch, getState) => {
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/like?origin=${location.href}&path=${location.origin}`).then(response => {
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/like?origin=${location.href}&path=${location.origin}&count=${count}`).then(response => {
       callback(response)
     })
+  };
+};
+
+export function superLiked(status, location,params,callBack) {
+  return (dispatch, getState) => {
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/superlike?origin=${location.href}&path=${location.origin}&tz=${params.tz}&parentSuperLikeID=${params.parentSuperLikeID}`).then((res) => {
+      callBack(res)
+    })
+  }
+}
+
+export function superLike(status) {
+  return (dispatch, getState) => {
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/superlike`).then(response => {
+    }).catch(error => {
+      dispatch(unfavouriteFail(status, error));
+    });
   };
 };
 
@@ -183,8 +200,8 @@ export function getSelfLikeCount(id, href, origin, callback) {
   return (dispatch, getState) => {
     api(getState).post(`/api/v1/statuses/${id}/count?origin=${href}&path=${origin}`).then((res) => {
       callback(res)
-    }).catch(err=>{
-      
+    }).catch(err => {
+
     })
   }
 }
@@ -209,19 +226,6 @@ export function getLikeCount(likerId, encodedURL, callback) {
   };
 }
 
-
-export function superlike(status) {
-  return (dispatch, getState) => {
-    dispatch(unfavouriteRequest(status));
-
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/superlike`).then(response => {
-      dispatch(importFetchedStatus(response.data));
-      dispatch(unfavouriteSuccess(status));
-    }).catch(error => {
-      dispatch(unfavouriteFail(status, error));
-    });
-  };
-};
 
 export function unfavouriteRequest(status) {
   return {

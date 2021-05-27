@@ -56,8 +56,8 @@ class Api::V1::Statuses::LikesController < Api::BaseController
 
       https = Net::HTTP.new(url.host, url.port)
       https.use_ssl = true
-      request = Net::HTTP::Post.new(url, {'Authorization' => "Bearer #{current_account['access_token']}"})
-      response = https.request(request)
+      x_request = Net::HTTP::Post.new(url, {'Authorization' => "Bearer #{current_account['access_token']}",'x-likecoin-real-ip'=>request.remote_ip,'x-likecoin-user-agent'=>request.user_agent})
+      response = https.request(x_request)
       response
     end
 
@@ -67,11 +67,11 @@ class Api::V1::Statuses::LikesController < Api::BaseController
       https = Net::HTTP.new(refresh_url.host, refresh_url.port)
       https.use_ssl = true
 
-      request = Net::HTTP::Post.new(refresh_url)
-      request["Content-Type"] = "application/x-www-form-urlencoded"
-      request.body = "client_id=#{ENV['LIKECOIN_CLIENT_ID']}&client_secret=#{ENV['LIKECOIN_CLIENT_SECRET']}&grant_type=refresh_token&refresh_token=#{current_account.refresh_token}"
+      x_request = Net::HTTP::Post.new(refresh_url)
+      x_request["Content-Type"] = "application/x-www-form-urlencoded"
+      x_request.body = "client_id=#{ENV['LIKECOIN_CLIENT_ID']}&client_secret=#{ENV['LIKECOIN_CLIENT_SECRET']}&grant_type=refresh_token&refresh_token=#{current_account.refresh_token}"
 
-      response = https.request(request)
+      response = https.request(x_request)
       Account.find(current_account.id).update_attribute(:access_token, JSON.parse(response.body)['access_token'])
       response
     end
@@ -99,9 +99,9 @@ class Api::V1::Statuses::LikesController < Api::BaseController
 
       https = Net::HTTP.new(url.host, url.port)
       https.use_ssl = true
-      request = Net::HTTP::Get.new(url, {'Authorization' => "Bearer #{current_account['access_token']}"})
+      x_request = Net::HTTP::Get.new(url, {'Authorization' => "Bearer #{current_account['access_token']}"})
 
-      response = https.request(request)
+      response = https.request(x_request)
 
       if response.code != '200'
         access_token_response = access_token()
