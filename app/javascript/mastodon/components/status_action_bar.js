@@ -269,6 +269,7 @@ class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleLikeContent = () => {
+
     if (this.state.selfLike >= 5) {
       if (me && this.state.selfLike === 5 && !this.props.status.get('favourited')) {
 
@@ -277,7 +278,7 @@ class StatusActionBar extends ImmutablePureComponent {
           parentSuperLikeID: this.state.liker_id
         }
         this.props.onSuperLiked(this.props.status, location, params, res => {
-          if (res.data.data !== "SUPERLIKE_ON_COOLDOWN") {
+          if (res.data.data === "ok") {
             this.props.onFavourite(this.props.status);
           } else {
             this.setState({
@@ -312,20 +313,20 @@ class StatusActionBar extends ImmutablePureComponent {
         })
       }
       if (res.data.data === 'INVALID_LIKE') {
-        this.setState({
-          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
-          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
-        }, () => {
-          storage.setItem(this.props.status.get('id'), this.state)
-        })
+        // this.setState({
+        //   selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+        //   totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        // }, () => {
+        //   storage.setItem(this.props.status.get('id'), this.state)
+        // })
       }
       if (res.data.data === 'CANNOT_SELF_LIKE') {
-        this.setState({
-          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
-          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
-        }, () => {
-          storage.setItem(this.props.status.get('id'), this.state)
-        })
+        // this.setState({
+        //   selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+        //   totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        // }, () => {
+        //   storage.setItem(this.props.status.get('id'), this.state)
+        // })
       }
     })
   }, 1300)

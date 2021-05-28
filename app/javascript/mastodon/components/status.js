@@ -235,12 +235,13 @@ class Status extends ImmutablePureComponent {
     if(status){
       const account = status.get('account');
       const liker_id = account.get('liker_id')
-  
+      if(!liker_id) return
       storage.getItem(liker_id, (err, value) => {
         if (value) {
           this.setState({
             isSubscribedCivicLiker: value
           })
+          return
         }
         if (!value ||　value === null) {
           api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {

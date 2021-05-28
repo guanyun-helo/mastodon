@@ -192,7 +192,6 @@ class Status extends ImmutablePureComponent {
   }
 
   componentDidMount() {
-    console.log(this)
     attachFullscreenListener(this.onFullScreenChange);
   }
 
@@ -233,9 +232,7 @@ class Status extends ImmutablePureComponent {
   }
 
   handleUserLikeCount = (id, href, origin, callback) => {
-    this.props.dispatch(() => {
-      getSelfLikeCount(id, href, origin, callback)
-    });
+    this.props.dispatch(getSelfLikeCount(id, href, origin, callback));
   }
 
   handlePin = (status) => {

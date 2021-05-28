@@ -202,7 +202,7 @@ class ActionBar extends React.PureComponent {
           parentSuperLikeID: this.state.liker_id
         }
         this.props.onSuperLiked(this.props.status, location, params, res => {
-          if (res.data.data !== "SUPERLIKE_ON_COOLDOWN") {
+          if (res.data.data === "ok") {
             this.props.onFavourite(this.props.status);
           } else {
             this.setState({
@@ -241,20 +241,20 @@ class ActionBar extends React.PureComponent {
         })
       }
       if (res.data.data === 'INVALID_LIKE') {
-        this.setState({
-          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
-          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
-        }, () => {
-          storage.setItem(this.props.status.get('id'), this.state)
-        })
+        // this.setState({
+        //   selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+        //   totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        // }, () => {
+        //   storage.setItem(this.props.status.get('id'), this.state)
+        // })
       }
       if (res.data.data === 'CANNOT_SELF_LIKE') {
-        this.setState({
-          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
-          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
-        }, () => {
-          storage.setItem(this.props.status.get('id'), this.state)
-        })
+        // this.setState({
+        //   selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
+        //   totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+        // }, () => {
+        //   storage.setItem(this.props.status.get('id'), this.state)
+        // })
       }
     })
   }, 1300)
@@ -268,32 +268,28 @@ class ActionBar extends React.PureComponent {
     this.setState({
       liker_id: liker_id
     })
-    storage.getItem(id,(err,value)=>{
-      if(value){
-        this.setState(value)
-      }
-      if(err || !value){
-        this.props.getLikeCount(liker_id, url, (count) => {
+    setTimeout(() => {
+      this.props.getLikeCount(liker_id, url, (count) => {
+        this.setState({
+          totalLike: count.data.total
+        }, () => {
+          storage.setItem(id, this.state)
+        })
+      })
+
+      this.props.getUserLikeCount(id, location.href, location.origin, (res) => {
+        let data = {}
+        try {
+          data = JSON.parse(res.data.data)
           this.setState({
-            totalLike: count.data.total
+            selfLike: data?.count
           }, () => {
             storage.setItem(id, this.state)
           })
-        })
-        this.props.getUserLikeCount(id, location.href, location.origin, (res) => {
-          let data = {}
-          try {
-            data = JSON.parse(res.data.data)
-            this.setState({
-              selfLike: data.count
-            }, () => {
-              storage.setItem(id, this.state)
-            })
-          } catch (error) {
-          }
-        })
-      }
-    })
+        } catch (error) {
+        }
+      })
+    }, 3000)
   }
 
   render() {
