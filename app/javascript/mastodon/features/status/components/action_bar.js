@@ -276,7 +276,7 @@ class ActionBar extends React.PureComponent {
         } catch (error) {
         }
       })
-    }, 3000)
+    }, 1000)
   }
 
   render() {
