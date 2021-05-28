@@ -231,28 +231,30 @@ class Status extends ImmutablePureComponent {
   }
 
   componentDidMount() {
-    const status = this._properStatus()
-    const account = status.get('account');
-    const liker_id = account.get('liker_id')
-
-    storage.getItem(liker_id, (err, value) => {
-      if (value) {
-        this.setState({
-          isSubscribedCivicLiker: value
-        })
-      }
-      if (!value ||　value === null) {
-        api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
-          if (res.data.isSubscribedCivicLiker) {
-            this.setState({
-              isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
-            }, () => {
-              storage.setItem(liker_id, true)
-            })
-          }
-        })
-      }
-    })
+    const status = this.props.status
+    if(status){
+      const account = status.get('account');
+      const liker_id = account.get('liker_id')
+  
+      storage.getItem(liker_id, (err, value) => {
+        if (value) {
+          this.setState({
+            isSubscribedCivicLiker: value
+          })
+        }
+        if (!value ||　value === null) {
+          api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+            if (res.data.isSubscribedCivicLiker) {
+              this.setState({
+                isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
+              }, () => {
+                storage.setItem(liker_id, true)
+              })
+            }
+          })
+        }
+      })
+    }
   }
 
   handleHotkeyFavourite = () => {
