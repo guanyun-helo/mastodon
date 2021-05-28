@@ -227,7 +227,7 @@ class StatusActionBar extends ImmutablePureComponent {
               try {
                 data = JSON.parse(res.data.data)
                 this.setState({
-                  selfLike: data.count
+                  selfLike: data?.count || 0
                 }, () => {
                   storage.setItem(id, this.state)
                 })
@@ -254,7 +254,7 @@ class StatusActionBar extends ImmutablePureComponent {
               try {
                 data = JSON.parse(res.data.data)
                 this.setState({
-                  selfLike: data.count
+                  selfLike: data?.count || 0
                 }, () => {
                   storage.setItem(id, this.state)
                 })
@@ -269,7 +269,13 @@ class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleLikeContent = () => {
-
+    // if(typeof this.state.selfLike !== 'number') {
+    //   this.setState({
+    //     totalLike: 0,
+    //     selfLike: 0
+    //   })
+    //   return
+    // }
     if (this.state.selfLike >= 5) {
       if (me && this.state.selfLike === 5 && !this.props.status.get('favourited')) {
 
@@ -280,13 +286,6 @@ class StatusActionBar extends ImmutablePureComponent {
         this.props.onSuperLiked(this.props.status, location, params, res => {
           if (res.data.data === "ok") {
             this.props.onFavourite(this.props.status);
-          } else {
-            this.setState({
-              selfLike: this.state.selfLike - 1,
-              totalLike: this.state.totalLike - 1
-            }, () => {
-              storage.setItem(this.props.status.get('id'), this.state)
-            })
           }
         })
       }
@@ -306,8 +305,8 @@ class StatusActionBar extends ImmutablePureComponent {
       if (res.data.code === 401) {
         toast.info("鄉民，請先綁定 LikeCoin Id！");
         this.setState({
-          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
-          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
+          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : 0,
+          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : 0
         }, () => {
           storage.setItem(this.props.status.get('id'), this.state)
         })
