@@ -481,8 +481,8 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className='status__action-bar-button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} />
         {publicStatus === true ? liker_id.length > 0 ? (
           <div className="like-button" onClick={this.handleLikeContent}>
-            <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
-            <div style={selfLike === 5 ? {color: '#ca8f04'} : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+            <img src={selfLike === 5 ? LikeButton : LikeButton} />
+            <div style={selfLike === 5 ? null : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
           </div>
         ) : null : null}
         {shareButton}
