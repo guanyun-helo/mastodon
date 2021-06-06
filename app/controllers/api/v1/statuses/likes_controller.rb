@@ -4,8 +4,6 @@ require 'uri'
 
 class Api::V1::Statuses::LikesController < Api::BaseController
     include Authorization
-    include Redisable
-    EXPIRE_AFTER = 24.hours.seconds
 
     before_action -> { doorkeeper_authorize! :write, :'write:favourites' }
     before_action :require_user!
@@ -21,15 +19,6 @@ class Api::V1::Statuses::LikesController < Api::BaseController
             access_token_response = access_token()
             if access_token_response.code == '200'
               response = like_content(@path,params['count'])
-            end
-          end
-          if response.body == 'ok'
-            if redis.get(@status.id)
-              redis.incrby(@status.id, params['count'])
-              redis.expire(@status.id, EXPIRE_AFTER)
-            else
-              redis.set(@status.id, params['count'])
-              redis.expire(@status.id, EXPIRE_AFTER)
             end
           end
         else
@@ -104,10 +93,6 @@ class Api::V1::Statuses::LikesController < Api::BaseController
     end
 
     def like_count
-      if redis.get(@status.id) != nil
-        render json: {:data=> "{\"count\":#{redis.get(@status.id)}}",:code => 200}, status: 200
-        return
-      end
       if Account.find(@status['account_id'])['liker_id'] == nil
         return
       end
@@ -126,10 +111,6 @@ class Api::V1::Statuses::LikesController < Api::BaseController
         if access_token_response.code == '200'
           response = https.request(x_request)
         end
-      end
-      if JSON.parse(response.body)['count'] > 0
-        redis.set(@status.id, JSON.parse(response.body)['count'])
-        redis.expire(@status.id, EXPIRE_AFTER)
       end
       render json: {:data=> response.body,:code => 200}, status: 200
     end
