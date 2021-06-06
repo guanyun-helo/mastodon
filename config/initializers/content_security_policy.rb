@@ -42,7 +42,7 @@ Rails.application.config.content_security_policy do |p|
     p.worker_src  :self, :blob, assets_host
   else
     p.connect_src :self, :data, :blob, assets_host, like_co, gam, gam_http,media_host, like_co, Rails.configuration.x.streaming_api_base_url
-    p.script_src  :self, assets_host, ga, ga_http, gam, gam_http
+    p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host, ga, ga_http, gam, gam_http
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host
   end
