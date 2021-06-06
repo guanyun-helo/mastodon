@@ -21,10 +21,13 @@
 
     %title= content_for?(:page_title) ? safe_join([yield(:page_title).chomp.html_safe, title], ' - ') : title
 
+
     = stylesheet_pack_tag 'common', media: 'all', crossorigin: 'anonymous'
     = stylesheet_pack_tag current_theme, media: 'all', crossorigin: 'anonymous'
-    = javascript_pack_tag 'common', crossorigin: 'anonymous'
+    = javascript_pack_tag 'common', crossorigin: 'anonymous', nonce: request.content_security_policy_nonce 
     = javascript_pack_tag "locale_#{I18n.locale}", crossorigin: 'anonymous'
+    = gam_pack_tag 'https://www.googletagmanager.com/gtag/js?id=UA-197581231-1'
+    = ga_pack_tag nonce: request.content_security_policy_nonce
     = csrf_meta_tags
     %meta{ name: 'style-nonce', content: request.content_security_policy_nonce }
 

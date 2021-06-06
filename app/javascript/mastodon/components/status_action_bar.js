@@ -9,10 +9,12 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { me, isStaff } from '../initial_state';
 import classNames from 'classnames';
 import LikeButton from '../../images/likebutton/like-clap'
+import LikeButtonGold from '../../images/likebutton/like-clap-gold' 
 import { toast } from 'material-react-toastify';
 import { COMPOSE_SPOILER_TEXT_CHANGE } from '../actions/compose';
 import { debounce } from 'lodash'
 import storage from 'localforage'
+
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
   redraft: { id: 'status.redraft', defaultMessage: 'Delete & re-draft' },
@@ -50,6 +52,8 @@ const messages = defineMessages({
 const mapStateToProps = (state, { status }) => ({
   relationship: state.getIn(['relationships', status.getIn(['account', 'id'])]),
 });
+
+let requestLock = false
 
 export default @connect(mapStateToProps)
 @injectIntl
@@ -121,6 +125,23 @@ class StatusActionBar extends ImmutablePureComponent {
       this.props.onFavourite(this.props.status);
     } else {
       this._openInteractionDialog('favourite');
+    }
+    if(this.props.status.get('favourited')) return
+    const params = {
+      tz: -(new Date().getTimezoneOffset() / 60),
+      parentSuperLikeID: this.state.liker_id
+    }
+    if(requestLock) return
+    requestLock = true
+    try {
+      this.props.onSuperLiked(this.props.status, location, params, res => {
+        requestLock = false
+        if (res.data.data === "ok") {
+          this.props.onFavourite(this.props.status);
+        }
+      })
+    } catch (error) {
+      requestLock = false
     }
   }
 
@@ -225,7 +246,9 @@ class StatusActionBar extends ImmutablePureComponent {
             this.props.getUserLikeCount(id, location.href, location.origin, (res) => {
               let data = {}
               try {
+
                 data = JSON.parse(res.data.data)
+
                 this.setState({
                   selfLike: data?.count || 0
                 }, () => {
@@ -269,26 +292,11 @@ class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleLikeContent = () => {
-    // if(typeof this.state.selfLike !== 'number') {
-    //   this.setState({
-    //     totalLike: 0,
-    //     selfLike: 0
-    //   })
-    //   return
-    // }
+    if(me === this.props.status.get('account').get('id')) {
+      toast.info("鄉民，不能給自己拍手哦！");
+      return
+    }
     if (this.state.selfLike >= 5) {
-      if (me && this.state.selfLike === 5 && !this.props.status.get('favourited')) {
-
-        const params = {
-          tz: -(new Date().getTimezoneOffset() / 60),
-          parentSuperLikeID: this.state.liker_id
-        }
-        this.props.onSuperLiked(this.props.status, location, params, res => {
-          if (res.data.data === "ok") {
-            this.props.onFavourite(this.props.status);
-          }
-        })
-      }
       return
     }
     this.setState({
@@ -305,27 +313,27 @@ class StatusActionBar extends ImmutablePureComponent {
       if (res.data.code === 401) {
         toast.info("鄉民，請先綁定 LikeCoin Id！");
         this.setState({
-          selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : 0,
-          totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : 0
+          selfLike: 0,
+          totalLike: this.state.totalLike - this.state.selfLike
         }, () => {
           storage.setItem(this.props.status.get('id'), this.state)
         })
       }
       if (res.data.data === 'INVALID_LIKE') {
-        // this.setState({
-        //   selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
-        //   totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
-        // }, () => {
-        //   storage.setItem(this.props.status.get('id'), this.state)
-        // })
+        this.setState({
+          selfLike: 0,
+          totalLike: this.state.totalLike - this.state.selfLike
+        }, () => {
+          storage.setItem(this.props.status.get('id'), this.state)
+        })
       }
       if (res.data.data === 'CANNOT_SELF_LIKE') {
-        // this.setState({
-        //   selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
-        //   totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
-        // }, () => {
-        //   storage.setItem(this.props.status.get('id'), this.state)
-        // })
+        this.setState({
+          selfLike: 0,
+          totalLike: this.state.totalLike - this.state.selfLike
+        }, () => {
+          storage.setItem(this.props.status.get('id'), this.state)
+        })
       }
     })
   }, 1300)
@@ -462,7 +470,7 @@ class StatusActionBar extends ImmutablePureComponent {
       reblogTitle = intl.formatMessage(messages.cannot_reblog);
     }
     let liker_id = account.get('liker_id') === null ? '' : account.get('liker_id')
-    const { totalLike } = this.state
+    const { totalLike,selfLike } = this.state
     const shareButton = ('share' in navigator) && publicStatus && (
       <IconButton className='status__action-bar-button' title={intl.formatMessage(messages.share)} icon='share-alt' onClick={this.handleShareClick} />
     );
@@ -471,11 +479,10 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className='status__action-bar-button' title={replyTitle} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} onClick={this.handleReplyClick} counter={status.get('replies_count')} obfuscateCount />
         <IconButton className={classNames('status__action-bar-button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} pressed={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} />
         <IconButton className='status__action-bar-button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} />
-
         {publicStatus === true ? liker_id.length > 0 ? (
           <div className="like-button" onClick={this.handleLikeContent}>
-            <img src={LikeButton} />
-            <div className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+            <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
+            <div style={selfLike === 5 ? {color: '#ca8f04'} : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
           </div>
         ) : null : null}
         {shareButton}

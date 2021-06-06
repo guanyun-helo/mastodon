@@ -46,6 +46,7 @@ const messages = defineMessages({
 const mapStateToProps = (state, { status }) => ({
   relationship: state.getIn(['relationships', status.getIn(['account', 'id'])]),
 });
+let requestLock = false
 
 export default @connect(mapStateToProps)
 @injectIntl
@@ -94,6 +95,23 @@ class ActionBar extends React.PureComponent {
 
   handleFavouriteClick = () => {
     this.props.onFavourite(this.props.status);
+    if(this.props.status.get('favourited')) return
+    const params = {
+      tz: -(new Date().getTimezoneOffset() / 60),
+      parentSuperLikeID: this.state.liker_id
+    }
+    if(requestLock) return
+    requestLock = true
+    try {
+      this.props.onSuperLiked(this.props.status, location, params, res => {
+        requestLock = false
+        if (res.data.data === "ok") {
+          this.props.onFavourite(this.props.status);
+        }
+      })
+    } catch (error) {
+      requestLock = false
+    }
   }
 
   handleBookmarkClick = (e) => {
@@ -195,18 +213,11 @@ class ActionBar extends React.PureComponent {
   }
 
   handleLikeContent = () => {
+    if(me === this.props.status.get('account').get('id')) {
+      toast.info("鄉民，不能給自己拍手哦！");
+      return
+    }
     if (this.state.selfLike >= 5) {
-      if (me && this.state.selfLike === 5 && !this.props.status.get('favourited')) {
-        const params = {
-          tz: -(new Date().getTimezoneOffset() / 60),
-          parentSuperLikeID: this.state.liker_id
-        }
-        this.props.onSuperLiked(this.props.status, location, params, res => {
-          if (res.data.data === "ok") {
-            this.props.onFavourite(this.props.status);
-          }
-        })
-      }
       return
     }
     // if (me && this.state.selfLike === 4 && !this.props.status.get('favourited')) {
@@ -226,22 +237,28 @@ class ActionBar extends React.PureComponent {
     this.props.onLike(this.props.status, this.state.selfLike === 6 ? 5 : this.state.selfLike, location, (res) => {
       if (res.data.code === 401) {
         toast.info("鄉民，請先綁定 LikeCoin Id！");
+        this.setState({
+          selfLike: 0,
+          totalLike: this.state.totalLike - this.state.selfLike
+        }, () => {
+          storage.setItem(this.props.status.get('id'), this.state)
+        })
       }
       if (res.data.data === 'INVALID_LIKE') {
-        // this.setState({
-        //   selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
-        //   totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
-        // }, () => {
-        //   storage.setItem(this.props.status.get('id'), this.state)
-        // })
+        this.setState({
+          selfLike: 0,
+          totalLike: this.state.totalLike - this.state.selfLike
+        }, () => {
+          storage.setItem(this.props.status.get('id'), this.state)
+        })
       }
       if (res.data.data === 'CANNOT_SELF_LIKE') {
-        // this.setState({
-        //   selfLike: this.state.selfLike - this.state.selfLike <= 0 ? 0 : this.state.selfLike - this.state.selfLike,
-        //   totalLike: this.state.totalLike - this.state.selfLike <= 0 ? 0 : this.state.totalLike - this.state.selfLike
-        // }, () => {
-        //   storage.setItem(this.props.status.get('id'), this.state)
-        // })
+        this.setState({
+          selfLike: 0,
+          totalLike: this.state.totalLike - this.state.selfLike
+        }, () => {
+          storage.setItem(this.props.status.get('id'), this.state)
+        })
       }
     })
   }, 1300)

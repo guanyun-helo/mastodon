@@ -9181,6 +9181,13 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
+react-animated-numbers@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/react-animated-numbers/-/react-animated-numbers-0.3.1.tgz#f32c4963cb9ab61dfc1864cd2cf94ff1e7edc92f"
+  integrity sha512-r9YiB1OsmaPR5UBnIM9v7sKoJ90B6BXbbmAqa1/ZlZptxJq32O2AafUSYJ1mbViOuo3lrNp+NJZkIYjIIo6EVw==
+  dependencies:
+    react-spring "^8.0.27"
+
 react-dom@^16.14.0:
   version "16.14.0"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.14.0.tgz#7ad838ec29a777fb3c75c3a190f661cf92ab8b89"
@@ -9199,6 +9206,13 @@ react-event-listener@^0.6.0:
     "@babel/runtime" "^7.2.0"
     prop-types "^15.6.0"
     warning "^4.0.1"
+
+react-flip-numbers@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/react-flip-numbers/-/react-flip-numbers-3.0.5.tgz#37fc3f9416575bfb9e9b7af44a7d64aaf922c712"
+  integrity sha512-iOzLaRZbqU7G7A+uE/ySBVzEHr+vZTPMJNP20o1dFUUZ3kkrpTFxpay3+kEVSSzeOXJWQWYDUQOFbv7g/PSf1g==
+  dependencies:
+    react-simple-animate "3.0.2"
 
 react-hotkeys@^1.1.4:
   version "1.1.4"
@@ -9376,12 +9390,25 @@ react-select@^4.3.0:
     react-input-autosize "^3.0.0"
     react-transition-group "^4.3.0"
 
+react-simple-animate@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-simple-animate/-/react-simple-animate-3.0.2.tgz#67f29b0c64155d2dfd540c1c74f634ef521536a8"
+  integrity sha512-GDpznDMpIHHdH6L6AZo9nNry6Xsq7forKmd6rwigMSuxe4FS9ihK0HSC1odB4WWKbA87S8VL7EVR9JeTRVkbQA==
+
 react-sparklines@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/react-sparklines/-/react-sparklines-1.7.0.tgz#9b1d97e8c8610095eeb2ad658d2e1fcf91f91a60"
   integrity sha512-bJFt9K4c5Z0k44G8KtxIhbG+iyxrKjBZhdW6afP+R7EnIq+iKjbWbEFISrf3WKNFsda+C46XAfnX0StS5fbDcg==
   dependencies:
     prop-types "^15.5.10"
+
+react-spring@^8.0.27:
+  version "8.0.27"
+  resolved "https://registry.yarnpkg.com/react-spring/-/react-spring-8.0.27.tgz#97d4dee677f41e0b2adcb696f3839680a3aa356a"
+  integrity sha512-nDpWBe3ZVezukNRandTeLSPcwwTMjNVu1IDq9qA/AMiUqHuRN4BeSWvKr3eIxxg1vtiYiOLy4FqdfCP5IoP77g==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
+    prop-types "^15.5.8"
 
 react-spring@^9.1.2:
   version "9.1.2"

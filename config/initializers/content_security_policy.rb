@@ -17,6 +17,10 @@ media_host ||= host_to_url(ENV['S3_HOSTNAME']) if ENV['S3_ENABLED'] == 'true'
 media_host ||= assets_host
 
 like_co = "https://api.like.co"
+ga = "https://www.googletagmanager.com/"
+ga_http = "http://www.googletagmanager.com/"
+gam = "https://www.google-analytics.com/"
+gam_http = "http://www.google-analytics.com/"
 
 Rails.application.config.content_security_policy do |p|
   p.base_uri        :none
@@ -32,13 +36,13 @@ Rails.application.config.content_security_policy do |p|
   if Rails.env.development?
     webpacker_urls = %w(ws http).map { |protocol| "#{protocol}#{Webpacker.dev_server.https? ? 's' : ''}://#{Webpacker.dev_server.host_with_port}" }
 
-    p.connect_src :self, :data, :blob, assets_host, like_co, media_host, Rails.configuration.x.streaming_api_base_url, *webpacker_urls
-    p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host
+    p.connect_src :self, :data, :blob, assets_host, like_co, gam, gam_http, media_host, Rails.configuration.x.streaming_api_base_url, *webpacker_urls
+    p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host, ga, ga_http, gam, gam_http
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host
   else
-    p.connect_src :self, :data, :blob, assets_host, like_co, media_host, like_co, Rails.configuration.x.streaming_api_base_url
-    p.script_src  :self, assets_host
+    p.connect_src :self, :data, :blob, assets_host, like_co, gam, gam_http,media_host, like_co, Rails.configuration.x.streaming_api_base_url
+    p.script_src  :self, assets_host, ga, ga_http, gam, gam_http
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host
   end
