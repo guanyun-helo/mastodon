@@ -8,6 +8,8 @@ import { defineMessages, injectIntl } from 'react-intl';
 import { me, isStaff } from '../../../initial_state';
 import classNames from 'classnames';
 import LikeButton from '../../../../images/likebutton/like-clap'
+import LikeButtonGold from '../../../../images/likebutton/like-clap-gold'
+
 import { toast } from 'material-react-toastify';
 import { debounce } from 'lodash'
 import storage from 'localforage'
@@ -395,8 +397,8 @@ class ActionBar extends React.PureComponent {
         <div className='detailed-status__button' ><IconButton className={classNames({ reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} /></div>
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} /></div>
         {publicStatus === true ? liker_id?.length > 0 ? <div className="detailed-status__button like-button animate__animated animate__fadeIn" onClick={this.handleLikeContent}>
-          <img src={LikeButton} />
-          <div className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+          <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
+          <div style={selfLike === 5 ? {color: '#ca8f04'} : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
         </div> : null : null}
         {shareButton}
         <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
