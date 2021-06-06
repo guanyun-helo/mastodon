@@ -320,12 +320,12 @@ class StatusActionBar extends ImmutablePureComponent {
         })
       }
       if (res.data.data === 'INVALID_LIKE') {
-        this.setState({
-          selfLike: 0,
-          totalLike: this.state.totalLike - this.state.selfLike
-        }, () => {
-          storage.setItem(this.props.status.get('id'), this.state)
-        })
+        // this.setState({
+        //   selfLike: 0,
+        //   totalLike: this.state.totalLike - this.state.selfLike
+        // }, () => {
+        //   storage.setItem(this.props.status.get('id'), this.state)
+        // })
       }
       if (res.data.data === 'CANNOT_SELF_LIKE') {
         this.setState({
