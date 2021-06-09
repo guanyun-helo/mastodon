@@ -33,7 +33,7 @@ en_GB:
       one: status
       other: statuses
     status_count_before: Who authored
-    tagline: Follow friends and discover new ones
+    tagline: Decentralized microblogs based on LikeCoin & Mastodon open source facilities, supporting likes for rewards, helping creators connect with their own communities and earn revenue from likes and subscriptions
     terms: Terms of service
     user_count_after:
       one: user

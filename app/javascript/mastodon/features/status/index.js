@@ -10,6 +10,10 @@ import MissingIndicator from '../../components/missing_indicator';
 import DetailedStatus from './components/detailed_status';
 import ActionBar from './components/action_bar';
 import Column from '../ui/components/column';
+import Support from '../../../images/likebutton/support.svg'
+import LikePay from './containers/pay'
+import queryString from 'query-string'
+import api from '../../api'
 import {
   favourite,
   unfavourite,
@@ -185,6 +189,9 @@ class Status extends ImmutablePureComponent {
     fullscreen: false,
     showMedia: defaultMediaVisibility(this.props.status),
     loadedStatusId: undefined,
+    isPayShow: false,
+    supoortLikers: [],
+    isSupportSuccess: false
   };
 
   componentWillMount() {
@@ -193,6 +200,52 @@ class Status extends ImmutablePureComponent {
 
   componentDidMount() {
     attachFullscreenListener(this.onFullScreenChange);
+
+    const tx_hash = queryString.parse(location.search).tx_hash
+    const state = queryString.parse(location.search).state
+    const loadedStatusId = this.props.params.statusId
+    if (tx_hash && state && loadedStatusId) {
+      api().get(`https://api.like.co/tx/id/${tx_hash}`).then((res) => {
+        if (res.data.remarks === 'Transaction from Liker Social' && res.data.status === "success") {
+          api().post(`/api/v1/statuses/${loadedStatusId}/support?liker=${res.data.fromId}`, { liker: res.data.fromId, statusId: loadedStatusId }).then((response) => {
+            for (const id of response.data.data) {
+              api().get(`https://api.like.co/users/id/${id}/min`).then((avatars) => {
+                const data = this.state.supoortLikers
+                data.push(avatars.data.avatar)
+                this.setState({
+                  supoortLikers: [...data]
+                })
+              })
+            }
+            // this.setState({
+            //   supoortLikers:
+            // })
+            this.setState({
+              isSupportSuccess: true
+            })
+            this.openPay()
+          })
+        }
+        // https://api.like.co/users/id/ckxpress/min
+      })
+      // const { statusId } = JSON.parse(state)
+      // this.context.router.history.push(`/statuses/${statusId}?tx_hash=${tx_hash}&state=${state}`);
+    } else {
+      api().get(`/api/v1/statuses/${this.props.params.statusId}/support_likers?statusId=${this.props.params.statusId}`).then((response) => {
+        for (const id of response.data.data) {
+          api().get(`https://api.like.co/users/id/${id}/min`).then((avatars) => {
+            const data = this.state.supoortLikers
+            data.push(avatars.data.avatar)
+            this.setState({
+              supoortLikers: [...data]
+            })
+          })
+        }
+        // this.setState({
+        //   supoortLikers:
+        // })
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -516,12 +569,16 @@ class Status extends ImmutablePureComponent {
   onFullScreenChange = () => {
     this.setState({ fullscreen: isFullscreen() });
   }
+  openPay = () => {
+    this.setState({
+      isPayShow: !this.state.isPayShow
+    })
+  }
 
   render() {
     let ancestors, descendants;
     const { shouldUpdateScroll, status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
-    const { fullscreen } = this.state;
-
+    const { fullscreen, isPayShow, supoortLikers,isSupportSuccess } = this.state;
     if (status === null) {
       return (
         <Column>
@@ -605,6 +662,19 @@ class Status extends ImmutablePureComponent {
                   getLikeCount={this.handleLikeCount}
                   getUserLikeCount={this.handleUserLikeCount}
                 />
+                <div className="support-liker">
+                  <div className="supports">
+                    {
+                      supoortLikers.map((item) => (
+                        <img className="animate__animated animate__bounce" src={item} />
+                      ))
+                    }
+                  </div>
+                  <div className="container" onClick={this.openPay}>
+                    <img src={Support} /> Support Liker
+                  </div>
+                  <LikePay isSupportSuccess={isSupportSuccess} likerId={status.get('account').get('liker_id')} statusId={status.get('id')} isShow={isPayShow} handleLikePay={this.openPay} />
+                </div>
               </div>
             </HotKeys>
 

@@ -9,7 +9,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { me, isStaff } from '../initial_state';
 import classNames from 'classnames';
 import LikeButton from '../../images/likebutton/like-clap'
-import LikeButtonGold from '../../images/likebutton/like-clap-gold' 
+import LikeButtonGold from '../../images/likebutton/like-clap-gold'
 import { toast } from 'material-react-toastify';
 import { COMPOSE_SPOILER_TEXT_CHANGE } from '../actions/compose';
 import { debounce } from 'lodash'
@@ -126,12 +126,12 @@ class StatusActionBar extends ImmutablePureComponent {
     } else {
       this._openInteractionDialog('favourite');
     }
-    if(this.props.status.get('favourited')) return
+    if (this.props.status.get('favourited')) return
     const params = {
       tz: -(new Date().getTimezoneOffset() / 60),
       parentSuperLikeID: this.state.liker_id
     }
-    if(requestLock) return
+    if (requestLock) return
     requestLock = true
     try {
       this.props.onSuperLiked(this.props.status, location, params, res => {
@@ -238,7 +238,7 @@ class StatusActionBar extends ImmutablePureComponent {
             this.setState({
               totalLike: count.data.total
             }, () => {
-              storage.setItem(id, this.state)
+              // storage.setItem(id, this.state)
             })
           })
 
@@ -252,7 +252,7 @@ class StatusActionBar extends ImmutablePureComponent {
                 this.setState({
                   selfLike: data?.count || 0
                 }, () => {
-                  storage.setItem(id, this.state)
+                  // storage.setItem(id, this.state)
                 })
               } catch (error) {
               }
@@ -267,7 +267,7 @@ class StatusActionBar extends ImmutablePureComponent {
             this.setState({
               totalLike: count.data.total
             }, () => {
-              storage.setItem(id, this.state)
+              // storage.setItem(id, this.state)
             })
           })
 
@@ -279,7 +279,7 @@ class StatusActionBar extends ImmutablePureComponent {
                 this.setState({
                   selfLike: data?.count || 0
                 }, () => {
-                  storage.setItem(id, this.state)
+                  // storage.setItem(id, this.state)
                 })
               } catch (error) {
               }
@@ -292,7 +292,7 @@ class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleLikeContent = () => {
-    if(me === this.props.status.get('account').get('id')) {
+    if (me === this.props.status.get('account').get('id')) {
       toast.info("鄉民，不能給自己拍手哦！");
       return
     }
@@ -304,7 +304,8 @@ class StatusActionBar extends ImmutablePureComponent {
       totalLike: this.state.totalLike + 1
     }, () => {
       this.sendLike()
-      storage.setItem(this.props.status.get('id'), this.state)
+      // storage.setItem(this.props.status.get('id'), this.state)
+      console.log('setState', this.state)
     })
   }
 
@@ -316,7 +317,7 @@ class StatusActionBar extends ImmutablePureComponent {
           selfLike: 0,
           totalLike: this.state.totalLike - this.state.selfLike
         }, () => {
-          storage.setItem(this.props.status.get('id'), this.state)
+          // storage.setItem(this.props.status.get('id'), this.state)
         })
       }
       if (res.data.data === 'INVALID_LIKE') {
@@ -332,7 +333,7 @@ class StatusActionBar extends ImmutablePureComponent {
           selfLike: 0,
           totalLike: this.state.totalLike - this.state.selfLike
         }, () => {
-          storage.setItem(this.props.status.get('id'), this.state)
+          // storage.setItem(this.props.status.get('id'), this.state)
         })
       }
     })
@@ -470,7 +471,7 @@ class StatusActionBar extends ImmutablePureComponent {
       reblogTitle = intl.formatMessage(messages.cannot_reblog);
     }
     let liker_id = account.get('liker_id') === null ? '' : account.get('liker_id')
-    const { totalLike,selfLike } = this.state
+    const { totalLike, selfLike } = this.state
     const shareButton = ('share' in navigator) && publicStatus && (
       <IconButton className='status__action-bar-button' title={intl.formatMessage(messages.share)} icon='share-alt' onClick={this.handleShareClick} />
     );
@@ -481,7 +482,7 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className='status__action-bar-button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} />
         {publicStatus === true ? liker_id.length > 0 ? (
           <div className="like-button" onClick={this.handleLikeContent}>
-            <img src={selfLike === 5 ? LikeButton : LikeButton} />
+            <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
             <div style={selfLike === 5 ? null : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
           </div>
         ) : null : null}

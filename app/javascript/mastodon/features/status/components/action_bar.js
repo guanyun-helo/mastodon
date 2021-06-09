@@ -397,7 +397,7 @@ class ActionBar extends React.PureComponent {
         <div className='detailed-status__button' ><IconButton className={classNames({ reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} /></div>
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} /></div>
         {publicStatus === true ? liker_id?.length > 0 ? <div className="detailed-status__button like-button animate__animated animate__fadeIn" onClick={this.handleLikeContent}>
-          <img src={selfLike === 5 ? LikeButton : LikeButton} />
+          <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
           <div style={selfLike === 5 ? null : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
         </div> : null : null}
         {shareButton}

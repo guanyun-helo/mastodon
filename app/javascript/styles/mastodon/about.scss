@@ -868,9 +868,9 @@ $small-breakpoint: 960px;
 .brand__tagline {
   display: block;
   position: absolute;
-  bottom: -10px;
+  bottom: -40px;
   left: 50px;
-  width: 300px;
+  width: 350px;
   color: $ui-primary-color;
   text-decoration: none;
   font-size: 14px;
@@ -878,6 +878,7 @@ $small-breakpoint: 960px;
   @media screen and (max-width: $no-gap-breakpoint) {
     position: static;
     width: auto;
+    max-width: 300px;
     margin-top: 20px;
     color: $dark-text-color;
   }

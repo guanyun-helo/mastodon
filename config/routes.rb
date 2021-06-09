@@ -326,12 +326,16 @@ Rails.application.routes.draw do
           resource :reblog, only: :create
           post :unreblog, to: 'reblogs#destroy'
 
+
           resource :favourite, only: :create
           post :unfavourite, to: 'favourites#destroy'
 
           resource :like, only: :create
           resource :superlike, only: :create
           post :count, to: 'likes#like_count'
+          post :support, to: 'likes#support'
+          resource :support_likers, to: 'likes#support_likers'
+
 
           resource :bookmark, only: :create
           post :unbookmark, to: 'bookmarks#destroy'

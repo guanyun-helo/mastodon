@@ -91,7 +91,6 @@ class GettingStarted extends ImmutablePureComponent {
   };
 
   componentDidMount () {
-
     if(document.body && document.body.classList.contains('theme-mastodon-light')){
       this.setState({
         clapImg: LikeCoinClapDark
@@ -224,7 +223,7 @@ class GettingStarted extends ImmutablePureComponent {
         <ColumnLink key='preferences' icon='gears' text={intl.formatMessage(messages.preferences)} href='/settings/preferences' />,
       );
 
-      height += 34 + 48 + 48;
+      height += 34 + 48 + 65;
     }
 
     return (

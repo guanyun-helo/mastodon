@@ -23,6 +23,7 @@
 #  in_reply_to_account_id :bigint(8)
 #  poll_id                :bigint(8)
 #  deleted_at             :datetime
+#  support_likers         :text             default([]), is an Array
 #
 
 class Status < ApplicationRecord

@@ -61,7 +61,7 @@ export default class NavigationBar extends ImmutablePureComponent {
               backgroundRepeat: 'no-repeat'
             }} href={this.props.account.get('url')} to={`/accounts/${this.props.account.get('id')}`}>
           <span style={{ display: 'none' }}>{this.props.account.get('acct')}</span>
-          <Avatar account={this.props.account} size={45} />
+          <Avatar account={this.props.account} size={40} />
         </Permalink>
 
         <div className='navigation-bar__profile'>

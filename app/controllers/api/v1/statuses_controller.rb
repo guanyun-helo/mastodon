@@ -62,6 +62,10 @@ class Api::V1::StatusesController < Api::BaseController
     render json: @status, serializer: REST::StatusSerializer, source_requested: true
   end
 
+  def update_support
+    puts params
+  end
+
   private
 
   def set_status

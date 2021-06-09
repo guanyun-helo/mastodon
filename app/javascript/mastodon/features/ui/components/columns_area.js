@@ -91,6 +91,7 @@ class ColumnsArea extends ImmutablePureComponent {
   }
 
   componentDidMount() {
+    // ?tx_hash=298620E3951C6C65E7A5CB5789C1E3A5F5F1D93B86860103AF21600236E8FC79&state=http%3A%2F%2Flocalhost%3A3000%2Fweb%2Fstatuses%2F106374183524751866&remarks=Transaction%20from%20Liker%20Social
     if (!this.props.singleColumn) {
       this.node.addEventListener('wheel', this.handleWheel, supportsPassiveEvents ? { passive: true } : false);
     }
@@ -108,7 +109,7 @@ class ColumnsArea extends ImmutablePureComponent {
     this.isRtlLayout = document.getElementsByTagName('body')[0].classList.contains('rtl');
 
     this.setState({ shouldAnimate: true });
-    if(document.body && document.body.classList.contains('theme-mastodon-light')){
+    if (document.body && document.body.classList.contains('theme-mastodon-light')) {
       this.setState({
         clapImg: LikeCoinClapDark
       })
@@ -118,15 +119,21 @@ class ColumnsArea extends ImmutablePureComponent {
 
     const code = queryString.parse(location.search).code
 
+    const tx_hash = queryString.parse(location.search).tx_hash
+    const state = queryString.parse(location.search).state
+    if (tx_hash && state) {
+      const { statusId } = JSON.parse(state)
+      this.context.router.history.push(`/statuses/${statusId}?tx_hash=${tx_hash}&state=${state}`);
+    }
     if (code && code.length > 0) {
       const params = new URLSearchParams()
       params.append("code", code)
       api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
         // dispatch(unblockAccountSuccess(response.data));
         if (response.data.code === 200) {
-            this.setState({
-              liker_id: response.data.user
-            })
+          this.setState({
+            liker_id: response.data.user
+          })
         }
         this.getLikerId()
       }).catch(error => {
@@ -135,7 +142,7 @@ class ColumnsArea extends ImmutablePureComponent {
     }
   }
 
-  getLikerId(){
+  getLikerId() {
     api().get(`/api/v1/accounts/liker_id`).then(response => {
       if (response.data.code === 200) {
         if (response.data.liker_id) {
@@ -255,7 +262,7 @@ class ColumnsArea extends ImmutablePureComponent {
   }
 
   bindLikeCoinId() {
-    if(location.href !== 'https://liker.social/web/timelines/home') {
+    if (location.href !== 'https://liker.social/web/timelines/home') {
       this.context.router.history.push('/timelines/home')
     }
     const { getLikeAuth } = this.props;
