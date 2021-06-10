@@ -52,6 +52,7 @@ class Api::V1::Statuses::LikesController < Api::BaseController
 
       if support_status['support_likers'].nil?
         Status.find(support_status.id).update_attribute(:support_likers, [])
+        support_status['support_likers'] = []
       else
         @likers = support_status['support_likers']
       end
