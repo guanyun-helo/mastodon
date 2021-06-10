@@ -15,7 +15,8 @@ export default class LikePay extends React.PureComponent {
         isShow: PropTypes.bool,
         handleLikePay: PropTypes.func,
         statusId: PropTypes.string,
-        isSupportSuccess: PropTypes.bool
+        isSupportSuccess: PropTypes.bool,
+        username: PropTypes.string,
     };
 
 
@@ -57,7 +58,7 @@ export default class LikePay extends React.PureComponent {
 
 
     render() {
-        const { isShow, likerId, statusId, isSupportSuccess } = this.props
+        const { isShow, likerId, statusId, isSupportSuccess ,username} = this.props
         return (
             <div className={isShow ? 'support-container animate__animated animate__fadeInUp animate__faster' : 'support-container-disappear animate__animated animate__fadeInDown animate__faster'}>
                 <div className="close" onClick={this.props.handleLikePay}>X</div>
@@ -68,7 +69,7 @@ export default class LikePay extends React.PureComponent {
                     <div className="support-status-text">鄉民，你的支持是對作者最大的鼓勵，拍謝 🙌！</div>
                 </div>) : (
                     <div>
-                        <div className="support-likerid">Support {likerId || 'editorLikerSocial'}</div>
+                        <div className="support-likerid">Support {username || 'editorlikersocial'}</div>
                         <div className="pay-ammount">
                             <input
                                 type='number'

@@ -205,6 +205,7 @@ class Status extends ImmutablePureComponent {
     const state = queryString.parse(location.search).state
     const loadedStatusId = this.props.params.statusId
     if (tx_hash && state && loadedStatusId) {
+      console.log('?tx_hash=BADFE76AD8AAE18257099BF0931C4FB8081BE7C3D391222C974E2CA3654C43EB&state={"statusId":"106375648106849272"}')
       api().get(`https://api.like.co/tx/id/${tx_hash}`).then((res) => {
         if (res.data.remarks === 'Transaction from Liker Social' && res.data.status === "success") {
           api().post(`/api/v1/statuses/${loadedStatusId}/support?liker=${res.data.fromId}`, { liker: res.data.fromId, statusId: loadedStatusId }).then((response) => {
@@ -672,7 +673,7 @@ class Status extends ImmutablePureComponent {
                 />
 
                 {
-                  likerId === 'editorlikersocial' ? (<div className="support-liker">
+                  likerId? (<div className="support-liker">
                     <div className="supports">
                       {
                         supoortLikers.map((item) => (
@@ -683,7 +684,7 @@ class Status extends ImmutablePureComponent {
                     <div className="container" onClick={this.openPay}>
                       <img src={Support} /> Support Liker (Beta)
                   </div>
-                    <LikePay isSupportSuccess={isSupportSuccess} likerId={status.get('account').get('liker_id')} statusId={status.get('id')} isShow={isPayShow} handleLikePay={this.openPay} />
+                    <LikePay username={status.get('account').get('username')} isSupportSuccess={isSupportSuccess} likerId={status.get('account').get('liker_id')} statusId={status.get('id')} isShow={isPayShow} handleLikePay={this.openPay} />
                   </div>) : null
                 }
               </div>

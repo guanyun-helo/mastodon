@@ -239,6 +239,11 @@ class ActionBar extends React.PureComponent {
 
   sendLike = debounce(() => {
     this.props.onLike(this.props.status, this.state.selfLike === 6 ? 5 : this.state.clickLike, location, (res) => {
+      if (res.data.code === 'OK'){
+        this.setState({
+          clickLike: 0
+        })
+      }
       if (res.data.code === 401) {
         toast.info("鄉民，請先綁定 LikeCoin Id！");
         this.setState({
@@ -265,7 +270,7 @@ class ActionBar extends React.PureComponent {
         })
       }
     })
-  }, 1300)
+  }, 500)
 
   componentDidMount() {
     const { status } = this.props;

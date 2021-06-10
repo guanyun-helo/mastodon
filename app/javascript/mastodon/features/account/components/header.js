@@ -335,6 +335,18 @@ class Header extends ImmutablePureComponent {
             <h1>
               <span dangerouslySetInnerHTML={displayNameHtml} /> {badge}
               <small>@{acct} {lockedIcon}</small>
+              {liker_id ? 
+              <div className="civic-liker" style={{
+              display: 'flex',
+              'flexDirection': 'row',
+              'alignItems': 'center',
+              'fontSize': '13px',
+              marginTop: '10px'
+            }}>
+              <img src={CivicLiker} style={{ width: '27px' }} />
+              <a style={{marginLeft: '5px',color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>成爲我的讚賞公民</a>
+            </div> : null
+            }
             </h1>
           </div>
 
@@ -397,19 +409,6 @@ class Header extends ImmutablePureComponent {
                 </NavLink>
               </div>
             )}
-            {liker_id ? 
-              <div className="civic-liker" style={{
-              display: 'flex',
-              'flexDirection': 'row',
-              'alignItems': 'center',
-              'paddingLeft': '7px',
-              'fontSize': '13px',
-              marginTop: '10px'
-            }}>
-              <img src={CivicLiker} style={{ width: '27px' }} />
-              <a style={{marginLeft: '5px',color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>成爲我的讚賞公民</a>
-            </div> : null
-            }
 
           </div>
         </div>
