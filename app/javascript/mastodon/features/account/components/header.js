@@ -17,6 +17,7 @@ import AccountNoteContainer from '../containers/account_note_container';
 import civic from '../../../../images/likebutton/civic-liker.svg'
 import api from '../../../api'
 import storage from 'localforage'
+import CivicLiker from '../../../../images/likebutton/support-icon.svg'
 
 const messages = defineMessages({
   unfollow: { id: 'account.unfollow', defaultMessage: 'Unfollow' },
@@ -132,7 +133,7 @@ class Header extends ImmutablePureComponent {
   componentDidMount() {
     const account = this.props.account;
     const liker_id = account.get('liker_id')
-    if(!liker_id) return
+    if (!liker_id) return
     storage.getItem(liker_id, (err, value) => {
       if (value) {
         this.setState({
@@ -292,6 +293,8 @@ class Header extends ImmutablePureComponent {
       badge = null;
     }
 
+    const liker_id = account.get('liker_id') || null
+
     return (
       <div className={classNames('account__header', { inactive: !!account.get('moved') })} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
         <div className='account__header__image'>
@@ -394,6 +397,20 @@ class Header extends ImmutablePureComponent {
                 </NavLink>
               </div>
             )}
+            {liker_id ? 
+              <div className="civic-liker" style={{
+              display: 'flex',
+              'flexDirection': 'row',
+              'alignItems': 'center',
+              'paddingLeft': '7px',
+              'fontSize': '13px',
+              marginTop: '10px'
+            }}>
+              <img src={CivicLiker} style={{ width: '27px' }} />
+              <a style={{marginLeft: '5px',color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>成爲我的讚賞公民</a>
+            </div> : null
+            }
+
           </div>
         </div>
       </div>

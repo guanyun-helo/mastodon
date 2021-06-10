@@ -23,13 +23,16 @@ class Api::V1::Statuses::LikesController < Api::BaseController
               response = like_content(@path,params['count'])
             end
           end
-          if response.body == 'ok'
-            if redis.get("#{current_account.id}#@status.id")
-              redis.incrby("#{current_account.id}#@status.id", params['count'])
-              redis.expire("#{current_account.id}#@status.id", EXPIRE_AFTER)
+          if response.body == 'OK'
+            if redis.get("#{current_account.id}#{@status.id}")
+              puts 'add =>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+              puts response.body
+              puts params['count']
+              redis.incrby("#{current_account.id}#{@status.id}", params['count'])
+              redis.expire("#{current_account.id}#{@status.id}", EXPIRE_AFTER)
             else
-              redis.set("#{current_account.id}#@status.id", params['count'])
-              redis.expire("#{current_account.id}#@status.id", EXPIRE_AFTER)
+              redis.set("#{current_account.id}#{@status.id}", params['count'])
+              redis.expire("#{current_account.id}#{@status.id}", EXPIRE_AFTER)
             end
           end
         else
@@ -49,6 +52,7 @@ class Api::V1::Statuses::LikesController < Api::BaseController
       if support_status['support_likers'].find_index{ |i| i == JSON.parse(request.raw_post)['liker'] }
         index = support_status['support_likers'].find_index{ |i| i == JSON.parse(request.raw_post)['liker'] }
         @likers = @likers[0,index].concat(@likers[index+1..-1])
+        @likers.push(JSON.parse(request.raw_post)['liker'])
       else
         @likers.push(JSON.parse(request.raw_post)['liker'])
       end
@@ -123,8 +127,8 @@ class Api::V1::Statuses::LikesController < Api::BaseController
     end
 
     def like_count
-      if redis.get("#{current_account.id}#@status.id") != nil
-        render json: {:data=> "{\"count\":#{redis.get("#{current_account.id}#@status.id")}}",:code => 200}, status: 200
+      if redis.get("#{current_account.id}#{@status.id}")
+        render json: {:data=> "{\"count\":#{redis.get("#{current_account.id}#{@status.id}")}}",:code => 200}, status: 200
         return
       end
       if Account.find(@status['account_id'])['liker_id'] == nil
@@ -145,10 +149,10 @@ class Api::V1::Statuses::LikesController < Api::BaseController
           response = https.request(x_request)
         end
       end
-      if JSON.parse(response.body)['count'] > 0
-        redis.set("#{current_account.id}#@status.id", JSON.parse(response.body)['count'])
-        redis.expire("#{current_account.id}#@status.id", EXPIRE_AFTER)
-      end
+      # if JSON.parse(response.body)['count'] > 0
+      redis.set("#{current_account.id}#{@status.id}", JSON.parse(response.body)['count'])
+      redis.expire("#{current_account.id}#{@status.id}", EXPIRE_AFTER)
+      # end
       render json: {:data=> response.body,:code => 200}, status: 200
     end
   

@@ -33,7 +33,7 @@ export default class Mastodon extends React.PureComponent {
 
   componentDidMount() {
     storage.getItem('times', (err, value) => {
-      if (value >= 8) {
+      if (value >= 3) {
         storage.clear().then(() => {
           console.log('Database is now empty.');
         }).catch(function (err) {

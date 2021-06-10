@@ -61,7 +61,8 @@ class ActionBar extends React.PureComponent {
   state = {
     selfLike: 0,
     totalLike: 0,
-    liker_id: ''
+    liker_id: '',
+    clickLike: 0
   }
 
   static propTypes = {
@@ -227,7 +228,8 @@ class ActionBar extends React.PureComponent {
     // }
     this.setState({
       selfLike: this.state.selfLike + 1,
-      totalLike: this.state.totalLike + 1
+      totalLike: this.state.totalLike + 1,
+      clickLike: this.state.clickLike + 1
     }, () => {
       this.sendLike()
       storage.setItem(this.props.status.get('id'), this.state)
@@ -236,7 +238,7 @@ class ActionBar extends React.PureComponent {
 
 
   sendLike = debounce(() => {
-    this.props.onLike(this.props.status, this.state.selfLike === 6 ? 5 : this.state.selfLike, location, (res) => {
+    this.props.onLike(this.props.status, this.state.selfLike === 6 ? 5 : this.state.clickLike, location, (res) => {
       if (res.data.code === 401) {
         toast.info("鄉民，請先綁定 LikeCoin Id！");
         this.setState({
@@ -398,7 +400,7 @@ class ActionBar extends React.PureComponent {
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} /></div>
         {publicStatus === true ? liker_id?.length > 0 ? <div className="detailed-status__button like-button animate__animated animate__fadeIn" onClick={this.handleLikeContent}>
           <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
-          <div style={selfLike === 5 ? null : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+          <div style={selfLike === 5 ? {color:"#ca8f04"} : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
         </div> : null : null}
         {shareButton}
         <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>

@@ -572,7 +572,14 @@ class Status extends ImmutablePureComponent {
   openPay = () => {
     this.setState({
       isPayShow: !this.state.isPayShow
+    },()=>{
+      if(!this.state.isPayShow){
+        this.setState({
+          isSupportSuccess:false
+        })
+      }
     })
+    // if(this.state.)
   }
 
   render() {
@@ -666,7 +673,7 @@ class Status extends ImmutablePureComponent {
                   <div className="supports">
                     {
                       supoortLikers.map((item) => (
-                        <img className="animate__animated animate__bounce" src={item} />
+                        <img key={item} className="animate__animated animate__bounce" src={item} />
                       ))
                     }
                   </div>

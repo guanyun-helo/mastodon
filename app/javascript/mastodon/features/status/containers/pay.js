@@ -29,7 +29,6 @@ export default class LikePay extends React.PureComponent {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.isSupportSuccess) {
-            console.log('tr=>>>>>>>>>>>')
             lottie.loadAnimation({
                 container: document.querySelector('.support-status-animation'), // the dom element that will contain the animation
                 renderer: 'canvas',
@@ -52,19 +51,20 @@ export default class LikePay extends React.PureComponent {
     }
     pay = () => {
         https://like.co/in/widget/pay?to=quibbler-live&amount=166&via=matterspool&fee=0&state=861fa6c8-8028-4595-8e45-2100d0d5125d&redirect_uri=https%3A%2F%2Fserver.matters.news%2Fpay%2Flikecoin&blocking=true
-        window.open(`https://like.co/in/widget/pay?to=${this.props.likerId || 'editorlikersocial'}&amount=${this.state.value}&via=editorlikersocial&fee=0.1&remarks=${this.state.memo}&state=${JSON.stringify({ statusId: this.props.statusId })}&redirect_uri=https://liker.social/web/timelines/home`, "_blank");
+        window.open(`https://like.co/in/widget/pay?to=${this.props.likerId || 'editorlikersocial'}&amount=${this.state.value}&via=editorlikersocial&fee=1&remarks=${this.state.memo}&state=${JSON.stringify({ statusId: this.props.statusId })}&redirect_uri=https://liker.social/web/timelines/home`, "_blank");
     }
 
 
 
     render() {
         const { isShow, likerId, statusId, isSupportSuccess } = this.props
-        console.log('isShow', isShow)
         return (
             <div className={isShow ? 'support-container animate__animated animate__fadeInUp animate__faster' : 'support-container-disappear animate__animated animate__fadeInDown animate__faster'}>
                 <div className="close" onClick={this.props.handleLikePay}>X</div>
                 {isSupportSuccess ? (<div className="support-status">
+                    <div>
                     <div className="support-status-animation"></div>
+                    </div>
                     <div className="support-status-text">鄉民，你的支持是對作者最大的鼓勵，拍謝 🙌！</div>
                 </div>) : (
                     <div>
