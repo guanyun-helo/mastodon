@@ -572,10 +572,10 @@ class Status extends ImmutablePureComponent {
   openPay = () => {
     this.setState({
       isPayShow: !this.state.isPayShow
-    },()=>{
-      if(!this.state.isPayShow){
+    }, () => {
+      if (!this.state.isPayShow) {
         this.setState({
-          isSupportSuccess:false
+          isSupportSuccess: false
         })
       }
     })
@@ -585,7 +585,7 @@ class Status extends ImmutablePureComponent {
   render() {
     let ancestors, descendants;
     const { shouldUpdateScroll, status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
-    const { fullscreen, isPayShow, supoortLikers,isSupportSuccess } = this.state;
+    const { fullscreen, isPayShow, supoortLikers, isSupportSuccess } = this.state;
     if (status === null) {
       return (
         <Column>
@@ -615,6 +615,7 @@ class Status extends ImmutablePureComponent {
       toggleSensitive: this.handleHotkeyToggleSensitive,
       openMedia: this.handleHotkeyOpenMedia,
     };
+    const likerId = this.props.status.get('account').get('liker_id') || null
 
     return (
       <Column bindToDocument={!multiColumn} label={intl.formatMessage(messages.detailedStatus)}>
@@ -669,19 +670,22 @@ class Status extends ImmutablePureComponent {
                   getLikeCount={this.handleLikeCount}
                   getUserLikeCount={this.handleUserLikeCount}
                 />
-                <div className="support-liker">
-                  <div className="supports">
-                    {
-                      supoortLikers.map((item) => (
-                        <img key={item} className="animate__animated animate__bounce" src={item} />
-                      ))
-                    }
+
+                {
+                  likerId === 'editorlikersocial' ? (<div className="support-liker">
+                    <div className="supports">
+                      {
+                        supoortLikers.map((item) => (
+                          <img key={item} className="animate__animated animate__bounce" src={item} />
+                        ))
+                      }
+                    </div>
+                    <div className="container" onClick={this.openPay}>
+                      <img src={Support} /> Support Liker (Beta)
                   </div>
-                  <div className="container" onClick={this.openPay}>
-                    <img src={Support} /> Support Liker
-                  </div>
-                  <LikePay isSupportSuccess={isSupportSuccess} likerId={status.get('account').get('liker_id')} statusId={status.get('id')} isShow={isPayShow} handleLikePay={this.openPay} />
-                </div>
+                    <LikePay isSupportSuccess={isSupportSuccess} likerId={status.get('account').get('liker_id')} statusId={status.get('id')} isShow={isPayShow} handleLikePay={this.openPay} />
+                  </div>) : null
+                }
               </div>
             </HotKeys>
 
