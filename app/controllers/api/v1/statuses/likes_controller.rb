@@ -68,7 +68,7 @@ class Api::V1::Statuses::LikesController < Api::BaseController
         @likers.push(JSON.parse(request.raw_post)['liker'])
       end
       Status.find(support_status.id).update_attribute(:support_likers, @likers)
-      render json: {:data=>support_status['support_likers'],:code => 200}, status: 200
+      render json: {:data=>@likers,:code => 200}, status: 200
     end
 
     def support_likers
