@@ -179,21 +179,19 @@
   }
 
   @media screen and (max-width: 740px) {
-    width: 100%;
+    width: 77%;
     margin: 0;
-    border-top-left-radius: 36px;
-    border-top-right-radius: 36px;
+    border-radius: 36px;
   }
 
   z-index: 999;
   width: 400px;
   position: fixed;
-  bottom: 0;
+  top: 300px;
   height: 140;
   background-image: linear-gradient(223deg, #d2f0f0, #f0e6b4);
   padding: 20px;
-  border-top-left-radius: 14px;
-  border-top-right-radius: 14px;
+  border-radius: 14px;
   display:flex;
   flex-direction: column;
   align-items: center;

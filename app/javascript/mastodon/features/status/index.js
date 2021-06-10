@@ -208,10 +208,8 @@ class Status extends ImmutablePureComponent {
       const loadedStatusId = JSON.parse(state).statusId
       if (!loadedStatusId) return
       api().get(`https://api.like.co/tx/id/${tx_hash}`).then((res) => {
-        console.log('step 2')
 
-        if (res.data.remarks === 'Transaction from Liker Social' && res.data.status === "success") {
-          console.log('step 3')
+        if (res.data.remarks === 'Transaction from Liker Social') {
 
           api().post(`/api/v1/statuses/${loadedStatusId}/support?liker=${res.data.fromId}`, { liker: res.data.fromId, statusId: loadedStatusId }).then((response) => {
             if (!response.data.data) return
