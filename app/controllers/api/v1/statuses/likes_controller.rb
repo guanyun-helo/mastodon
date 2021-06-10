@@ -48,14 +48,16 @@ class Api::V1::Statuses::LikesController < Api::BaseController
     def support
       support_status = Status.find(JSON.parse(request.raw_post)['statusId'])
 
-      if support_status['support_likers']
-        @likers = support_status['support_likers']
-      else
-        @likers = []
-      end
-      if support_status['support_likers'] == nil
+      @likers = []
+
+      if support_status['support_likers'].nil?
         Status.find(support_status.id).update_attribute(:support_likers, [])
+      else
+        @likers = support_status['support_likers']
       end
+      puts '=>?>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      puts support_status['support_likers'].nil?
+      puts @likers.nil?
 
       if support_status['support_likers'].find_index{ |i| i == JSON.parse(request.raw_post)['liker'] }
         index = support_status['support_likers'].find_index{ |i| i == JSON.parse(request.raw_post)['liker'] }

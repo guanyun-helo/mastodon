@@ -203,12 +203,18 @@ class Status extends ImmutablePureComponent {
 
     const tx_hash = queryString.parse(location.search).tx_hash
     const state = queryString.parse(location.search).state
-    const loadedStatusId = this.props.params.statusId
-    if (tx_hash && state && loadedStatusId) {
-      console.log('?tx_hash=BADFE76AD8AAE18257099BF0931C4FB8081BE7C3D391222C974E2CA3654C43EB&state={"statusId":"106375648106849272"}')
+    if (tx_hash && state) {
+      console.log('step 1')
+      const loadedStatusId = JSON.parse(state).statusId
+      if (!loadedStatusId) return
       api().get(`https://api.like.co/tx/id/${tx_hash}`).then((res) => {
+        console.log('step 2')
+
         if (res.data.remarks === 'Transaction from Liker Social' && res.data.status === "success") {
+          console.log('step 3')
+
           api().post(`/api/v1/statuses/${loadedStatusId}/support?liker=${res.data.fromId}`, { liker: res.data.fromId, statusId: loadedStatusId }).then((response) => {
+            if (!response.data.data) return
             for (const id of response.data.data) {
               api().get(`https://api.like.co/users/id/${id}/min`).then((avatars) => {
                 const data = this.state.supoortLikers
@@ -233,6 +239,7 @@ class Status extends ImmutablePureComponent {
       // this.context.router.history.push(`/statuses/${statusId}?tx_hash=${tx_hash}&state=${state}`);
     } else {
       api().get(`/api/v1/statuses/${this.props.params.statusId}/support_likers?statusId=${this.props.params.statusId}`).then((response) => {
+        if (!response.data.data) return
         for (const id of response.data.data) {
           api().get(`https://api.like.co/users/id/${id}/min`).then((avatars) => {
             const data = this.state.supoortLikers
@@ -673,7 +680,7 @@ class Status extends ImmutablePureComponent {
                 />
 
                 {
-                  likerId? (<div className="support-liker">
+                  likerId ? (<div className="support-liker">
                     <div className="supports">
                       {
                         supoortLikers.map((item) => (
