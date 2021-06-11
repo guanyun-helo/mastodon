@@ -583,6 +583,10 @@ class Status extends ImmutablePureComponent {
         this.setState({
           isSupportSuccess: false
         })
+      }else{
+        let container = document.querySelector('.support-container')
+        if(!container) return
+        container.scrollIntoView();
       }
     })
     // if(this.state.)
