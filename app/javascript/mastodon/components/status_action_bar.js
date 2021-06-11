@@ -239,7 +239,7 @@ class StatusActionBar extends ImmutablePureComponent {
             this.setState({
               totalLike: count.data.total
             }, () => {
-              // storage.setItem(id, this.state)
+              storage.setItem(id, this.state)
             })
           })
 
@@ -253,7 +253,7 @@ class StatusActionBar extends ImmutablePureComponent {
                 this.setState({
                   selfLike: data?.count || 0
                 }, () => {
-                  // storage.setItem(id, this.state)
+                  storage.setItem(id, this.state)
                 })
               } catch (error) {
               }
@@ -268,7 +268,7 @@ class StatusActionBar extends ImmutablePureComponent {
             this.setState({
               totalLike: count.data.total
             }, () => {
-              // storage.setItem(id, this.state)
+              storage.setItem(id, this.state)
             })
           })
 
@@ -280,7 +280,7 @@ class StatusActionBar extends ImmutablePureComponent {
                 this.setState({
                   selfLike: data?.count || 0
                 }, () => {
-                  // storage.setItem(id, this.state)
+                  storage.setItem(id, this.state)
                 })
               } catch (error) {
               }
