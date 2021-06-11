@@ -309,7 +309,7 @@ class Header extends ImmutablePureComponent {
           <div className='account__header__tabs'>
             <a className='avatar' style={{
               backgroundImage: this.state.isSubscribedCivicLiker ? `url(${civic})` : null,
-              backgroundSize: '95px 95px',
+              backgroundSize: '91px 91px',
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
