@@ -1251,20 +1251,20 @@
 }
 .support-liker{
   width: 100%;
-  margin-top: 15px;
+  margin-top: 10px;
   // background: red;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   .supports{
     width: 200px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
     img{
       width: 20px;
@@ -1272,12 +1272,15 @@
       border-radius: 50%;
     }
   }
+  .container:hover{
+    cursor: pointer;
+  }
   .container{
     color: #fff;
     background: #c0a46b;
     border-radius: 20px;
     width: 180px;
-    height: 30px;
+    height: 36px;
     display: flex;
     flex-direction: row;
     justify-content: center;

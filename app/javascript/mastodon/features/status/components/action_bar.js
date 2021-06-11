@@ -98,12 +98,12 @@ class ActionBar extends React.PureComponent {
 
   handleFavouriteClick = () => {
     this.props.onFavourite(this.props.status);
-    if(this.props.status.get('favourited')) return
+    if (this.props.status.get('favourited')) return
     const params = {
       tz: -(new Date().getTimezoneOffset() / 60),
       parentSuperLikeID: this.state.liker_id
     }
-    if(requestLock) return
+    if (requestLock) return
     requestLock = true
     try {
       this.props.onSuperLiked(this.props.status, location, params, res => {
@@ -216,7 +216,7 @@ class ActionBar extends React.PureComponent {
   }
 
   handleLikeContent = () => {
-    if(me === this.props.status.get('account').get('id')) {
+    if (me === this.props.status.get('account').get('id')) {
       toast.info("鄉民，不能給自己拍手哦！");
       return
     }
@@ -239,11 +239,9 @@ class ActionBar extends React.PureComponent {
 
   sendLike = debounce(() => {
     this.props.onLike(this.props.status, this.state.selfLike === 6 ? 5 : this.state.clickLike, location, (res) => {
-      if (res.data.code === 'OK'){
-        this.setState({
-          clickLike: 0
-        })
-      }
+      this.setState({
+        clickLike: 0
+      })
       if (res.data.code === 401) {
         toast.info("鄉民，請先綁定 LikeCoin Id！");
         this.setState({
@@ -270,7 +268,7 @@ class ActionBar extends React.PureComponent {
         })
       }
     })
-  }, 500)
+  }, 2000)
 
   componentDidMount() {
     const { status } = this.props;
@@ -405,7 +403,7 @@ class ActionBar extends React.PureComponent {
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} /></div>
         {publicStatus === true ? liker_id?.length > 0 ? <div className="detailed-status__button like-button animate__animated animate__fadeIn" onClick={this.handleLikeContent}>
           <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
-          <div style={selfLike === 5 ? {color:"#ca8f04"} : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+          <div style={selfLike === 5 ? { color: "#ca8f04" } : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
         </div> : null : null}
         {shareButton}
         <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>

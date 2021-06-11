@@ -312,11 +312,9 @@ class StatusActionBar extends ImmutablePureComponent {
 
   sendLike = debounce(() => {
     this.props.onLike(this.props.status, this.state.selfLike === 6 ? 5 : this.state.clickLike, location, (res) => {
-      if (res.data.code === 'OK'){
-        this.setState({
-          clickLike: 0
-        })
-      }
+      this.setState({
+        clickLike: 0
+      })
       if (res.data.code === 401) {
         toast.info("鄉民，請先綁定 LikeCoin Id！");
         this.setState({
@@ -343,7 +341,7 @@ class StatusActionBar extends ImmutablePureComponent {
         })
       }
     })
-  }, 500)
+  }, 2000)
 
   handleOpen = () => {
     this.context.router.history.push(`/statuses/${this.props.status.get('id')}`);
@@ -489,7 +487,7 @@ class StatusActionBar extends ImmutablePureComponent {
         {publicStatus === true ? liker_id.length > 0 ? (
           <div className="like-button" onClick={this.handleLikeContent}>
             <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
-            <div style={selfLike === 5 ? {color:"#ca8f04"} : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+            <div style={selfLike === 5 ? { color: "#ca8f04" } : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
           </div>
         ) : null : null}
         {shareButton}

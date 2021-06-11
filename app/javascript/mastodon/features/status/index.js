@@ -682,12 +682,12 @@ class Status extends ImmutablePureComponent {
                     <div className="supports">
                       {
                         supoortLikers.map((item) => (
-                          <img key={item} className="animate__animated animate__bounce" src={item} />
+                          <img key={item} className="animate__animated animate__bounceIn" src={item} />
                         ))
                       }
                     </div>
                     <div className="container" onClick={this.openPay}>
-                      <img src={Support} /> Support Liker (Beta)
+                      <img src={Support} /> Support Liker
                   </div>
                     <LikePay username={status.get('account').get('username')} isSupportSuccess={isSupportSuccess} likerId={status.get('account').get('liker_id')} statusId={status.get('id')} isShow={isPayShow} handleLikePay={this.openPay} />
                   </div>) : null
