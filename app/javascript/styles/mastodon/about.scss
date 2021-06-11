@@ -864,13 +864,15 @@ $small-breakpoint: 960px;
   position: relative;
   text-decoration: none;
 }
-
+.landing__brand{
+  margin-bottom: 50px;
+}
 .brand__tagline {
   display: block;
   position: absolute;
-  bottom: -40px;
+  bottom: -88px;
   left: 50px;
-  width: 511px;
+  width: 244px;
   color: $ui-primary-color;
   text-decoration: none;
   font-size: 14px;
