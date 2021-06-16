@@ -65,6 +65,7 @@ import { boostModal, deleteModal } from '../../initial_state';
 import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from '../ui/util/fullscreen';
 import { textForScreenReader, defaultMediaVisibility } from '../../components/status';
 import Icon from 'mastodon/components/icon';
+import { toast } from 'material-react-toastify';
 
 const messages = defineMessages({
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -204,7 +205,6 @@ class Status extends ImmutablePureComponent {
     const tx_hash = queryString.parse(location.search).tx_hash
     const state = queryString.parse(location.search).state
     if (tx_hash && state) {
-      console.log('step 1')
       const loadedStatusId = JSON.parse(state).statusId
       if (!loadedStatusId) return
       api().get(`https://api.like.co/tx/id/${tx_hash}`).then((res) => {
@@ -225,10 +225,13 @@ class Status extends ImmutablePureComponent {
             // this.setState({
             //   supoortLikers:
             // })
-            this.setState({
-              isSupportSuccess: true
-            })
-            this.openPay()
+            toast.success("鄉民，你的支持是對作者最大的鼓勵，拍謝 🙌！");
+            if(this.props.status.get('reblogged')) return
+            this.handleReblogClick(this.props.status);
+            // this.setState({
+            //   isSupportSuccess: true
+            // })
+            // this.openPay()
           })
         }
         // https://api.like.co/users/id/ckxpress/min

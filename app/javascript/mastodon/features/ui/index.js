@@ -544,7 +544,7 @@ class UI extends React.PureComponent {
           <ToastContainer
             limit={2}
             position="top-center"
-            autoClose={700}
+            autoClose={1000}
             hideProgressBar
             newestOnTop={false}
             closeOnClick

@@ -137,7 +137,8 @@ class StatusActionBar extends ImmutablePureComponent {
     try {
       this.props.onSuperLiked(this.props.status, location, params, res => {
         requestLock = false
-        if (res.data.data === "ok") {
+        if (res.data.data === "OK") {
+          toast.success("感謝你的 SuperLike！");
           this.props.onFavourite(this.props.status);
         }
       })
