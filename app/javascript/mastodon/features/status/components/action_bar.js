@@ -268,7 +268,7 @@ class ActionBar extends React.PureComponent {
         })
       }
     })
-  }, 2000)
+  }, 1000)
 
   componentDidMount() {
     const { status } = this.props;

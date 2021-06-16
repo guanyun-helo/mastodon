@@ -306,7 +306,6 @@ class StatusActionBar extends ImmutablePureComponent {
       clickLike: this.state.clickLike + 1
     }, () => {
       this.sendLike()
-      // storage.setItem(this.props.status.get('id'), this.state)
     })
   }
 
@@ -314,6 +313,10 @@ class StatusActionBar extends ImmutablePureComponent {
     this.props.onLike(this.props.status, this.state.selfLike === 6 ? 5 : this.state.clickLike, location, (res) => {
       this.setState({
         clickLike: 0
+      }, () => {
+        if (res.data.data === 'OK') {
+          storage.setItem(this.props.status.get('id'), this.state)
+        }
       })
       if (res.data.code === 401) {
         toast.info("鄉民，請先綁定 LikeCoin Id！");
@@ -341,7 +344,7 @@ class StatusActionBar extends ImmutablePureComponent {
         })
       }
     })
-  }, 2000)
+  }, 1000)
 
   handleOpen = () => {
     this.context.router.history.push(`/statuses/${this.props.status.get('id')}`);
