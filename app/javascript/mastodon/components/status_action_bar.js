@@ -134,17 +134,17 @@ class StatusActionBar extends ImmutablePureComponent {
     }
     if (requestLock) return
     requestLock = true
-    try {
-      this.props.onSuperLiked(this.props.status, location, params, res => {
-        requestLock = false
-        if (res.data.data === "OK") {
-          toast.success("感謝你的 SuperLike！");
-          this.props.onFavourite(this.props.status);
-        }
-      })
-    } catch (error) {
-      requestLock = false
-    }
+    // try {
+    //   this.props.onSuperLiked(this.props.status, location, params, res => {
+    //     requestLock = false
+    //     if (res.data.data === "OK") {
+    //       toast.success("感謝你的 SuperLike！");
+    //       this.props.onFavourite(this.props.status);
+    //     }
+    //   })
+    // } catch (error) {
+    //   requestLock = false
+    // }
   }
 
   handleReblogClick = e => {
@@ -250,7 +250,6 @@ class StatusActionBar extends ImmutablePureComponent {
               try {
 
                 data = JSON.parse(res.data.data)
-
                 this.setState({
                   selfLike: data?.count || 0
                 }, () => {
@@ -259,7 +258,7 @@ class StatusActionBar extends ImmutablePureComponent {
               } catch (error) {
               }
             })
-          }, 2500)
+          }, 500)
         }
       }
       if (err) {
@@ -278,6 +277,7 @@ class StatusActionBar extends ImmutablePureComponent {
               let data = {}
               try {
                 data = JSON.parse(res.data.data)
+
                 this.setState({
                   selfLike: data?.count || 0
                 }, () => {
@@ -286,7 +286,7 @@ class StatusActionBar extends ImmutablePureComponent {
               } catch (error) {
               }
             })
-          }, 2500)
+          }, 500)
         }
       }
     })
@@ -297,6 +297,11 @@ class StatusActionBar extends ImmutablePureComponent {
     if (me === this.props.status.get('account').get('id')) {
       toast.info("鄉民，不能給自己拍手哦！");
       return
+    }
+
+    if (this.state.selfLike === 4) {
+      if (this.props.status.get('favourited')) return
+      this.props.onFavourite(this.props.status);
     }
     if (this.state.selfLike >= 5) {
       return
@@ -490,8 +495,8 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className='status__action-bar-button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} />
         {publicStatus === true ? liker_id.length > 0 ? (
           <div className="like-button" onClick={this.handleLikeContent}>
-            <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
-            <div style={selfLike === 5 ? { color: "#ca8f04" } : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+            <img src={selfLike >= 5 ? LikeButtonGold : LikeButton} />
+            <div style={selfLike >= 5 ? { color: "#ca8f04" } : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
           </div>
         ) : null : null}
         {shareButton}

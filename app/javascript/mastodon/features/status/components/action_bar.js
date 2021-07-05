@@ -105,17 +105,17 @@ class ActionBar extends React.PureComponent {
     }
     if (requestLock) return
     requestLock = true
-    try {
-      this.props.onSuperLiked(this.props.status, location, params, res => {
-        requestLock = false
-        if (res.data.data === "OK") {
-          toast.success("感謝你的 SuperLike！");
-          this.props.onFavourite(this.props.status);
-        }
-      })
-    } catch (error) {
-      requestLock = false
-    }
+    // try {
+    //   this.props.onSuperLiked(this.props.status, location, params, res => {
+    //     requestLock = false
+    //     if (res.data.data === "OK") {
+    //       toast.success("感謝你的 SuperLike！");
+    //       this.props.onFavourite(this.props.status);
+    //     }
+    //   })
+    // } catch (error) {
+    //   requestLock = false
+    // }
   }
 
   handleBookmarkClick = (e) => {
@@ -221,6 +221,10 @@ class ActionBar extends React.PureComponent {
       toast.info("鄉民，不能給自己拍手哦！");
       return
     }
+    if (this.state.selfLike === 4) {
+      if (this.props.status.get('favourited')) return
+      this.props.onFavourite(this.props.status);
+    }
     if (this.state.selfLike >= 5) {
       return
     }
@@ -253,12 +257,7 @@ class ActionBar extends React.PureComponent {
         })
       }
       if (res.data.data === 'INVALID_LIKE') {
-        // this.setState({
-        //   selfLike: 0,
-        //   totalLike: this.state.totalLike - this.state.selfLike
-        // }, () => {
-        //   storage.setItem(this.props.status.get('id'), this.state)
-        // })
+
       }
       if (res.data.data === 'CANNOT_SELF_LIKE') {
         this.setState({
@@ -301,7 +300,7 @@ class ActionBar extends React.PureComponent {
         } catch (error) {
         }
       })
-    }, 1000)
+    }, 500)
   }
 
   render() {
@@ -403,8 +402,8 @@ class ActionBar extends React.PureComponent {
         <div className='detailed-status__button' ><IconButton className={classNames({ reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} /></div>
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} /></div>
         {publicStatus === true ? liker_id?.length > 0 ? <div className="detailed-status__button like-button animate__animated animate__fadeIn" onClick={this.handleLikeContent}>
-          <img src={selfLike === 5 ? LikeButtonGold : LikeButton} />
-          <div style={selfLike === 5 ? { color: "#ca8f04" } : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
+          <img src={selfLike >= 5 ? LikeButtonGold : LikeButton} />
+          <div style={selfLike >= 5 ? { color: "#ca8f04" } : null} className="count">{totalLike <= 0 ? 0 : totalLike}</div>
         </div> : null : null}
         {shareButton}
         <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
