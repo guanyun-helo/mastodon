@@ -222,8 +222,9 @@ class ActionBar extends React.PureComponent {
       return
     }
     if (this.state.selfLike === 4) {
-      if (this.props.status.get('favourited')) return
-      this.props.onFavourite(this.props.status);
+      if (!this.props.status.get('favourited')) {
+        this.props.onFavourite(this.props.status);
+      }
     }
     if (this.state.selfLike >= 5) {
       return
