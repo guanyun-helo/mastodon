@@ -225,7 +225,7 @@ class Status extends ImmutablePureComponent {
             // this.setState({
             //   supoortLikers:
             // })
-            toast.success("鄉民，你的支持是對作者最大的鼓勵，拍謝 🙌！");
+            toast.success("鄉民，你的支持是對作者最大的鼓勵，感謝 🙌！");
             if(this.props.status.get('reblogged')) return
             this.handleReblogClick(this.props.status);
             // this.setState({
