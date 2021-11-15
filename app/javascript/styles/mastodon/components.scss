@@ -2998,6 +2998,15 @@ a.account__display-name {
   font-size: 16px;
   padding: 15px;
   text-decoration: none;
+  .price-change{
+    float: right;
+  }
+  .price-change-red{
+    color: #e144ff;
+  }
+  .price-change-green{
+    color: #00ff9f;
+  }
 
   &:hover,
   &:focus,

@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { me, profile_directory, showTrends } from '../../initial_state';
-import { fetchFollowRequests,getLikeAuth } from 'mastodon/actions/accounts';
+import { fetchFollowRequests, getLikeAuth } from 'mastodon/actions/accounts';
 import { List as ImmutableList } from 'immutable';
 import NavigationContainer from '../compose/containers/navigation_container';
 import Icon from 'mastodon/components/icon';
@@ -51,7 +51,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   fetchFollowRequests: () => dispatch(fetchFollowRequests()),
-  getLikeAuth: (location,callback)=>dispatch(getLikeAuth(location,callback))
+  getLikeAuth: (location, callback) => dispatch(getLikeAuth(location, callback))
 });
 
 const badgeDisplay = (number, limit) => {
@@ -76,7 +76,11 @@ class GettingStarted extends ImmutablePureComponent {
 
   state = {
     clapImg: LikeCoinClap,
-    liker_id: "Click to bind"
+    liker_id: "Click to bind",
+    coins: {
+      cosmos: { usd: 0, usd_market_cap: 0, usd_24h_vol: 0, usd_24h_change: 0, last_updated_at: 0 },
+      likecoin: { usd: 0, usd_market_cap: 0, usd_24h_vol: 0, usd_24h_change: 0, last_updated_at: 0 }
+    }
   }
 
   static propTypes = {
@@ -90,13 +94,13 @@ class GettingStarted extends ImmutablePureComponent {
     unreadNotifications: PropTypes.number,
   };
 
-  componentDidMount () {
-    if(document.body && document.body.classList.contains('theme-mastodon-light')){
+  componentDidMount() {
+    if (document.body && document.body.classList.contains('theme-mastodon-light')) {
       this.setState({
         clapImg: LikeCoinClapDark
       })
     }
-    const { fetchFollowRequests, multiColumn} = this.props;
+    const { fetchFollowRequests, multiColumn } = this.props;
 
     if (!multiColumn && window.innerWidth >= NAVIGATION_PANEL_BREAKPOINT) {
       this.context.router.history.replace('/timelines/home');
@@ -110,9 +114,9 @@ class GettingStarted extends ImmutablePureComponent {
       params.append("code", code)
       api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
         // dispatch(unblockAccountSuccess(response.data));
-        if(response.data.code === 200){
-          this.props.myAccount.set('liker_id',response.data.user)
-          if(response.data.user){
+        if (response.data.code === 200) {
+          this.props.myAccount.set('liker_id', response.data.user)
+          if (response.data.user) {
             this.setState({
               liker_id: response.data.user
             })
@@ -124,9 +128,9 @@ class GettingStarted extends ImmutablePureComponent {
       });
     }
     fetchFollowRequests();
-
+    this.getCoinPrice();
     const liker_id = this.props.myAccount.get('liker_id')
-    if(liker_id){
+    if (liker_id) {
       this.setState({
         liker_id: liker_id
       })
@@ -134,16 +138,16 @@ class GettingStarted extends ImmutablePureComponent {
 
 
   }
-  bindLikeCoinId(){
-    const {getLikeAuth} = this.props;
-    getLikeAuth(window.location,(res)=>{
-      if(res.data.code === 301){
+  bindLikeCoinId() {
+    const { getLikeAuth } = this.props;
+    getLikeAuth(window.location, (res) => {
+      if (res.data.code === 301) {
         location.href = 'https://like.co' + res.data.url
       }
     })
   }
 
-  getLikerId(){
+  getLikerId() {
     api().get(`/api/v1/accounts/liker_id`).then(response => {
       if (response.data.code === 200) {
         if (response.data.liker_id) {
@@ -157,8 +161,22 @@ class GettingStarted extends ImmutablePureComponent {
     });
   }
 
-  render () {
+  getCoinPrice() {
+    api().get('https://api.coingecko.com/api/v3/simple/price?ids=cosmos,likecoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true').then(response => {
+      // if(response.data.code === 200){
+
+      if (response.status === 200) {
+        this.setState({
+          coins: response.data
+        })
+      }
+      // }
+    })
+  }
+
+  render() {
     const { intl, myAccount, columns, multiColumn, unreadFollowRequests } = this.props;
+    const { coins } = this.state;
     const navItems = [];
     let height = (multiColumn) ? 0 : 60;
 
@@ -169,7 +187,7 @@ class GettingStarted extends ImmutablePureComponent {
         <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/timelines/public' />,
       );
 
-      height += 34 + 48*2;
+      height += 34 + 48 * 2;
 
       if (profile_directory) {
         navItems.push(
@@ -205,12 +223,12 @@ class GettingStarted extends ImmutablePureComponent {
       <ColumnLink key='favourites' icon='star' text={intl.formatMessage(messages.favourites)} to='/favourites' />,
       <ColumnLink key='lists' icon='list-ul' text={intl.formatMessage(messages.lists)} to='/lists' />,
       <div key="liker-id" onClick={this.bindLikeCoinId.bind(this)} className="liker-id column-link">
-        <img src={this.state.clapImg}/>
+        <img src={this.state.clapImg} />
         <div className="bind">Liker Id ({this.state.liker_id})</div>
       </div>
     );
 
-    height += 48*4;
+    height += 48 * 4;
 
     if (myAccount.get('locked') || unreadFollowRequests > 0) {
       navItems.push(<ColumnLink key='follow_requests' icon='user-plus' text={intl.formatMessage(messages.follow_requests)} badge={badgeDisplay(unreadFollowRequests, 40)} to='/follow_requests' />);
@@ -219,11 +237,14 @@ class GettingStarted extends ImmutablePureComponent {
 
     if (!multiColumn) {
       navItems.push(
+        <ColumnSubheading key='header-settings-crypto' text={'Cryptos'} />,
+        <div className="column-link" key='ATOM' icon='gears' text={'ATOM'}  >ATOM: {coins.cosmos.usd.toFixed(2)} usd  <div className={coins.cosmos.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.cosmos.usd_24h_change.toFixed(2)} %</div></div>,
+        <div className="column-link" key='LIKE' icon='gears' text={'LIKE'}  >LIKE: {coins.likecoin.usd.toFixed(2)} usd <div className={coins.likecoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.likecoin.usd_24h_change.toFixed(2)} %</div></div>,
         <ColumnSubheading key='header-settings' text={intl.formatMessage(messages.settings_subheading)} />,
         <ColumnLink key='preferences' icon='gears' text={intl.formatMessage(messages.preferences)} href='/settings/preferences' />,
       );
 
-      height += 34 + 48 + 65;
+      height += 34 + 48 + 65 * 3;
     }
 
     return (

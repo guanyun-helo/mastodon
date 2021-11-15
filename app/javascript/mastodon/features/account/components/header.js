@@ -89,7 +89,15 @@ class Header extends ImmutablePureComponent {
   };
 
   state = {
-    isSubscribedCivicLiker: false
+    isSubscribedCivicLiker: false,
+    balances: 0,
+    price: {
+      last_updated_at: 0,
+      usd: 0,
+      usd_24h_change: 0,
+      usd_24h_vol: 0,
+      usd_market_cap: 0,
+    }
   }
 
   openEditProfile = () => {
@@ -130,10 +138,23 @@ class Header extends ImmutablePureComponent {
     }
   }
 
+  getCoinPrice() {
+    api().get('https://api.coingecko.com/api/v3/simple/price?ids=likecoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true').then(response => {
+
+      if (response.status === 200) {
+        this.setState({
+          price: response.data.likecoin
+        })
+      }
+    })
+  }
+
   componentDidMount() {
     const account = this.props.account;
     const liker_id = account.get('liker_id')
     if (!liker_id) return
+    this.getCoinPrice();
+
     storage.getItem(liker_id, (err, value) => {
       if (value) {
         this.setState({
@@ -143,6 +164,15 @@ class Header extends ImmutablePureComponent {
       }
       if (!value || value === null) {
         api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+          if (res.data.cosmosWallet) {
+            api().get(`https://api.like.co/cosmos/lcd/cosmos/bank/v1beta1/balances/${res.data.cosmosWallet}`).then((balances) => {
+              if (balances.status === 200) {
+                this.setState({
+                  balances: Number(balances.data.balances[0].amount) / 1000000000
+                })
+              }
+            });
+          }
           if (res.data.isSubscribedCivicLiker) {
             this.setState({
               isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
@@ -157,7 +187,11 @@ class Header extends ImmutablePureComponent {
 
   render() {
     const { account, intl, domain, identity_proofs } = this.props;
-
+    const { balances, price } = this.state;
+    let self = false
+    if (me === account.get('id')) {
+      self = true
+    }
     if (!account) {
       return null;
     }
@@ -335,20 +369,36 @@ class Header extends ImmutablePureComponent {
             <h1>
               <span dangerouslySetInnerHTML={displayNameHtml} /> {badge}
               <small>@{acct} {lockedIcon}</small>
-              {liker_id ? 
-              <div className="civic-liker" style={{
-              display: 'flex',
-              'flexDirection': 'row',
-              'alignItems': 'center',
-              'fontSize': '13px',
-              marginTop: '10px'
-            }}>
-              <img src={CivicLiker} style={{ width: '27px' }} />
-              <a style={{marginLeft: '5px',color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>成爲我的讚賞公民</a>
-            </div> : null
-            }
+              {liker_id ?
+                <div className="civic-liker" style={{
+                  display: 'flex',
+                  'flexDirection': 'row',
+                  'alignItems': 'center',
+                  'fontSize': '13px',
+                  marginTop: '10px'
+                }}>
+                  <img src={CivicLiker} style={{ width: '27px' }} />
+                  <a style={{ marginLeft: '5px', color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>成爲我的讚賞公民</a>
+                </div> : null
+
+              }
+
+              {self ? liker_id ?
+                <div className="civic-liker-asset" style={{
+                  display: 'flex',
+                  'flexDirection': 'row',
+                  'alignItems': 'center',
+                  'fontSize': '13px',
+                  marginTop: '10px'
+                }}>
+                  <a style={{ marginLeft: '5px', color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>Crypto Assets(僅自我可見):</a>
+                  <div> &nbsp; {balances.toFixed(2)} LIKE ≈ {(price.usd * balances).toFixed(2)} USD</div>
+                </div> : null
+
+                : null}
             </h1>
           </div>
+
 
           <div className='account__header__extra'>
             <div className='account__header__bio'>
