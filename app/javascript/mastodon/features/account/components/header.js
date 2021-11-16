@@ -169,6 +169,35 @@ class Header extends ImmutablePureComponent {
     if (!liker_id) return
     this.getCoinPrice();
 
+    api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+      if (res.data.cosmosWallet) {
+        let balancesTotal = 0;
+        let wallet = res.data.cosmosWallet;
+        Promise.allSettled([this.getBalances(wallet),this.getDelegation(wallet),this.getUnbonding(wallet)]).then((res)=>{
+          if (res[0].status === 'fulfilled') {
+            balancesTotal += Number(res[0].value.data.balances[0].amount) / 1000000000
+          }
+          if (res[1].status === 'fulfilled') {
+            let delegatedBalances = 0;
+            res[1].value.data.delegation_responses.forEach((item)=>{
+              delegatedBalances += Number(item.balance.amount) / 1000000000
+            })
+            balancesTotal += delegatedBalances
+          }
+          if (res[2].status === 'fulfilled') {
+            let unbondingBalances  = 0;
+            res[2].value.data.unbonding_responses.forEach(item=>{
+              unbondingBalances+= Number(item.entries[0].balance) / 1000000000
+            })
+            balancesTotal += unbondingBalances
+          }
+          this.setState({
+            balances: balancesTotal
+          })
+        })
+      }
+    })
+
     storage.getItem(liker_id, (err, value) => {
       if (value) {
         this.setState({
@@ -178,32 +207,6 @@ class Header extends ImmutablePureComponent {
       }
       if (!value || value === null) {
         api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
-          if (res.data.cosmosWallet) {
-            let balancesTotal = 0;
-            let wallet = res.data.cosmosWallet;
-            Promise.allSettled([this.getBalances(wallet),this.getDelegation(wallet),this.getUnbonding(wallet)]).then((res)=>{
-              if (res[0].status === 'fulfilled') {
-                balancesTotal += Number(res[0].value.data.balances[0].amount) / 1000000000
-              }
-              if (res[1].status === 'fulfilled') {
-                let delegatedBalances = 0;
-                res[1].value.data.delegation_responses.forEach((item)=>{
-                  delegatedBalances += Number(item.balance.amount) / 1000000000
-                })
-                balancesTotal += delegatedBalances
-              }
-              if (res[2].status === 'fulfilled') {
-                let unbondingBalances  = 0;
-                res[2].value.data.unbonding_responses.forEach(item=>{
-                  unbondingBalances+= Number(item.entries[0].balance) / 1000000000
-                })
-                balancesTotal += unbondingBalances
-              }
-              this.setState({
-                balances: balancesTotal
-              })
-            })
-          }
           if (res.data.isSubscribedCivicLiker) {
             this.setState({
               isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
