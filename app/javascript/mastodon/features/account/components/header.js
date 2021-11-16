@@ -169,7 +169,7 @@ class Header extends ImmutablePureComponent {
     if (!liker_id) return
     this.getCoinPrice();
 
-    api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+    api().get(`https://api.like.co/users/id/cathytsai/min`).then((res) => {
       if (res.data.cosmosWallet) {
         let balancesTotal = 0;
         let wallet = res.data.cosmosWallet;
@@ -187,7 +187,9 @@ class Header extends ImmutablePureComponent {
           if (res[2].status === 'fulfilled') {
             let unbondingBalances  = 0;
             res[2].value.data.unbonding_responses.forEach(item=>{
-              unbondingBalances+= Number(item.entries[0].balance) / 1000000000
+              item.entries.forEach((ele)=>{
+                unbondingBalances+= Number(ele.balance) / 1000000000
+              })
             })
             balancesTotal += unbondingBalances
           }
