@@ -149,6 +149,20 @@ class Header extends ImmutablePureComponent {
     })
   }
 
+  getDelegation(cosmosWallet){
+    // https://mainnet-node.like.co/cosmos/staking/v1beta1/delegations/cosmos1g2dpslkge0wmhgpdegeg0wq549syz8tjx48fhz
+    return api().get(`https://api.like.co/cosmos/lcd/cosmos/staking/v1beta1/delegations/${cosmosWallet}`)
+  }
+
+  getUnbonding(cosmosWallet){
+    // https://mainnet-node.like.co/cosmos/staking/v1beta1/delegators/cosmos1g2dpslkge0wmhgpdegeg0wq549syz8tjx48fhz/unbonding_delegations
+    return api().get(`https://api.like.co/cosmos/lcd/cosmos/staking/v1beta1/delegators/${cosmosWallet}/unbonding_delegations`)
+  }
+
+  getBalances(cosmosWallet){
+    return api().get(`https://api.like.co/cosmos/lcd/cosmos/bank/v1beta1/balances/${cosmosWallet}`)
+  }
+
   componentDidMount() {
     const account = this.props.account;
     const liker_id = account.get('liker_id')
@@ -165,13 +179,30 @@ class Header extends ImmutablePureComponent {
       if (!value || value === null) {
         api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
           if (res.data.cosmosWallet) {
-            api().get(`https://api.like.co/cosmos/lcd/cosmos/bank/v1beta1/balances/${res.data.cosmosWallet}`).then((balances) => {
-              if (balances.status === 200) {
-                this.setState({
-                  balances: Number(balances.data.balances[0].amount) / 1000000000
-                })
+            let balancesTotal = 0;
+            let wallet = res.data.cosmosWallet;
+            Promise.allSettled([this.getBalances(wallet),this.getDelegation(wallet),this.getUnbonding(wallet)]).then((res)=>{
+              if (res[0].status === 'fulfilled') {
+                balancesTotal += Number(res[0].value.data.balances[0].amount) / 1000000000
               }
-            });
+              if (res[1].status === 'fulfilled') {
+                let delegatedBalances = 0;
+                res[1].value.data.delegation_responses.forEach((item)=>{
+                  delegatedBalances += Number(item.balance.amount) / 1000000000
+                })
+                balancesTotal += delegatedBalances
+              }
+              if (res[2].status === 'fulfilled') {
+                let unbondingBalances  = 0;
+                res[2].value.data.unbonding_responses.forEach(item=>{
+                  unbondingBalances+= Number(item.entries[0].balance) / 1000000000
+                })
+                balancesTotal += unbondingBalances
+              }
+              this.setState({
+                balances: balancesTotal
+              })
+            })
           }
           if (res.data.isSubscribedCivicLiker) {
             this.setState({
@@ -391,7 +422,7 @@ class Header extends ImmutablePureComponent {
                   'fontSize': '13px',
                   marginTop: '10px'
                 }}>
-                  <a style={{ marginLeft: '5px', color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>Crypto Assets(僅自我可見):</a>
+                  <a style={{ marginLeft: '5px', color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>LIKE 餘額:</a>
                   <div> &nbsp; {balances.toFixed(2)} LIKE ≈ {(price.usd * balances).toFixed(2)} USD</div>
                 </div> : null
 
