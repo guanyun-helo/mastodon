@@ -169,7 +169,7 @@ class Header extends ImmutablePureComponent {
     if (!liker_id) return
     this.getCoinPrice();
 
-    api().get(`https://api.like.co/users/id/cathytsai/min`).then((res) => {
+    api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
       if (res.data.cosmosWallet) {
         let balancesTotal = 0;
         let wallet = res.data.cosmosWallet;
