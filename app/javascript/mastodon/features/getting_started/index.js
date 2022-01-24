@@ -16,6 +16,7 @@ import LinkFooter from 'mastodon/features/ui/components/link_footer';
 import TrendsContainer from './containers/trends_container';
 import LikeCoinClapDark from '.././../../images/likebutton/like-calp-dark.svg'
 import LikeCoinClap from '.././../../images/likebutton/like-clap-white.svg'
+import LikeCoinAirdrop from '../../../images/airdrop/background.png'
 import queryString from "query-string"
 import api from '../../api'
 
@@ -241,13 +242,17 @@ class GettingStarted extends ImmutablePureComponent {
       height += 48;
     }
 
+    const airdrop = {backgroundImage: `url(${LikeCoinAirdrop})`,backgroundRepeat: 'no-repeat',
+    'background-position': 'unset',
+    'background-size': 'contain' }
+
     if (!multiColumn) {
       navItems.push(
         <ColumnSubheading key='header-settings-crypto' text={'Cryptos'} />,
         <div className="column-link" key='BTC' icon='gears' text={'BTC'}  >BTC: {coins.bitcoin.usd.toFixed(2)} usd <div className={coins.bitcoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.bitcoin.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.bitcoin.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='ETH' icon='gears' text={'ETH'}  >ETH: {coins.ethereum.usd.toFixed(2)} usd <div className={coins.ethereum.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.ethereum.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.ethereum.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='ATOM' icon='gears' text={'ATOM'}  >ATOM: {coins.cosmos.usd.toFixed(2)} usd  <div className={coins.cosmos.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.cosmos.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.cosmos.usd_24h_change.toFixed(2)} %</div></div>,
-        <div className="column-link" key='LIKE' icon='gears' text={'LIKE'}  >LIKE: {coins.likecoin.usd.toFixed(2)} usd <div className={coins.likecoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.likecoin.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.likecoin.usd_24h_change.toFixed(2)} %</div></div>,
+        <div style={airdrop} className="column-link" key='LIKE' icon='gears' text={'LIKE'}  >LIKE: {coins.likecoin.usd.toFixed(2)} usd <div className={coins.likecoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.likecoin.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.likecoin.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='OSMO' icon='gears' text={'OSMO'}  >OSMO: {coins.osmosis.usd.toFixed(2)} usd <div className={coins.osmosis.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.osmosis.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.osmosis.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='CRO' icon='gears' text={'CRO'}  >CRO: {coins['crypto-com-chain'].usd.toFixed(2)} usd <div className={coins['crypto-com-chain'].usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins['crypto-com-chain'].usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins['crypto-com-chain'].usd_24h_change.toFixed(2)} %</div></div>,
 

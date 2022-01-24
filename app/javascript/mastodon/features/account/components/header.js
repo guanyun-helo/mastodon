@@ -414,7 +414,7 @@ class Header extends ImmutablePureComponent {
                   marginTop: '10px'
                 }}>
                   <img src={CivicLiker} style={{ width: '27px' }} />
-                  <a style={{ marginLeft: '5px', color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>成爲我的讚賞公民</a>
+                  <a style={{ marginLeft: '5px', color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>Become my CivicLiker</a>
                 </div> : null
 
               }
@@ -427,7 +427,7 @@ class Header extends ImmutablePureComponent {
                   'fontSize': '13px',
                   marginTop: '10px'
                 }}>
-                  <a style={{ marginLeft: '5px', color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>LIKE 餘額:</a>
+                  <a style={{ marginLeft: '5px', color: "#50e3c2", textDecoration: "none", fontWeight: 500 }} target="_blank" href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>LIKE balances:</a>
                   <div> &nbsp; {balances.toFixed(2)} LIKE ≈ {(price.usd * balances).toFixed(2)} USD</div>
                 </div> : null
 
