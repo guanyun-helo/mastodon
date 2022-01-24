@@ -471,5 +471,6 @@
   "video.mute": "静音",
   "video.pause": "暂停",
   "video.play": "播放",
-  "video.unmute": "取消静音"
+  "video.unmute": "取消静音",
+  "like.iscn": "Only one file is allowed to be uploaded, please delete the other"
 }

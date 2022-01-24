@@ -105,17 +105,6 @@ class ActionBar extends React.PureComponent {
     }
     if (requestLock) return
     requestLock = true
-    // try {
-    //   this.props.onSuperLiked(this.props.status, location, params, res => {
-    //     requestLock = false
-    //     if (res.data.data === "OK") {
-    //       toast.success("感謝你的 SuperLike！");
-    //       this.props.onFavourite(this.props.status);
-    //     }
-    //   })
-    // } catch (error) {
-    //   requestLock = false
-    // }
   }
 
   handleBookmarkClick = (e) => {

@@ -23,6 +23,8 @@ import {
   COMPOSE_SUGGESTION_SELECT,
   COMPOSE_SUGGESTION_TAGS_UPDATE,
   COMPOSE_TAG_HISTORY_UPDATE,
+  COMPOSE_ISCN_CHANGE,
+  COMPOSE_ISCN_FEE_CHANGE,
   COMPOSE_SENSITIVITY_CHANGE,
   COMPOSE_SPOILERNESS_CHANGE,
   COMPOSE_SPOILER_TEXT_CHANGE,
@@ -51,6 +53,8 @@ import { unescapeHTML } from '../utils/html';
 const initialState = ImmutableMap({
   mounted: 0,
   sensitive: false,
+  iscn: false,
+  iscn_fee: null,
   spoiler: false,
   spoiler_text: '',
   privacy: null,
@@ -104,6 +108,8 @@ function clearAll(state) {
     map.set('in_reply_to', null);
     map.set('privacy', state.get('default_privacy'));
     map.set('sensitive', false);
+    map.set('iscn',false);
+    map.set('iscn_fee',null);
     map.update('media_attachments', list => list.clear());
     map.set('poll', null);
     map.set('idempotencyKey', uuid());
@@ -257,6 +263,22 @@ export default function compose(state = initialState, action) {
     return state
       .set('mounted', Math.max(state.get('mounted') - 1, 0))
       .set('is_composing', false);
+  case COMPOSE_ISCN_CHANGE:
+    return state.withMutations(map => {
+      if (!state.get('spoiler')) {
+        map.set('iscn', !state.get('iscn'));
+      }
+
+      map.set('idempotencyKey', uuid());
+    });
+  case COMPOSE_ISCN_FEE_CHANGE:
+    return state.withMutations(map => {
+      if (!state.get('spoiler')) {
+        map.set('iscn_fee', action.value);
+      }
+
+      map.set('idempotencyKey', uuid());
+    });
   case COMPOSE_SENSITIVITY_CHANGE:
     return state.withMutations(map => {
       if (!state.get('spoiler')) {

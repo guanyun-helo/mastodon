@@ -4,6 +4,8 @@ import UploadProgressContainer from '../containers/upload_progress_container';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import UploadContainer from '../containers/upload_container';
 import SensitiveButtonContainer from '../containers/sensitive_button_container';
+import ISCNButtonContainer from '../containers/iscn_button_container';
+
 import { FormattedMessage } from 'react-intl';
 
 export default class UploadForm extends ImmutablePureComponent {
@@ -13,7 +15,7 @@ export default class UploadForm extends ImmutablePureComponent {
   };
 
   render () {
-    const { mediaIds } = this.props;
+    const { mediaIds, iscn_fee} = this.props;
 
     return (
       <div className='compose-form__upload-wrapper'>
@@ -26,6 +28,8 @@ export default class UploadForm extends ImmutablePureComponent {
         </div>
 
         {!mediaIds.isEmpty() && <SensitiveButtonContainer />}
+        {<ISCNButtonContainer  iscn_fee = {iscn_fee}/>}
+
       </div>
     );
   }
