@@ -17,6 +17,7 @@ import TrendsContainer from './containers/trends_container';
 import LikeCoinClapDark from '.././../../images/likebutton/like-calp-dark.svg'
 import LikeCoinClap from '.././../../images/likebutton/like-clap-white.svg'
 import LikeCoinAirdrop from '../../../images/airdrop/background.png'
+import LikeCoinStake from '../../../images/airdrop/stake.png'
 import queryString from "query-string"
 import api from '../../api'
 
@@ -87,6 +88,8 @@ class GettingStarted extends ImmutablePureComponent {
       ethereum: { usd: 0, usd_market_cap: 0, usd_24h_vol: 0, usd_24h_change: 0, last_updated_at: 0 },
       likecoin: { usd: 0, usd_market_cap: 0, usd_24h_vol: 0, usd_24h_change: 0, last_updated_at: 0 },
       osmosis: { usd: 0, usd_market_cap: 0, usd_24h_vol: 0, usd_24h_change: 0, last_updated_at: 0 },
+      ion: { usd: 0, usd_market_cap: 0, usd_24h_vol: 0, usd_24h_change: 0, last_updated_at: 0 },
+
     }
   }
 
@@ -169,7 +172,7 @@ class GettingStarted extends ImmutablePureComponent {
   }
 
   getCoinPrice() {
-    api().get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,cosmos,crypto-com-chain,osmosis,likecoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true').then(response => {
+    api().get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,cosmos,ion,crypto-com-chain,osmosis,likecoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true').then(response => {
       // if(response.data.code === 200){
 
       if (response.status === 200) {
@@ -242,26 +245,43 @@ class GettingStarted extends ImmutablePureComponent {
       height += 48;
     }
 
-    const airdrop = {backgroundImage: `url(${LikeCoinAirdrop})`,backgroundRepeat: 'no-repeat',
-    'background-position': 'center',
-    'background-size': 'cover',
-  color: 'black' }
+    const airdrop = {
+      backgroundImage: `url(${LikeCoinAirdrop})`, backgroundRepeat: 'no-repeat',
+      'background-position': 'center',
+      'background-size': 'cover',
+      color: 'black'
+    }
+
+    const stake = {
+      backgroundImage: `url(${LikeCoinStake})`, backgroundRepeat: 'no-repeat',
+      'background-position': 'center',
+      'background-size': 'cover',
+      color: 'black'
+    }
 
     if (!multiColumn) {
       navItems.push(
         <ColumnSubheading key='header-settings-crypto' text={'Cryptos'} />,
+        <div style={airdrop} className="column-link" key='airdrop' icon='gears' text={'LIKE'}  ><a style={{
+          display: 'inline-block', minHeight: '30px', width: '100%'
+        }} href="https://app.like.co/airdrop/check" target="_blank"></a></div>,
+
+
         <div className="column-link" key='BTC' icon='gears' text={'BTC'}  >BTC: {coins.bitcoin.usd.toFixed(2)} usd <div className={coins.bitcoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.bitcoin.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.bitcoin.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='ETH' icon='gears' text={'ETH'}  >ETH: {coins.ethereum.usd.toFixed(2)} usd <div className={coins.ethereum.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.ethereum.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.ethereum.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='ATOM' icon='gears' text={'ATOM'}  >ATOM: {coins.cosmos.usd.toFixed(2)} usd  <div className={coins.cosmos.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.cosmos.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.cosmos.usd_24h_change.toFixed(2)} %</div></div>,
-        <div style={airdrop} className="column-link" key='LIKE' icon='gears' text={'LIKE'}  >LIKE: {coins.likecoin.usd.toFixed(2)} usd <div className={coins.likecoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.likecoin.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.likecoin.usd_24h_change.toFixed(2)} %</div></div>,
+        <div className="column-link" key='LIKE' icon='gears' text={'LIKE'}  >LIKE: {coins.likecoin.usd.toFixed(2)} usd <div className={coins.likecoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.likecoin.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.likecoin.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='OSMO' icon='gears' text={'OSMO'}  >OSMO: {coins.osmosis.usd.toFixed(2)} usd <div className={coins.osmosis.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.osmosis.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.osmosis.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='CRO' icon='gears' text={'CRO'}  >CRO: {coins['crypto-com-chain'].usd.toFixed(2)} usd <div className={coins['crypto-com-chain'].usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins['crypto-com-chain'].usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins['crypto-com-chain'].usd_24h_change.toFixed(2)} %</div></div>,
-
+        <div className="column-link" key='ION' icon='gears' text={'CRO'}  >ION: {coins['ion'].usd.toFixed(2)} usd <div className={coins['ion'].usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins['ion'].usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins['ion'].usd_24h_change.toFixed(2)} %</div></div>,
+        // <div style={stake} className="column-link" key='stake' icon='gears' text={'LIKE'}  ><a style={{
+        //   display: 'inline-block', minHeight: '30px', width: '100%'
+        // }} href="https://app.like.co/airdrop/check" target="_blank"></a></div>,
         <ColumnSubheading key='header-settings' text={intl.formatMessage(messages.settings_subheading)} />,
         <ColumnLink key='preferences' icon='gears' text={intl.formatMessage(messages.preferences)} href='/settings/preferences' />,
       ); { coins.bitcoin.usd_24h_change.toFixed(2) > 0 ? '+' : null }
 
-      height += 34 + 48 + 65 * 6;
+      height += 34 + 48 + 65 * 8;
     }
 
     return (
