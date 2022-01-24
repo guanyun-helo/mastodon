@@ -244,7 +244,8 @@ class GettingStarted extends ImmutablePureComponent {
 
     const airdrop = {backgroundImage: `url(${LikeCoinAirdrop})`,backgroundRepeat: 'no-repeat',
     'background-position': 'center',
-    'background-size': 'cover' }
+    'background-size': 'cover',
+  color: 'black' }
 
     if (!multiColumn) {
       navItems.push(
