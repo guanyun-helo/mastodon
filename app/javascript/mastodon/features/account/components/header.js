@@ -167,64 +167,8 @@ class Header extends ImmutablePureComponent {
 
 
     const { account } = this.props;
-    let self = false
     if (me === account.get('id')) {
-      console.log('is me')
-      const account = this.props.account;
-      const liker_id = account.get('liker_id')
-      if (!liker_id) return
-      this.getCoinPrice();
-  
-      api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
-        if (res.data.cosmosWallet) {
-          let balancesTotal = 0;
-          let wallet = res.data.cosmosWallet;
-          Promise.allSettled([this.getBalances(wallet), this.getDelegation(wallet), this.getUnbonding(wallet)]).then((res) => {
-            if (res[0].status === 'fulfilled') {
-              balancesTotal += Number(res[0].value.data.balances[0].amount) / 1000000000
-            }
-            if (res[1].status === 'fulfilled') {
-              let delegatedBalances = 0;
-              res[1].value.data.delegation_responses.forEach((item) => {
-                delegatedBalances += Number(item.balance.amount) / 1000000000
-              })
-              balancesTotal += delegatedBalances
-            }
-            if (res[2].status === 'fulfilled') {
-              let unbondingBalances = 0;
-              res[2].value.data.unbonding_responses.forEach(item => {
-                item.entries.forEach((ele) => {
-                  unbondingBalances += Number(ele.balance) / 1000000000
-                })
-              })
-              balancesTotal += unbondingBalances
-            }
-            this.setState({
-              balances: balancesTotal
-            })
-          })
-        }
-      })
-  
-      storage.getItem(liker_id, (err, value) => {
-        if (value) {
-          this.setState({
-            isSubscribedCivicLiker: value
-          })
-          return
-        }
-        if (!value || value === null) {
-          api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
-            if (res.data.isSubscribedCivicLiker) {
-              this.setState({
-                isSubscribedCivicLiker: res.data.isSubscribedCivicLiker
-              }, () => {
-                storage.setItem(liker_id, true)
-              })
-            }
-          })
-        }
-      })
+
     }else{
       this.setState({
         balances: 0
@@ -299,6 +243,10 @@ class Header extends ImmutablePureComponent {
     let self = false
     if (me === account.get('id')) {
       self = true
+    }else{
+      this.setState({
+        balances: 0
+      })
     }
     if (!account) {
       return null;
