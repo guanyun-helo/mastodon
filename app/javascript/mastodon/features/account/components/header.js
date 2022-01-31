@@ -149,18 +149,34 @@ class Header extends ImmutablePureComponent {
     })
   }
 
-  getDelegation(cosmosWallet){
+  getDelegation(cosmosWallet) {
     // https://mainnet-node.like.co/cosmos/staking/v1beta1/delegations/cosmos1g2dpslkge0wmhgpdegeg0wq549syz8tjx48fhz
     return api().get(`https://api.like.co/cosmos/lcd/cosmos/staking/v1beta1/delegations/${cosmosWallet}`)
   }
 
-  getUnbonding(cosmosWallet){
+  getUnbonding(cosmosWallet) {
     // https://mainnet-node.like.co/cosmos/staking/v1beta1/delegators/cosmos1g2dpslkge0wmhgpdegeg0wq549syz8tjx48fhz/unbonding_delegations
     return api().get(`https://api.like.co/cosmos/lcd/cosmos/staking/v1beta1/delegators/${cosmosWallet}/unbonding_delegations`)
   }
 
-  getBalances(cosmosWallet){
+  getBalances(cosmosWallet) {
     return api().get(`https://api.like.co/cosmos/lcd/cosmos/bank/v1beta1/balances/${cosmosWallet}`)
+  }
+
+  componentDidUpdate() {
+    const { account } = this.props;
+    if (me === account.get('id')) {
+    } else {
+      this.setState({
+        balances: 0
+      }, () => {
+        console.log('reset bala')
+      })
+    }
+  }
+
+  componentWillUnmount() {
+    console.log('un mount')
   }
 
   componentDidMount() {
@@ -173,22 +189,22 @@ class Header extends ImmutablePureComponent {
       if (res.data.cosmosWallet) {
         let balancesTotal = 0;
         let wallet = res.data.cosmosWallet;
-        Promise.allSettled([this.getBalances(wallet),this.getDelegation(wallet),this.getUnbonding(wallet)]).then((res)=>{
+        Promise.allSettled([this.getBalances(wallet), this.getDelegation(wallet), this.getUnbonding(wallet)]).then((res) => {
           if (res[0].status === 'fulfilled') {
             balancesTotal += Number(res[0].value.data.balances[0].amount) / 1000000000
           }
           if (res[1].status === 'fulfilled') {
             let delegatedBalances = 0;
-            res[1].value.data.delegation_responses.forEach((item)=>{
+            res[1].value.data.delegation_responses.forEach((item) => {
               delegatedBalances += Number(item.balance.amount) / 1000000000
             })
             balancesTotal += delegatedBalances
           }
           if (res[2].status === 'fulfilled') {
-            let unbondingBalances  = 0;
-            res[2].value.data.unbonding_responses.forEach(item=>{
-              item.entries.forEach((ele)=>{
-                unbondingBalances+= Number(ele.balance) / 1000000000
+            let unbondingBalances = 0;
+            res[2].value.data.unbonding_responses.forEach(item => {
+              item.entries.forEach((ele) => {
+                unbondingBalances += Number(ele.balance) / 1000000000
               })
             })
             balancesTotal += unbondingBalances
