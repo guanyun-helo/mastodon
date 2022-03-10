@@ -110,7 +110,7 @@ const makeMapStateToProps = () => {
     const ids = [statusId];
 
     while (ids.length > 0) {
-      let id        = ids.pop();
+      let id = ids.pop();
       const replies = contextReplies.get(id);
 
       if (statusId !== id) {
@@ -226,7 +226,7 @@ class Status extends ImmutablePureComponent {
             //   supoortLikers:
             // })
             toast.success("鄉民，你的支持是對作者最大的鼓勵，感謝 🙌！");
-            if(this.props.status.get('reblogged')) return
+            if (this.props.status.get('reblogged')) return
             this.handleReblogClick(this.props.status);
             // this.setState({
             //   isSupportSuccess: true
@@ -586,9 +586,9 @@ class Status extends ImmutablePureComponent {
         this.setState({
           isSupportSuccess: false
         })
-      }else{
+      } else {
         let container = document.querySelector('.support-container')
-        if(!container) return
+        if (!container) return
         container.scrollIntoView();
       }
     })
@@ -598,7 +598,7 @@ class Status extends ImmutablePureComponent {
   render() {
     let ancestors, descendants;
     const { status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
-    const { fullscreen } = this.state;
+    const { fullscreen, isPayShow, supoortLikers, isSupportSuccess } = this.state;
 
     if (status === null) {
       return (
