@@ -594,12 +594,93 @@ class Status extends ImmutablePureComponent {
     })
     // if(this.state.)
   }
+  openISCN = () => {
+    const { status } = this.props;
+    if (!status) return
+    const likerId = status.get('account').get('liker_id') || null
+    let attachmentsUrl = []
+    let popUpWindow = null
+    status.get('media_attachments').map((attachment, idx) => {
+      attachmentsUrl.push(attachment.get('remote_url') || attachment.get('url'))
+    })
+    const promises = attachmentsUrl.map(item => {
+      return fetch(item)
+    })
 
+    Promise.allSettled(promises).then(results => {
+      console.log('results', results)
+      const files = []
+      results.forEach((image) => {
+        if (image.status === "fulfilled") {
+          console.log(image.value)
+          // files.push({
+          //   filename: 'index.html',
+          //   mimeType: 'text/html',
+          //   data: Buffer.from(image.value)
+          // })
+        }
+      })
+    })
+    // fetch(attachmentUrl).then(r => {
+    //   r.blob().then((res) => {
+    //     attachmentUrlBlob = res
+    //     console.log('attachmentUrlBlob', attachmentUrlBlob)
+    //     const ISCN_WIDGET_ORIGIN = 'https://like.co';
+    //     const siteurl = window.location.href
+    //     const redirectString = encodeURIComponent(siteurl);
+
+    //     const popUpWidget = `${ISCN_WIDGET_ORIGIN}/in/widget/iscn-ar?opener=1&redirect_uri=${redirectString}`;
+    //     try {
+    //       const popUp = window.open(
+    //         popUpWidget,
+    //         'likePayWindow',
+    //         'menubar=no,location=no,width=576,height=768',
+    //       );
+    //       if (!popUp || popUp.closed || typeof popUp.closed == 'undefined') {
+    //         // TODO: show error in UI
+    //         console.error('POPUP_BLOCKED');
+    //         return;
+    //       }
+
+    //       popUpWindow = popUp
+    //       // setPopUpWindow(popUp);
+    //       // window.addEventListener('message', onPostMessageCallback, false);
+    //     } catch (error) {
+    //       console.error(error);
+    //     }
+
+
+    //     window.addEventListener('message', ((res) => {
+    //       console.log(res)
+    //     }), false);
+    //     const payload = JSON.stringify({
+    //       action: 'SUBMIT_ISCN_DATA',
+    //       data: {
+    //         metadata: {
+    //           name: status.get('id'),
+    //           tags: ['liker.social'],
+    //           url: siteurl,
+    //           author: likerId,
+    //           authorDescription: likerId,
+    //           description: status.get('content'),
+    //           type: 'toot',
+    //           license: '',
+    //         },
+    //         attachmentUrlBlob,
+    //       },
+    //     });
+    //     console.log('payload', payload)
+    //     popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
+
+    //   })
+
+    // });
+
+  }
   render() {
     let ancestors, descendants;
     const { status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
     const { fullscreen, isPayShow, supoortLikers, isSupportSuccess } = this.state;
-
     if (status === null) {
       return (
         <Column>
@@ -696,7 +777,10 @@ class Status extends ImmutablePureComponent {
                     </div>
                     <div className="container" onClick={this.openPay}>
                       <img src={Support} /> Support Liker
-                  </div>
+                    </div>
+                    <div className="ISCN-container" onClick={this.openISCN}>
+                      Register ISCN
+                    </div>
                     <LikePay username={status.get('account').get('username')} isSupportSuccess={isSupportSuccess} likerId={status.get('account').get('liker_id')} statusId={status.get('id')} isShow={isPayShow} handleLikePay={this.openPay} />
                   </div>) : null
                 }

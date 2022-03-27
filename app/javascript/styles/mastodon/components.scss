@@ -1291,6 +1291,18 @@
       height: 15px;
     }
   }
+  .ISCN-container{
+    margin-top: 20px;
+    background-color: #aaf1e7;
+    color: #28646E;
+    border-radius: 20px;
+    width: 180px;
+    height: 36px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .detailed-status__meta {
