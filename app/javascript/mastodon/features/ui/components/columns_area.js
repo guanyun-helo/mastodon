@@ -12,6 +12,8 @@ import { disableSwiping } from 'mastodon/initial_state';
 import queryString from "query-string"
 import LikeCoinClapDark from '../../../../images/likebutton/like-calp-dark.svg'
 import LikeCoinClap from '../../../../images/likebutton/like-clap-white.svg'
+import ISCN_dark from '../../../../images/likebutton/ISCN_dark'
+import ISCN_light from '../../../../images/likebutton/ISCN_light'
 import BundleContainer from '../containers/bundle_container';
 import ColumnLoading from './column_loading';
 import DrawerLoading from './drawer_loading';
@@ -81,6 +83,7 @@ class ColumnsArea extends ImmutablePureComponent {
     renderComposePanel: !(this.mediaQuery && this.mediaQuery.matches),
     liker_id: "Click to bind",
     clapImg: LikeCoinClap,
+    ISCNbage: ISCN_light,
 
   }
 
@@ -91,6 +94,12 @@ class ColumnsArea extends ImmutablePureComponent {
   }
 
   componentDidMount() {
+
+    if (document.body && document.body.classList.contains('theme-mastodon-light')) {
+      this.setState({
+        ISCNbage: ISCN_dark
+      })
+    }
     // ?tx_hash=298620E3951C6C65E7A5CB5789C1E3A5F5F1D93B86860103AF21600236E8FC79&state=http%3A%2F%2Flocalhost%3A3000%2Fweb%2Fstatuses%2F106374183524751866&remarks=Transaction%20from%20Liker%20Social
     if (!this.props.singleColumn) {
       this.node.addEventListener('wheel', this.handleWheel, supportsPassiveEvents ? { passive: true } : false);

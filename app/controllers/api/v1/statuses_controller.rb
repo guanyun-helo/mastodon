@@ -66,6 +66,10 @@ class Api::V1::StatusesController < Api::BaseController
     puts params
   end
 
+  def iscn
+    put params
+  end
+
   private
 
   def set_status

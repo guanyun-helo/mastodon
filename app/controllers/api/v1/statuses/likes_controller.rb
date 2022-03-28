@@ -71,6 +71,7 @@ class Api::V1::Statuses::LikesController < Api::BaseController
       render json: {:data=>@likers,:code => 200}, status: 200
     end
 
+
     def support_likers
       support_status = Status.find(params['statusId'])
       render json: {:data=>support_status.support_likers,:code => 200}, status: 200

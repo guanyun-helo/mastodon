@@ -333,9 +333,9 @@ Rails.application.routes.draw do
           resource :like, only: :create
           resource :superlike, only: :create
           post :count, to: 'likes#like_count'
+          resource :iscn, only: :create
           post :support, to: 'likes#support'
           resource :support_likers, to: 'likes#support_likers'
-
 
           resource :bookmark, only: :create
           post :unbookmark, to: 'bookmarks#destroy'

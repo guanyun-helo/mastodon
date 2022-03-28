@@ -1164,6 +1164,11 @@
   align-items: center;
   display: flex;
   margin-top: 8px;
+  img{
+    width: 23px;
+    height: 23px;
+    transition: all .1s ease-in-out;
+  }
   .like-button{
     width: 23px;
     height: 23px;
@@ -7376,7 +7381,21 @@ noscript {
 .notification,
 .status__wrapper {
   position: relative;
-
+  .iscn-bage-disable{
+    display: none;
+  }
+  .iscn-bage{
+    z-index: 1000;
+    position: absolute;
+    right: 30px;
+    bottom: 0px;
+    a{
+      img{
+        width: 30px;
+        height: 30px;
+      }
+    }
+  }
   &.unread {
     &::before {
       content: "";

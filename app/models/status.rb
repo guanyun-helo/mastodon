@@ -24,6 +24,7 @@
 #  poll_id                :bigint(8)
 #  deleted_at             :datetime
 #  support_likers         :text             default([]), is an Array
+#  iscn_id                :string
 #
 
 class Status < ApplicationRecord

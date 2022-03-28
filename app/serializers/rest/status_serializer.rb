@@ -4,13 +4,14 @@ class REST::StatusSerializer < ActiveModel::Serializer
   attributes :id, :created_at, :in_reply_to_id, :in_reply_to_account_id,
              :sensitive, :spoiler_text, :visibility, :language,
              :uri, :url, :replies_count, :reblogs_count,
-             :favourites_count, :support_likers
+             :favourites_count, :support_likers, :iscn_id
 
   attribute :favourited, if: :current_user?
   attribute :reblogged, if: :current_user?
   attribute :muted, if: :current_user?
   attribute :bookmarked, if: :current_user?
   attribute :pinned, if: :pinnable?
+
 
   attribute :content, unless: :source_requested?
   attribute :text, if: :source_requested?
@@ -47,6 +48,10 @@ class REST::StatusSerializer < ActiveModel::Serializer
     object.support_likers
   end
 
+  def iscn_id
+    object.iscn_id
+  end
+  
   def show_application?
     object.account.user_shows_application? || (current_user? && current_user.account_id == object.account_id)
   end

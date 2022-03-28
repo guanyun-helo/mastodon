@@ -16,6 +16,8 @@ import { MediaGallery, Video, Audio } from '../features/ui/util/async-components
 import { HotKeys } from 'react-hotkeys';
 import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
+import ISCN_dark from '../../images/likebutton/ISCN_dark'
+import ISCN_light from '../../images/likebutton/ISCN_light'
 import { displayMedia } from '../initial_state';
 import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
 import api from '../api'
@@ -118,7 +120,8 @@ class Status extends ImmutablePureComponent {
   state = {
     showMedia: defaultMediaVisibility(this.props.status),
     statusId: undefined,
-    isSubscribedCivicLiker: false
+    isSubscribedCivicLiker: false,
+    ISCNbage: ISCN_light
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -231,6 +234,11 @@ class Status extends ImmutablePureComponent {
   }
 
   componentDidMount() {
+    if (document.body && document.body.classList.contains('theme-mastodon-light')) {
+      this.setState({
+        ISCNbage: ISCN_dark
+      })
+    }
     const status = this.props.status
     if(status){
       const account = status.get('account');
@@ -493,7 +501,11 @@ class Status extends ImmutablePureComponent {
       <HotKeys handlers={handlers}>
         <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
           {prepend}
-
+          <div className={`${status.get('iscn_id') ? 'iscn-bage' : 'iscn-bage-disable'}`}>
+            <a target="_blank" href={`https://app.like.co/view/${encodeURIComponent(status.get('iscn_id'))}`}>
+              <img src={this.state.ISCNbage}></img>
+            </a>
+          </div>
           <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted })} data-id={status.get('id')}>
             <div className='status__expand' onClick={this.handleExpandClick} role='presentation' />
             <div className='status__info'>

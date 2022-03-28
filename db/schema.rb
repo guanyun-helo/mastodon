@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_30_000137) do
+ActiveRecord::Schema.define(version: 2022_03_28_074355) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -818,6 +818,7 @@ ActiveRecord::Schema.define(version: 2021_06_30_000137) do
     t.bigint "poll_id"
     t.datetime "deleted_at"
     t.text "support_likers", default: [], array: true
+    t.string "iscn_id"
     t.index ["account_id", "id", "visibility", "updated_at"], name: "index_statuses_20190820", order: { id: :desc }, where: "(deleted_at IS NULL)"
     t.index ["id", "account_id"], name: "index_statuses_local_20190824", order: { id: :desc }, where: "((local OR (uri IS NULL)) AND (deleted_at IS NULL) AND (visibility = 0) AND (reblog_of_id IS NULL) AND ((NOT reply) OR (in_reply_to_account_id = account_id)))"
     t.index ["id", "account_id"], name: "index_statuses_public_20200119", order: { id: :desc }, where: "((deleted_at IS NULL) AND (visibility = 0) AND (reblog_of_id IS NULL) AND ((NOT reply) OR (in_reply_to_account_id = account_id)))"

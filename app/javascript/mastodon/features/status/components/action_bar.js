@@ -9,10 +9,13 @@ import { me, isStaff } from '../../../initial_state';
 import classNames from 'classnames';
 import LikeButton from '../../../../images/likebutton/like-clap'
 import LikeButtonGold from '../../../../images/likebutton/like-clap-gold'
+import ISCN_dark from '../../../../images/likebutton/ISCN_dark'
+import ISCN_light from '../../../../images/likebutton/ISCN_light'
 
 import { toast } from 'material-react-toastify';
 import { debounce } from 'lodash'
 import storage from 'localforage'
+import api from '../../../api'
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -62,7 +65,8 @@ class ActionBar extends React.PureComponent {
     selfLike: 0,
     totalLike: 0,
     liker_id: '',
-    clickLike: 0
+    clickLike: 0,
+    ISCNbage: ISCN_light
   }
 
   static propTypes = {
@@ -215,7 +219,9 @@ class ActionBar extends React.PureComponent {
       document.body.removeChild(textarea);
     }
   }
-
+  getISCNstatus = () =>{
+    
+  }
   handleLikeContent = () => {
     if (me === this.props.status.get('account').get('id')) {
       toast.info("鄉民，不能給自己拍手哦！");
@@ -270,8 +276,142 @@ class ActionBar extends React.PureComponent {
       }
     })
   }, 1000)
+  fetchAsBlob = url => fetch(url)
+    .then(response => response.blob());
 
+  convertBlobToBase64 = blob => new Promise((resolve, reject) => {
+    const reader = new FileReader;
+    reader.onerror = reject;
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+  });
+  openISCN = () => {
+    const { status } = this.props;
+    if (!status) return
+
+    const likerId = status.get('account').get('liker_id') || null
+    let attachmentsUrl = []
+    let popUpWindow = null
+    status.get('media_attachments').map((attachment, idx) => {
+      attachmentsUrl.push(attachment.get('remote_url') || attachment.get('url'))
+    })
+    const promises = attachmentsUrl.map(item => {
+      return this.fetchAsBlob(item).then(res => {
+        return this.convertBlobToBase64(res).then((data) => {
+          return {
+            filename: item,
+            mimeType: data.type,
+            data: data.split(',')[1]
+          }
+        })
+      })
+    })
+
+
+    Promise.allSettled(promises).then(results => {
+      const files = []
+      results.forEach((image, idx) => {
+        if (image.status === "fulfilled") {
+          console.log(image.value)
+          files.push(image.value)
+        }
+      })
+      const ISCN_WIDGET_ORIGIN = 'https://like.co';
+      const siteurl = window.location.href
+      const redirectString = encodeURIComponent(siteurl);
+
+      const popUpWidget = `${ISCN_WIDGET_ORIGIN}/in/widget/iscn-ar?opener=1&redirect_uri=${redirectString}`;
+      try {
+        const popUp = window.open(
+          popUpWidget,
+          'likePayWindow',
+          'menubar=no,location=no,width=576,height=768',
+        );
+        if (!popUp || popUp.closed || typeof popUp.closed == 'undefined') {
+          // TODO: show error in UI
+          console.error('POPUP_BLOCKED');
+          return;
+        }
+
+        popUpWindow = popUp
+        // setPopUpWindow(popUp);
+        // window.addEventListener('message', onPostMessageCallback, false);
+      } catch (error) {
+        console.error(error);
+      }
+
+      const domParser = new DOMParser();
+
+      const fragment = domParser.parseFromString(status.get('content'), 'text/html');
+      window.addEventListener('message', ((event) => {
+        if (event && event.data && event.origin === ISCN_WIDGET_ORIGIN && typeof event.data === 'string') {
+          try {
+            const { action, data } = JSON.parse(event.data);
+            if (action === 'ISCN_WIDGET_READY') {
+              const payload = JSON.stringify({
+                action: 'SUBMIT_ISCN_DATA',
+                data: {
+                  metadata: {
+                    name: likerId + '-' + status.get('id'),
+                    tags: ['liker.social','depub','likecoin'],
+                    url: siteurl,
+                    author: likerId,
+                    authorDescription: likerId,
+                    description: fragment.body.innerText,
+                    type: 'article',
+                    // publisher: 'liker.social',
+                    license: '',
+                  },
+                  files,
+                },
+              });
+              console.log('payload', payload)
+              popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
+            } else if (action === 'ARWEAVE_SUBMITTED') {
+              // onArweaveCallback(data);
+            } else if (action === 'ISCN_SUBMITTED') {
+              this.onISCNCallback(data);
+            } else {
+              console.log(`Unknown event: ${action}`);
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      }), false);
+      try {
+        const popUp = window.open(
+          popUpWidget,
+          'likePayWindow',
+          'menubar=no,location=no,width=576,height=768',
+        );
+        if (!popUp || popUp.closed || typeof popUp.closed == 'undefined') {
+          // TODO: show error in UI
+          console.error('POPUP_BLOCKED');
+          return;
+        }
+        // window.addEventListener('message', onPostMessageCallback, false);
+      } catch (error) {
+        console.error(error);
+      }
+    })
+
+
+
+  }
+  onISCNCallback = (data)=>{
+    api().post(`/api/v1/statuses/${this.props.status.get('id')}/iscn?iscn_id=iscn://likecoin-chain/UTOzSTL_PiLCoQk3yMmekyXnayCW89PdafVlJiGubcc/1`).then((response) => {
+      if (!response.data.data) return
+    })
+  }
   componentDidMount() {
+    if (document.body && document.body.classList.contains('theme-mastodon-light')) {
+      this.setState({
+        ISCNbage: ISCN_dark
+      })
+    }
     const { status } = this.props;
     const account = status.get('account');
     const id = status.get('id')
@@ -408,6 +548,9 @@ class ActionBar extends React.PureComponent {
         </div> : null : null}
         {shareButton}
         <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
+        <div className='detailed-status__button' onClick={this.openISCN}>
+        <img width='25px' height='25px' src={this.state.ISCNbage} />
+        </div>
 
         <div className='detailed-status__action-bar-dropdown'>
           <DropdownMenuContainer size={18} icon='ellipsis-h' status={status} items={menu} direction='left' title={intl.formatMessage(messages.more)} />
