@@ -400,7 +400,7 @@ class ActionBar extends React.PureComponent {
 
   }
   onISCNCallback = (data) => {
-    api().post(`/api/v1/statuses/${this.props.status.get('id')}/iscn?iscn_id=iscn://likecoin-chain/UTOzSTL_PiLCoQk3yMmekyXnayCW89PdafVlJiGubcc/1`).then((response) => {
+    api().post(`/api/v1/statuses/${this.props.status.get('id')}/iscn?iscn_id=${data.iscnId}`).then((response) => {
       if (!response.data.data) return
     })
   }
