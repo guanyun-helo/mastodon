@@ -546,8 +546,9 @@ class ActionBar extends React.PureComponent {
         </div> : null : null}
         {shareButton}
         <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
-        {me === this.props.status.get('account').get('id') ? <div className='detailed-status__button' onClick={this.openISCN}>
-          <img width='25px' height='25px' src={this.state.ISCNbage} />
+        {me === this.props.status.get('account').get('id') ? <div className='detailed-status__button ISCN-bage' onClick={this.openISCN}>
+          {/* <img width='25px' height='25px' src={this.state.ISCNbage} /> */}
+          DePub
         </div> : null}
 
         <div className='detailed-status__action-bar-dropdown'>

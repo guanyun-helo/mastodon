@@ -1324,6 +1324,20 @@
   display: flex;
   flex-direction: row;
   padding: 10px 0;
+  .ISCN-bage{
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    color: #ffc107;
+    cursor: pointer;
+  }
+  .ISCN-bage:focus{
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    color: gold;
+    cursor: pointer;
+  }
   .like-button{
     display: flex;
     flex-direction: row;
@@ -7391,8 +7405,8 @@ noscript {
     bottom: 0px;
     a{
       img{
-        width: 30px;
-        height: 30px;
+        width: 39px;
+        height: 39px;
       }
     }
   }
