@@ -219,8 +219,8 @@ class ActionBar extends React.PureComponent {
       document.body.removeChild(textarea);
     }
   }
-  getISCNstatus = () =>{
-    
+  getISCNstatus = () => {
+
   }
   handleLikeContent = () => {
     if (me === this.props.status.get('account').get('id')) {
@@ -314,7 +314,6 @@ class ActionBar extends React.PureComponent {
       const files = []
       results.forEach((image, idx) => {
         if (image.status === "fulfilled") {
-          console.log(image.value)
           files.push(image.value)
         }
       })
@@ -355,7 +354,7 @@ class ActionBar extends React.PureComponent {
                 data: {
                   metadata: {
                     name: likerId + '-' + status.get('id'),
-                    tags: ['liker.social','depub','likecoin'],
+                    tags: ['liker.social', 'depub', 'likecoin'],
                     url: siteurl,
                     author: likerId,
                     authorDescription: likerId,
@@ -367,7 +366,6 @@ class ActionBar extends React.PureComponent {
                   files,
                 },
               });
-              console.log('payload', payload)
               popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
             } else if (action === 'ARWEAVE_SUBMITTED') {
               // onArweaveCallback(data);
@@ -401,7 +399,7 @@ class ActionBar extends React.PureComponent {
 
 
   }
-  onISCNCallback = (data)=>{
+  onISCNCallback = (data) => {
     api().post(`/api/v1/statuses/${this.props.status.get('id')}/iscn?iscn_id=iscn://likecoin-chain/UTOzSTL_PiLCoQk3yMmekyXnayCW89PdafVlJiGubcc/1`).then((response) => {
       if (!response.data.data) return
     })
@@ -548,9 +546,9 @@ class ActionBar extends React.PureComponent {
         </div> : null : null}
         {shareButton}
         <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
-        <div className='detailed-status__button' onClick={this.openISCN}>
-        <img width='25px' height='25px' src={this.state.ISCNbage} />
-        </div>
+        {me === this.props.status.get('account').get('id') ? <div className='detailed-status__button' onClick={this.openISCN}>
+          <img width='25px' height='25px' src={this.state.ISCNbage} />
+        </div> : null}
 
         <div className='detailed-status__action-bar-dropdown'>
           <DropdownMenuContainer size={18} icon='ellipsis-h' status={status} items={menu} direction='left' title={intl.formatMessage(messages.more)} />
