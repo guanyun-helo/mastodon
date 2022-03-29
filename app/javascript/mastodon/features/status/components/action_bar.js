@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { nanoid } from 'nanoid'
+
 import IconButton from '../../../components/icon_button';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import DropdownMenuContainer from '../../../containers/dropdown_menu_container';
@@ -302,7 +304,7 @@ class ActionBar extends React.PureComponent {
       return this.fetchAsBlob(item).then(res => {
         return this.convertBlobToBase64(res).then((data) => {
           return {
-            filename: item,
+            filename: nanoid()+ '.' + item.split('.')[1],
             mimeType: data.type,
             data: data.split(',')[1]
           }
@@ -345,52 +347,54 @@ class ActionBar extends React.PureComponent {
       const domParser = new DOMParser();
 
       const fragment = domParser.parseFromString(status.get('content'), 'text/html');
-      const fragmentFile = new File([status.get('content')], "index.html", {
-        type: "text/html",
-      });
 
-      const fragmentBlob = new Blob([fragment.body.innerHTML], { type: "text/html" });
-      window.addEventListener('message', ((event) => {
-        if (event && event.data && event.origin === ISCN_WIDGET_ORIGIN && typeof event.data === 'string') {
-          try {
-            const { action, data } = JSON.parse(event.data);
-            if (action === 'ISCN_WIDGET_READY') {
-              const payload = JSON.stringify({
-                action: 'SUBMIT_ISCN_DATA',
-                data: {
-                  metadata: {
-                    name: likerId + '-' + status.get('id'),
-                    tags: ['liker.social', 'depub', 'likecoin'],
-                    url: siteurl,
-                    author: likerId,
-                    authorDescription: likerId,
-                    description: fragment.body.innerText,
-                    type: 'article',
-                    license: '',
-                  },
-                  files,
-                },
-              });
-
-              popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
-            } else if (action === 'ARWEAVE_SUBMITTED') {
-              // onArweaveCallback(data);
-            } else if (action === 'ISCN_SUBMITTED') {
-              this.onISCNCallback(data);
-            } else {
-              console.log(`Unknown event: ${action}`);
-            }
-          } catch (err) {
-            console.error(err);
-          }
-        }
-      }), false);
+      let fileListHtml = ''
+      files.forEach((file)=>{
+        fileListHtml = fileListHtml.concat(`<a href="${file.filename}">${file.filename}</a>`)
+      })
+      const fragmentBlob = new Blob([fragment.body.innerHTML.concat(fileListHtml)], { type: "text/html" });
       this.convertBlobToBase64(fragmentBlob).then((data) => {
         files.unshift({
           filename: 'index.html',
           mimeType: 'text/html',
           data: data.split(',')[1]
         })
+
+        window.addEventListener('message', ((event) => {
+          if (event && event.data && event.origin === ISCN_WIDGET_ORIGIN && typeof event.data === 'string') {
+            try {
+              const { action, data } = JSON.parse(event.data);
+              if (action === 'ISCN_WIDGET_READY') {
+                const payload = JSON.stringify({
+                  action: 'SUBMIT_ISCN_DATA',
+                  data: {
+                    metadata: {
+                      name: likerId + '-' + status.get('id'),
+                      tags: ['liker.social', 'depub', 'likecoin'],
+                      url: siteurl,
+                      author: likerId,
+                      authorDescription: likerId,
+                      description: fragment.body.innerText,
+                      type: 'article',
+                      license: '',
+                    },
+                    files,
+                  },
+                });
+  
+                popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
+              } else if (action === 'ARWEAVE_SUBMITTED') {
+                // onArweaveCallback(data);
+              } else if (action === 'ISCN_SUBMITTED') {
+                this.onISCNCallback(data);
+              } else {
+                console.log(`Unknown event: ${action}`);
+              }
+            } catch (err) {
+              console.error(err);
+            }
+          }
+        }), false);
 
         try {
           const popUp = window.open(
