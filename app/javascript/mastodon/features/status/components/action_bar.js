@@ -304,7 +304,8 @@ class ActionBar extends React.PureComponent {
       return this.fetchAsBlob(item).then(res => {
         return this.convertBlobToBase64(res).then((data) => {
           return {
-            filename: nanoid()+ '.' + item.split('.')[1],
+            // filename: nanoid()+ '.' + item.split('.')[1],
+            filename: item,
             mimeType: data.type,
             data: data.split(',')[1]
           }
@@ -350,7 +351,7 @@ class ActionBar extends React.PureComponent {
 
       let fileListHtml = ''
       files.forEach((file)=>{
-        fileListHtml = fileListHtml.concat(`<a href="${file.filename}">${file.filename}</a>`)
+        fileListHtml = fileListHtml.concat(`<a style="display: block;" href="${file.filename}">${file.filename}</a>`)
       })
       const fragmentBlob = new Blob([fragment.body.innerHTML.concat(fileListHtml)], { type: "text/html" });
       this.convertBlobToBase64(fragmentBlob).then((data) => {
