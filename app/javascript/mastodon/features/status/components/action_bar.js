@@ -287,6 +287,7 @@ class ActionBar extends React.PureComponent {
     };
     reader.readAsDataURL(blob);
   });
+
   openISCN = () => {
     const { status } = this.props;
     if (!status) return
@@ -344,6 +345,11 @@ class ActionBar extends React.PureComponent {
       const domParser = new DOMParser();
 
       const fragment = domParser.parseFromString(status.get('content'), 'text/html');
+      const fragmentFile = new File([status.get('content')], "index.html", {
+        type: "text/html",
+      });
+
+      const fragmentBlob = new Blob([fragment.body.innerHTML], { type: "text/html" });
       window.addEventListener('message', ((event) => {
         if (event && event.data && event.origin === ISCN_WIDGET_ORIGIN && typeof event.data === 'string') {
           try {
@@ -360,12 +366,12 @@ class ActionBar extends React.PureComponent {
                     authorDescription: likerId,
                     description: fragment.body.innerText,
                     type: 'article',
-                    // publisher: 'liker.social',
                     license: '',
                   },
                   files,
                 },
               });
+
               popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
             } else if (action === 'ARWEAVE_SUBMITTED') {
               // onArweaveCallback(data);
@@ -379,21 +385,29 @@ class ActionBar extends React.PureComponent {
           }
         }
       }), false);
-      try {
-        const popUp = window.open(
-          popUpWidget,
-          'likePayWindow',
-          'menubar=no,location=no,width=576,height=768',
-        );
-        if (!popUp || popUp.closed || typeof popUp.closed == 'undefined') {
-          // TODO: show error in UI
-          console.error('POPUP_BLOCKED');
-          return;
+      this.convertBlobToBase64(fragmentBlob).then((data) => {
+        files.unshift({
+          filename: 'index.html',
+          mimeType: 'text/html',
+          data: data.split(',')[1]
+        })
+
+        try {
+          const popUp = window.open(
+            popUpWidget,
+            'likePayWindow',
+            'menubar=no,location=no,width=576,height=768',
+          );
+          if (!popUp || popUp.closed || typeof popUp.closed == 'undefined') {
+            // TODO: show error in UI
+            console.error('POPUP_BLOCKED');
+            return;
+          }
+          // window.addEventListener('message', onPostMessageCallback, false);
+        } catch (error) {
+          console.error(error);
         }
-        // window.addEventListener('message', onPostMessageCallback, false);
-      } catch (error) {
-        console.error(error);
-      }
+      })
     })
 
 
