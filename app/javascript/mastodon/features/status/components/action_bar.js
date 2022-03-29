@@ -68,7 +68,11 @@ class ActionBar extends React.PureComponent {
     totalLike: 0,
     liker_id: '',
     clickLike: 0,
-    ISCNbage: ISCN_light
+    ISCNbage: ISCN_light,
+    payload: null,
+    popUpWindow: null,
+    ISCN_WIDGET_ORIGIN: 'https://like.co',
+    id: null
   }
 
   static propTypes = {
@@ -111,17 +115,6 @@ class ActionBar extends React.PureComponent {
     }
     if (requestLock) return
     requestLock = true
-    // try {
-    //   this.props.onSuperLiked(this.props.status, location, params, res => {
-    //     requestLock = false
-    //     if (res.data.data === "OK") {
-    //       toast.success("感謝你的 SuperLike！");
-    //       this.props.onFavourite(this.props.status);
-    //     }
-    //   })
-    // } catch (error) {
-    //   requestLock = false
-    // }
   }
 
   handleBookmarkClick = (e) => {
@@ -221,9 +214,6 @@ class ActionBar extends React.PureComponent {
       document.body.removeChild(textarea);
     }
   }
-  getISCNstatus = () => {
-
-  }
   handleLikeContent = () => {
     if (me === this.props.status.get('account').get('id')) {
       toast.info("鄉民，不能給自己拍手哦！");
@@ -292,20 +282,44 @@ class ActionBar extends React.PureComponent {
 
   openISCN = () => {
     const { status } = this.props;
+    const { ISCN_WIDGET_ORIGIN } = this.state;
+    const siteurl = window.location.href
+    const redirectString = encodeURIComponent(siteurl);
+    const popUpWidget = `${ISCN_WIDGET_ORIGIN}/in/widget/iscn-ar?opener=1&redirect_uri=${redirectString}`;
+    let popUpWindow = null
+
+    try {
+      const popUp = window.open(
+        popUpWidget,
+        'likePayWindow',
+        'menubar=no,location=no,width=576,height=768',
+      );
+      if (!popUp || popUp.closed || typeof popUp.closed == 'undefined') {
+        // TODO: show error in UI
+        console.error('POPUP_BLOCKED');
+        return;
+      }
+
+      popUpWindow = popUp
+      this.setState({
+        popUpWindow: popUpWindow
+      })
+    } catch (error) {
+      console.error(error);
+    }
     if (!status) return
 
     const likerId = status.get('account').get('liker_id') || null
     let attachmentsUrl = []
-    let popUpWindow = null
     status.get('media_attachments').map((attachment, idx) => {
       attachmentsUrl.push(attachment.get('remote_url') || attachment.get('url'))
     })
     const promises = attachmentsUrl.map(item => {
       return this.fetchAsBlob(item).then(res => {
         return this.convertBlobToBase64(res).then((data) => {
+          // console.log(item.split('.')[item.split('.').length - 1])
           return {
-            // filename: nanoid()+ '.' + item.split('.')[1],
-            filename: item,
+            filename: nanoid() + '.' + item.split('.')[item.split('.').length - 1],
             mimeType: data.type,
             data: data.split(',')[1]
           }
@@ -321,36 +335,13 @@ class ActionBar extends React.PureComponent {
           files.push(image.value)
         }
       })
-      const ISCN_WIDGET_ORIGIN = 'https://like.co';
-      const siteurl = window.location.href
-      const redirectString = encodeURIComponent(siteurl);
-
-      const popUpWidget = `${ISCN_WIDGET_ORIGIN}/in/widget/iscn-ar?opener=1&redirect_uri=${redirectString}`;
-      try {
-        const popUp = window.open(
-          popUpWidget,
-          'likePayWindow',
-          'menubar=no,location=no,width=576,height=768',
-        );
-        if (!popUp || popUp.closed || typeof popUp.closed == 'undefined') {
-          // TODO: show error in UI
-          console.error('POPUP_BLOCKED');
-          return;
-        }
-
-        popUpWindow = popUp
-        // setPopUpWindow(popUp);
-        // window.addEventListener('message', onPostMessageCallback, false);
-      } catch (error) {
-        console.error(error);
-      }
 
       const domParser = new DOMParser();
 
       const fragment = domParser.parseFromString(status.get('content'), 'text/html');
 
       let fileListHtml = ''
-      files.forEach((file)=>{
+      files.forEach((file) => {
         fileListHtml = fileListHtml.concat(`<a style="display: block;" href="${file.filename}">${file.filename}</a>`)
       })
       const fragmentBlob = new Blob([fragment.body.innerHTML.concat(fileListHtml)], { type: "text/html" });
@@ -361,42 +352,27 @@ class ActionBar extends React.PureComponent {
           data: data.split(',')[1]
         })
 
-        window.addEventListener('message', ((event) => {
-          if (event && event.data && event.origin === ISCN_WIDGET_ORIGIN && typeof event.data === 'string') {
-            try {
-              const { action, data } = JSON.parse(event.data);
-              if (action === 'ISCN_WIDGET_READY') {
-                const payload = JSON.stringify({
-                  action: 'SUBMIT_ISCN_DATA',
-                  data: {
-                    metadata: {
-                      name: likerId + '-' + status.get('id'),
-                      tags: ['liker.social', 'depub', 'likecoin'],
-                      url: siteurl,
-                      author: likerId,
-                      authorDescription: likerId,
-                      description: fragment.body.innerText,
-                      type: 'article',
-                      license: '',
-                    },
-                    files,
-                  },
-                });
-  
-                popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
-              } else if (action === 'ARWEAVE_SUBMITTED') {
-                // onArweaveCallback(data);
-              } else if (action === 'ISCN_SUBMITTED') {
-                this.onISCNCallback(data);
-              } else {
-                console.log(`Unknown event: ${action}`);
-              }
-            } catch (err) {
-              console.error(err);
-            }
-          }
-        }), false);
+        const payload = JSON.stringify({
+          action: 'SUBMIT_ISCN_DATA',
+          data: {
+            metadata: {
+              name: likerId + '-' + status.get('id'),
+              tags: ['liker.social', 'depub', 'likecoin'],
+              url: siteurl,
+              author: likerId,
+              authorDescription: likerId,
+              description: fragment.body.innerText,
+              type: 'article',
+              license: '',
+            },
+            files,
+          },
+        });
 
+        // popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
+        this.setState({
+          payload: payload
+        })
         try {
           const popUp = window.open(
             popUpWidget,
@@ -418,18 +394,51 @@ class ActionBar extends React.PureComponent {
 
 
   }
+  onWidgetReady = () => {
+    const { payload, popUpWindow, ISCN_WIDGET_ORIGIN } = this.state
+
+    popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
+  }
   onISCNCallback = (data) => {
-    api().post(`/api/v1/statuses/${this.props.status.get('id')}/iscn?iscn_id=${data.iscnId}`).then((response) => {
+    api().post(`/api/v1/statuses/${this.state.id}/iscn?iscn_id=${data.iscnId}`).then((response) => {
       if (!response.data.data) return
     })
   }
+  componentWillUnmount() {
+    window.removeEventListener('message', this.onISCNmessageBind, false)
+  }
+  onISCNmessageBind = this.onISCNmessage.bind(this)
+  onISCNmessage(event) {
+    const ISCN_WIDGET_ORIGIN = 'https://like.co';
+
+    if (event && event.data && event.origin === ISCN_WIDGET_ORIGIN && typeof event.data === 'string') {
+      try {
+        const { action, data } = JSON.parse(event.data);
+        if (action === 'ISCN_WIDGET_READY') {
+          this.onWidgetReady()
+        } else if (action === 'ARWEAVE_SUBMITTED') {
+          // onArweaveCallback(data);
+        } else if (action === 'ISCN_SUBMITTED') {
+          this.onISCNCallback(data);
+        } else {
+          console.log(`Unknown event: ${action}`);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
   componentDidMount() {
+    const { status } = this.props;
+    this.setState({
+      id: status.get('id')
+    })
+    window.addEventListener('message', this.onISCNmessageBind);
     if (document.body && document.body.classList.contains('theme-mastodon-light')) {
       this.setState({
         ISCNbage: ISCN_dark
       })
     }
-    const { status } = this.props;
     const account = status.get('account');
     const id = status.get('id')
     const liker_id = account.get('liker_id')
