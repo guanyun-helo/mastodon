@@ -502,7 +502,7 @@ class StatusActionBar extends ImmutablePureComponent {
         ) : null : null}
         {shareButton}
 
-        {/* <div className='status__action-bar-dropdown'>
+        {status.get('iscn_id')?null:<div className='status__action-bar-dropdown'>
           <DropdownMenuContainer
             scrollKey={scrollKey}
             disabled={anonymousAccess}
@@ -513,7 +513,7 @@ class StatusActionBar extends ImmutablePureComponent {
             direction='right'
             title={intl.formatMessage(messages.more)}
           />
-        </div> */}
+        </div>}
       </div>
     );
   }
