@@ -203,7 +203,7 @@ class GettingStarted extends ImmutablePureComponent {
       height += 34;
     }
 
-    height += 34 + 48 * 3;
+    height += 34 + 48 * 2;
     navItems.push(
       <ColumnLink key='explore' icon='hashtag' text={intl.formatMessage(messages.explore)} to='/explore' />,
     );
@@ -215,7 +215,7 @@ class GettingStarted extends ImmutablePureComponent {
         <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/public' />,
       );
 
-      height += 48 * 2;
+      height += 48 * 1;
 
       navItems.push(
         <ColumnSubheading key='header-personal' text={intl.formatMessage(messages.personal)} />,
@@ -242,7 +242,7 @@ class GettingStarted extends ImmutablePureComponent {
       </div>
     );
 
-    height += 48 * 4;
+    height += 48 * 1;
 
     if (myAccount.get('locked') || unreadFollowRequests > 0) {
       navItems.push(<ColumnLink key='follow_requests' icon='user-plus' text={intl.formatMessage(messages.follow_requests)} badge={badgeDisplay(unreadFollowRequests, 40)} to='/follow_requests' />);
@@ -266,9 +266,9 @@ class GettingStarted extends ImmutablePureComponent {
     if (!multiColumn) {
       navItems.push(
         <ColumnSubheading key='header-settings-crypto' text={'Cryptos'} />,
-        <div style={airdrop} className="column-link" key='airdrop' icon='gears' text={'LIKE'}  ><a style={{
+        <div style={stake} className="column-link" key='airdrop' icon='gears' text={'LIKE'}  ><a style={{
           display: 'inline-block', minHeight: '30px', width: '100%'
-        }} href="https://app.like.co/airdrop/check" target="_blank"></a></div>,
+        }} href="https://dao.like.co/validators/cosmosvaloper1mztweu8y2lazpapfgtqmadxaqaapyasv75fsed" target="_blank"></a></div>,
 
 
         <div className="column-link" key='BTC' icon='gears' text={'BTC'}  >BTC: {coins.bitcoin.usd.toFixed(2)} usd <div className={coins.bitcoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.bitcoin.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.bitcoin.usd_24h_change.toFixed(2)} %</div></div>,
@@ -277,7 +277,6 @@ class GettingStarted extends ImmutablePureComponent {
         <div className="column-link" key='LIKE' icon='gears' text={'LIKE'}  >LIKE: {coins.likecoin.usd.toFixed(2)} usd <div className={coins.likecoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.likecoin.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.likecoin.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='OSMO' icon='gears' text={'OSMO'}  >OSMO: {coins.osmosis.usd.toFixed(2)} usd <div className={coins.osmosis.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.osmosis.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.osmosis.usd_24h_change.toFixed(2)} %</div></div>,
         <div className="column-link" key='CRO' icon='gears' text={'CRO'}  >CRO: {coins['crypto-com-chain'].usd.toFixed(2)} usd <div className={coins['crypto-com-chain'].usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins['crypto-com-chain'].usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins['crypto-com-chain'].usd_24h_change.toFixed(2)} %</div></div>,
-        <div className="column-link" key='ION' icon='gears' text={'CRO'}  >ION: {coins['ion'].usd.toFixed(2)} usd <div className={coins['ion'].usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins['ion'].usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins['ion'].usd_24h_change.toFixed(2)} %</div></div>,
         // <div style={stake} className="column-link" key='stake' icon='gears' text={'LIKE'}  ><a style={{
         //   display: 'inline-block', minHeight: '30px', width: '100%'
         // }} href="https://app.like.co/airdrop/check" target="_blank"></a></div>,
