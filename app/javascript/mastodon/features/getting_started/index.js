@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { fetchFollowRequests, getLikeAuth } from 'mastodon/actions/accounts';
+import { fetchFollowRequests, getLikeAuth, getLikerId } from 'mastodon/actions/accounts';
 import { me, showTrends } from '../../initial_state';
 import { List as ImmutableList } from 'immutable';
 import NavigationContainer from '../compose/containers/navigation_container';
@@ -158,17 +158,23 @@ class GettingStarted extends ImmutablePureComponent {
   }
 
   getLikerId() {
-    api().get(`/api/v1/accounts/liker_id`).then(response => {
-      if (response.data.code === 200) {
-        if (response.data.liker_id) {
-          this.setState({
-            liker_id: response.data.liker_id
-          })
-        }
-      }
-    }).catch(error => {
-      // dispatch(unblockAccountFail(id, error));
-    });
+    getLikerId((data)=>{
+      console.log('data',data)
+      this.setState({
+        liker_id: response.data.liker_id
+      })
+    })
+    // api().get(`/api/v1/accounts/liker_id`).then(response => {
+    //   if (response.data.code === 200) {
+    //     if (response.data.liker_id) {
+    //       this.setState({
+    //         liker_id: response.data.liker_id
+    //       })
+    //     }
+    //   }
+    // }).catch(error => {
+    //   // dispatch(unblockAccountFail(id, error));
+    // });
   }
 
   getCoinPrice() {
@@ -209,7 +215,7 @@ class GettingStarted extends ImmutablePureComponent {
         <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/public' />,
       );
 
-      height += 48*2;
+      height += 48 * 2;
 
       navItems.push(
         <ColumnSubheading key='header-personal' text={intl.formatMessage(messages.personal)} />,
@@ -245,15 +251,15 @@ class GettingStarted extends ImmutablePureComponent {
 
     const airdrop = {
       backgroundImage: `url(${LikeCoinAirdrop})`, backgroundRepeat: 'no-repeat',
-      'background-position': 'center',
-      'background-size': 'cover',
+      'backgroundPosition': 'center',
+      'backgroundSize': 'cover',
       color: 'black'
     }
 
     const stake = {
       backgroundImage: `url(${LikeCoinStake})`, backgroundRepeat: 'no-repeat',
-      'background-position': 'center',
-      'background-size': 'cover',
+      'backgroundPosition': 'center',
+      'backgroundSize': 'cover',
       color: 'black'
     }
 

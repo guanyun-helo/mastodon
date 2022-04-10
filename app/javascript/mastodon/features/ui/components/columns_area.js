@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-
 import ReactSwipeableViews from 'react-swipeable-views';
 import TabsBar, { links, getIndex, getLink } from './tabs_bar';
 import { Link } from 'react-router-dom';
-
+import { getLikerId } from 'mastodon/actions/accounts';
+import connect from 'react-redux'
 import { disableSwiping } from 'mastodon/initial_state';
 import queryString from "query-string"
 import LikeCoinClapDark from '../../../../images/likebutton/like-calp-dark.svg'
@@ -18,6 +18,8 @@ import BundleContainer from '../containers/bundle_container';
 import ColumnLoading from './column_loading';
 import DrawerLoading from './drawer_loading';
 import BundleColumnError from './bundle_column_error';
+
+
 import {
   Compose,
   Notifications,
@@ -38,6 +40,7 @@ import NavigationPanel from './navigation_panel';
 import { supportsPassiveEvents } from 'detect-passive-events';
 import { scrollRight } from '../../../scroll';
 import api from '../.././../api'
+import { countBy } from 'lodash';
 
 const componentMap = {
   'COMPOSE': Compose,
@@ -60,7 +63,8 @@ const messages = defineMessages({
 
 const shouldHideFAB = path => path.match(/^\/statuses\/|^\/@[^/]+\/\d+|^\/publish|^\/explore|^\/getting-started|^\/start/);
 
-export default @(component => injectIntl(component, { withRef: true }))
+
+export default @((component) => injectIntl(component, { withRef: true }))
 class ColumnsArea extends ImmutablePureComponent {
 
   static contextTypes = {
@@ -152,7 +156,10 @@ class ColumnsArea extends ImmutablePureComponent {
   }
 
   getLikerId() {
-    api().get(`/api/v1/accounts/liker_id`).then(response => {
+
+    const { getLikerId } = this.props;
+
+    getLikerId(response => {
       if (response.data.code === 200) {
         if (response.data.liker_id) {
           this.setState({
@@ -160,9 +167,7 @@ class ColumnsArea extends ImmutablePureComponent {
           })
         }
       }
-    }).catch(error => {
-      // dispatch(unblockAccountFail(id, error));
-    });
+    })
   }
 
   componentWillUpdate(nextProps) {

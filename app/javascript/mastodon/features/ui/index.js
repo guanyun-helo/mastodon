@@ -130,6 +130,7 @@ class SwitchingColumnsArea extends React.PureComponent {
 
   componentDidUpdate(prevProps) {
     if (![this.props.location.pathname, '/'].includes(prevProps.location.pathname)) {
+      console.log(this)
       this.node.handleChildrenContentChange();
     }
 
