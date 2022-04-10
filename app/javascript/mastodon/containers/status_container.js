@@ -28,6 +28,7 @@ import {
   hideStatus,
   revealStatus,
   toggleStatusCollapse,
+  editStatus,
 } from '../actions/statuses';
 import {
   unmuteAccount,
