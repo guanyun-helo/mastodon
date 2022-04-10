@@ -238,7 +238,7 @@ class Header extends ImmutablePureComponent {
   }
 
   render() {
-    const { account, intl, domain, identity_proofs } = this.props;
+    const { account, intl, domain } = this.props;
     const { balances, price } = this.state;
     let self = false
     if (me === account.get('id')) {
@@ -460,7 +460,7 @@ class Header extends ImmutablePureComponent {
             <div className='account__header__bio'>
               {fields.size > 0 && (
                 <div className='account__header__fields'>
-                  {identity_proofs.map((proof, i) => (
+                  {/* {fields.map((proof, i) => (
                     <dl key={i}>
                       <dt dangerouslySetInnerHTML={{ __html: proof.get('provider') }} />
 
@@ -471,7 +471,7 @@ class Header extends ImmutablePureComponent {
                         <a href={proof.get('profile_url')} target='_blank' rel='noopener noreferrer'><span dangerouslySetInnerHTML={{ __html: ' ' + proof.get('provider_username') }} /></a>
                       </dd>
                     </dl>
-                  ))}
+                  ))} */}
                   {fields.map((pair, i) => (
                     <dl key={i}>
                       <dt dangerouslySetInnerHTML={{ __html: pair.get('name_emojified') }} title={pair.get('name')} className='translate' />
