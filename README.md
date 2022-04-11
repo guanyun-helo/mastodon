@@ -99,3 +99,32 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+
+Liker.Social 超級功能上新
+1. 探索功能(重磅)
+ a. 熱門分享
+ b. 熱門標籤
+ c. 最新新聞
+ d. 推介用戶
+2. 定時嘟文
+   現在嘟文可以定時刪除了
+
+如何支持 Liker.Social
+
+本次更新，Mastodon 引入 1000+ 修改，經過幾天的代碼審查，Liker.Social 終於引入了一系列新功能。
+
+如果你想繼續支持我們保持快速的更新運作，可以通過以下幾種方式：
+1. 委託你的 LIKE 到 Liker.Social
+2. 支持我們的 Patreon https://www.patreon.com/liker_social?fan_landing=true
+3. 直接捐款：
+
+ATOM
+cosmos1ul4c57anu9q00vhr3lh8rjdrhqzx8g6cq2csx0
+
+OSMO
+osmo1ul4c57anu9q00vhr3lh8rjdrhqzx8g6cg3tqsa
+
+LIKE
+cosmos1ul4c57anu9q00vhr3lh8rjdrhqzx8g6cq2csx0
+
