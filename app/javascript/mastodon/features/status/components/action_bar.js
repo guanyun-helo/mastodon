@@ -13,7 +13,7 @@ import LikeButton from '../../../../images/likebutton/like-clap'
 import LikeButtonGold from '../../../../images/likebutton/like-clap-gold'
 import ISCN_dark from '../../../../images/likebutton/ISCN_dark'
 import ISCN_light from '../../../../images/likebutton/ISCN_light'
-
+import { setISCN } from '../../../actions/statuses'
 import { toast } from 'material-react-toastify';
 import { debounce } from 'lodash'
 import storage from 'localforage'
@@ -54,9 +54,13 @@ const messages = defineMessages({
 const mapStateToProps = (state, { status }) => ({
   relationship: state.getIn(['relationships', status.getIn(['account', 'id'])]),
 });
+
+const mapDispatchToProps = dispatch => ({
+  setISCN: (statusID,ISCNID) => dispatch(setISCN(statusID,ISCNID))
+});
 let requestLock = false
 
-export default @connect(mapStateToProps)
+export default @connect(mapStateToProps, mapDispatchToProps)
 @injectIntl
 class ActionBar extends React.PureComponent {
 
@@ -406,9 +410,7 @@ class ActionBar extends React.PureComponent {
     popUpWindow.postMessage(payload, ISCN_WIDGET_ORIGIN);
   }
   onISCNCallback = (data) => {
-    api().post(`/api/v1/statuses/${this.state.id}/iscn?iscn_id=${data.iscnId}`).then((response) => {
-      if (!response.data.data) return
-    })
+    this.props.setISCN(this.state.id,data.iscnId)
   }
   componentWillUnmount() {
     window.removeEventListener('message', this.onISCNmessageBind, false)
@@ -484,8 +486,8 @@ class ActionBar extends React.PureComponent {
       liker_id
     } = this.state
 
-    const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
-    const pinnableStatus     = ['public', 'unlisted', 'private'].includes(status.get('visibility'));
+    const publicStatus = ['public', 'unlisted'].includes(status.get('visibility'));
+    const pinnableStatus = ['public', 'unlisted', 'private'].includes(status.get('visibility'));
     const mutingConversation = status.get('muted');
     const account = status.get('account');
     const writtenByMe = status.getIn(['account', 'id']) === me;

@@ -225,6 +225,32 @@ export function muteStatus(id) {
   };
 };
 
+export function support(loadedStatusId,fromId,cb) {
+  return (dispatch, getState) => {
+    api(getState).post(`/api/v1/statuses/${loadedStatusId}/support?liker=${fromId}`, { liker: fromId, statusId: loadedStatusId }).then((data) => {
+      cb(data)
+    }).catch(error => {
+    });
+  };
+};
+
+export function getSupportLikers(statusId,cb) {
+  return (dispatch, getState) => {
+    api(getState).get(`/api/v1/statuses/${statusId}/support_likers?statusId=${statusId}`).then((data) => {
+      cb(data)
+    }).catch(error => {
+    });
+  };
+};
+
+export function setISCN(statusId,ISCNID) {
+  return (dispatch, getState) => {
+    api(getState).post(`/api/v1/statuses/${statusId}/iscn?iscn_id=${ISCNID}`).then(() => {
+    }).catch(error => {
+    });
+  };
+};
+
 export function muteStatusRequest(id) {
   return {
     type: STATUS_MUTE_REQUEST,

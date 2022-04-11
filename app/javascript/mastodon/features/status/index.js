@@ -40,6 +40,8 @@ import {
   editStatus,
   hideStatus,
   revealStatus,
+  support,
+  getSupportLikers
 } from '../../actions/statuses';
 import {
   unblockAccount,
@@ -211,9 +213,7 @@ class Status extends ImmutablePureComponent {
       api().get(`https://api.like.co/tx/id/${tx_hash}`).then((res) => {
 
         if (res.data.remarks === 'Transaction from Liker Social') {
-
-          api().post(`/api/v1/statuses/${loadedStatusId}/support?liker=${res.data.fromId}`, { liker: res.data.fromId, statusId: loadedStatusId }).then((response) => {
-            if (!response.data.data) return
+          this.props.dispatch(support(loadedStatusId, res.data.fromId, (response) => {
             for (const id of response.data.data) {
               api().get(`https://api.like.co/users/id/${id}/min`).then((avatars) => {
                 const data = this.state.supoortLikers
@@ -223,22 +223,13 @@ class Status extends ImmutablePureComponent {
                 })
               })
             }
-            // this.setState({
-            //   supoortLikers:
-            // })
             toast.success("鄉民，你的支持是對作者最大的鼓勵，感謝 🙌！");
-            if (this.props.status.get('reblogged')) retud, e
-            //   isSupportSuccess: true
-            // })
-            // this.openPay()
-          })
+            if (this.props.status.get('reblogged')) return
+          }));
         }
-        // https://api.like.co/users/id/ckxpress/min
       })
-      // const { statusId } = JSON.parse(state)
-      // this.context.router.history.push(`/statuses/${statusId}?tx_hash=${tx_hash}&state=${state}`);
     } else {
-      api().get(`/api/v1/statuses/${this.props.params.statusId}/support_likers?statusId=${this.props.params.statusId}`).then((response) => {
+      this.props.dispatch(getSupportLikers(this.props.params.statusId, (response) => {
         if (!response.data.data) return
         for (const id of response.data.data) {
           api().get(`https://api.like.co/users/id/${id}/min`).then((avatars) => {
@@ -249,10 +240,7 @@ class Status extends ImmutablePureComponent {
             })
           })
         }
-        // this.setState({
-        //   supoortLikers:
-        // })
-      })
+      }))
     }
   }
 
@@ -610,20 +598,6 @@ class Status extends ImmutablePureComponent {
   });
 
 
-  onISCNCallback = (data)=>{
-    api().get(`/api/v1/statuses/${this.props.params.statusId}/support_likers?statusId=${this.props.params.statusId}`).then((response) => {
-      if (!response.data.data) return
-      for (const id of response.data.data) {
-        api().get(`https://api.like.co/users/id/${id}/min`).then((avatars) => {
-          const data = this.state.supoortLikers
-          data.push(avatars.data.avatar)
-          this.setState({
-            supoortLikers: [...data]
-          })
-        })
-      }
-    })
-  }
   render() {
     let ancestors, descendants;
     const { status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
