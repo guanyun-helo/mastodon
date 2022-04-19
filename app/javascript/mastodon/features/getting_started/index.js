@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { fetchFollowRequests, getLikeAuth, getLikerId } from 'mastodon/actions/accounts';
+import { fetchFollowRequests, getLikeAuth, getLikerId ,getTimeLine} from 'mastodon/actions/accounts';
 import { me, showTrends } from '../../initial_state';
 import { List as ImmutableList } from 'immutable';
 import NavigationContainer from '../compose/containers/navigation_container';
@@ -53,7 +53,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   fetchFollowRequests: () => dispatch(fetchFollowRequests()),
-  getLikeAuth: (location, callback) => dispatch(getLikeAuth(location, callback))
+  getLikeAuth: (location, callback) => dispatch(getLikeAuth(location, callback)),
+  getTimeLine: (code,location,callback) => dispatch(getTimeLine(code,location,callback))
 });
 
 const badgeDisplay = (number, limit) => {
@@ -122,8 +123,7 @@ class GettingStarted extends ImmutablePureComponent {
     if (code && code.length > 0) {
       const params = new URLSearchParams()
       params.append("code", code)
-      api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
-        // dispatch(unblockAccountSuccess(response.data));
+      this.props.getTimeLine(code,location,(response)=>{
         if (response.data.code === 200) {
           this.props.myAccount.set('liker_id', response.data.user)
           if (response.data.user) {
@@ -133,9 +133,21 @@ class GettingStarted extends ImmutablePureComponent {
           }
         }
         this.getLikerId()
-      }).catch(error => {
-        // dispatch(unblockAccountFail(id, error));
-      });
+      })
+      // api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
+      //   // dispatch(unblockAccountSuccess(response.data));
+      //   if (response.data.code === 200) {
+      //     this.props.myAccount.set('liker_id', response.data.user)
+      //     if (response.data.user) {
+      //       this.setState({
+      //         liker_id: response.data.user
+      //       })
+      //     }
+      //   }
+      //   this.getLikerId()
+      // }).catch(error => {
+      //   // dispatch(unblockAccountFail(id, error));
+      // });
     }
     fetchFollowRequests();
     this.getCoinPrice();
@@ -159,22 +171,10 @@ class GettingStarted extends ImmutablePureComponent {
 
   getLikerId() {
     getLikerId((data)=>{
-      console.log('data',data)
       this.setState({
         liker_id: response.data.liker_id
       })
     })
-    // api().get(`/api/v1/accounts/liker_id`).then(response => {
-    //   if (response.data.code === 200) {
-    //     if (response.data.liker_id) {
-    //       this.setState({
-    //         liker_id: response.data.liker_id
-    //       })
-    //     }
-    //   }
-    // }).catch(error => {
-    //   // dispatch(unblockAccountFail(id, error));
-    // });
   }
 
   getCoinPrice() {

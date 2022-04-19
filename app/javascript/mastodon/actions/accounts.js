@@ -157,6 +157,14 @@ export function getLikerId(callback) {
   };
 };
 
+export function getTimeLine(code,location,callback) {
+  return (dispatch, getState) => {
+    api(getState).get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then((response)=>{
+      callback(response)
+    })
+  };
+};
+
 export function followAccount(id, options = { reblogs: true }) {
   return (dispatch, getState) => {
     const alreadyFollowing = getState().getIn(['relationships', id, 'following']);

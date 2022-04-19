@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import ColumnsArea from '../components/columns_area';
-import { getLikeAuth } from '../../../actions/accounts'
+import { getLikeAuth,getTimeLine} from '../../../actions/accounts'
 import { getLikerId } from '../../../actions/accounts'
 
 const mapStateToProps = state => ({
@@ -11,6 +11,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getLikeAuth: (location,callback)=>dispatch(getLikeAuth(location,callback)),
   getLikerId: (location,callback)=>dispatch(getLikerId(location,callback)),
+  getTimeLine: (code,location,callback) => dispatch(getTimeLine(code,location,callback))
 });
 
 export default connect(mapStateToProps,mapDispatchToProps, null, { forwardRef: true })(ColumnsArea);

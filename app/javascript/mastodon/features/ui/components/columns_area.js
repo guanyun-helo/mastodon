@@ -141,17 +141,15 @@ class ColumnsArea extends ImmutablePureComponent {
     if (code && code.length > 0) {
       const params = new URLSearchParams()
       params.append("code", code)
-      api().get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then(response => {
-        // dispatch(unblockAccountSuccess(response.data));
+
+      this.props.getTimeLine(code,location,(response)=>{
         if (response.data.code === 200) {
           this.setState({
             liker_id: response.data.user
           })
         }
         this.getLikerId()
-      }).catch(error => {
-        // dispatch(unblockAccountFail(id, error));
-      });
+      })
     }
   }
 
