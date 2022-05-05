@@ -268,7 +268,7 @@ class GettingStarted extends ImmutablePureComponent {
         <ColumnSubheading key='header-settings-crypto' text={'Cryptos'} />,
         <div style={stake} className="column-link" key='airdrop' icon='gears' text={'LIKE'}  ><a style={{
           display: 'inline-block', minHeight: '30px', width: '100%'
-        }} href="https://dao.like.co/validators/cosmosvaloper1mztweu8y2lazpapfgtqmadxaqaapyasv75fsed" target="_blank"></a></div>,
+        }} href="https://dao.like.co/validators/likevaloper1mztweu8y2lazpapfgtqmadxaqaapyasv7nhexk" target="_blank"></a></div>,
 
 
         <div className="column-link" key='BTC' icon='gears' text={'BTC'}  >BTC: {coins.bitcoin.usd.toFixed(2)} usd <div className={coins.bitcoin.usd_24h_change > 0 ? 'price-change price-change-red' : 'price-change price-change-green'}>{coins.bitcoin.usd_24h_change.toFixed(2) > 0 ? '+' : null} {coins.bitcoin.usd_24h_change.toFixed(2)} %</div></div>,
