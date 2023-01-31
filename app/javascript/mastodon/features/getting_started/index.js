@@ -1,8 +1,9 @@
 import React from 'react';
-import Column from '../ui/components/column';
+import Column from 'mastodon/components/column';
+import ColumnHeader from 'mastodon/components/column_header';
 import ColumnLink from '../ui/components/column_link';
 import ColumnSubheading from '../ui/components/column_subheading';
-import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
@@ -11,7 +12,6 @@ import { fetchFollowRequests, getLikeAuth, getLikerId ,getTimeLine} from 'mastod
 import { me, showTrends } from '../../initial_state';
 import { List as ImmutableList } from 'immutable';
 import NavigationContainer from '../compose/containers/navigation_container';
-import Icon from 'mastodon/components/icon';
 import LinkFooter from 'mastodon/features/ui/components/link_footer';
 import TrendsContainer from './containers/trends_container';
 import LikeCoinClapDark from '.././../../images/likebutton/like-calp-dark.svg'
@@ -21,6 +21,7 @@ import LikeCoinStake from '../../../images/airdrop/stake.png'
 import queryString from "query-string"
 import api from '../../api'
 
+import { Helmet } from 'react-helmet';
 
 const messages = defineMessages({
   home_timeline: { id: 'tabs_bar.home', defaultMessage: 'Home' },
@@ -47,7 +48,6 @@ const messages = defineMessages({
 
 const mapStateToProps = state => ({
   myAccount: state.getIn(['accounts', me]),
-  columns: state.getIn(['settings', 'columns']),
   unreadFollowRequests: state.getIn(['user_lists', 'follow_requests', 'items'], ImmutableList()).size,
 });
 
@@ -67,14 +67,13 @@ const badgeDisplay = (number, limit) => {
   }
 };
 
-const NAVIGATION_PANEL_BREAKPOINT = 600 + (285 * 2) + (10 * 2);
-
 export default @connect(mapStateToProps, mapDispatchToProps)
 @injectIntl
 class GettingStarted extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object.isRequired,
+    identity: PropTypes.object,
   };
 
   state = {
@@ -96,8 +95,7 @@ class GettingStarted extends ImmutablePureComponent {
 
   static propTypes = {
     intl: PropTypes.object.isRequired,
-    myAccount: ImmutablePropTypes.map.isRequired,
-    columns: ImmutablePropTypes.list,
+    myAccount: ImmutablePropTypes.map,
     multiColumn: PropTypes.bool,
     fetchFollowRequests: PropTypes.func.isRequired,
     getLikeAuth: PropTypes.func,
@@ -105,16 +103,16 @@ class GettingStarted extends ImmutablePureComponent {
     unreadNotifications: PropTypes.number,
   };
 
-  componentDidMount() {
+  componentDidMount () {
     if (document.body && document.body.classList.contains('theme-mastodon-light')) {
       this.setState({
         clapImg: LikeCoinClapDark
       })
     }
-    const { fetchFollowRequests, multiColumn } = this.props;
+    const { fetchFollowRequests } = this.props;
+    const { signedIn } = this.context.identity;
 
-    if (!multiColumn && window.innerWidth >= NAVIGATION_PANEL_BREAKPOINT) {
-      this.context.router.history.replace('/home');
+    if (!signedIn) {
       return;
     }
 
@@ -168,7 +166,6 @@ class GettingStarted extends ImmutablePureComponent {
       }
     })
   }
-
   getLikerId() {
     getLikerId((data)=>{
       this.setState({
@@ -176,6 +173,7 @@ class GettingStarted extends ImmutablePureComponent {
       })
     })
   }
+
 
   getCoinPrice() {
     api().get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,cosmos,ion,crypto-com-chain,osmosis,likecoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true').then(response => {
@@ -189,81 +187,61 @@ class GettingStarted extends ImmutablePureComponent {
       // }
     })
   }
-
   render() {
     const { intl, myAccount, columns, multiColumn, unreadFollowRequests } = this.props;
     const { coins } = this.state;
     const navItems = [];
-    let height = (multiColumn) ? 0 : 60;
+    const { signedIn } = this.context.identity;
 
-    if (multiColumn) {
+
+    navItems.push(
+      <ColumnSubheading key='header-discover' text={intl.formatMessage(messages.discover)} />,
+    );
+
+    if (showTrends) {
       navItems.push(
-        <ColumnSubheading key='header-discover' text={intl.formatMessage(messages.discover)} />,
+        <ColumnLink key='explore' icon='hashtag' text={intl.formatMessage(messages.explore)} to='/explore' />,
       );
-      height += 34;
     }
 
     height += 34 + 48 * 2;
     navItems.push(
-      <ColumnLink key='explore' icon='hashtag' text={intl.formatMessage(messages.explore)} to='/explore' />,
+      <ColumnLink key='community_timeline' icon='users' text={intl.formatMessage(messages.community_timeline)} to='/public/local' />,
+      <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/public' />,
     );
-    // height += 48;
 
-    if (multiColumn) {
-      navItems.push(
-        <ColumnLink key='community_timeline' icon='users' text={intl.formatMessage(messages.community_timeline)} to='/public/local' />,
-        <ColumnLink key='public_timeline' icon='globe' text={intl.formatMessage(messages.public_timeline)} to='/public' />,
-      );
-
-      height += 48 * 1;
-
+    if (signedIn) {
       navItems.push(
         <ColumnSubheading key='header-personal' text={intl.formatMessage(messages.personal)} />,
-      );
-
-      height += 34;
-    }
-
-    if (multiColumn && !columns.find(item => item.get('id') === 'HOME')) {
-      navItems.push(
         <ColumnLink key='home' icon='home' text={intl.formatMessage(messages.home_timeline)} to='/home' />,
-      );
-      height += 48;
-    }
-
-    navItems.push(
-      <ColumnLink key='direct' icon='at' text={intl.formatMessage(messages.direct)} to='/conversations' />,
-      <ColumnLink key='bookmark' icon='bookmark' text={intl.formatMessage(messages.bookmarks)} to='/bookmarks' />,
-      <ColumnLink key='favourites' icon='star' text={intl.formatMessage(messages.favourites)} to='/favourites' />,
-      <ColumnLink key='lists' icon='list-ul' text={intl.formatMessage(messages.lists)} to='/lists' />,
-      <div key="liker-id" onClick={this.bindLikeCoinId.bind(this)} className="liker-id column-link">
+        <ColumnLink key='direct' icon='at' text={intl.formatMessage(messages.direct)} to='/conversations' />,
+        <ColumnLink key='bookmark' icon='bookmark' text={intl.formatMessage(messages.bookmarks)} to='/bookmarks' />,
+        <ColumnLink key='favourites' icon='star' text={intl.formatMessage(messages.favourites)} to='/favourites' />,
+        <ColumnLink key='lists' icon='list-ul' text={intl.formatMessage(messages.lists)} to='/lists' />,
+        <div key="liker-id" onClick={this.bindLikeCoinId.bind(this)} className="liker-id column-link">
         <img src={this.state.clapImg} />
         <div className="bind">Liker Id ({this.state.liker_id})</div>
       </div>
-    );
+      );
 
-    height += 48 * 1;
+      const airdrop = {
+        backgroundImage: `url(${LikeCoinAirdrop})`, backgroundRepeat: 'no-repeat',
+        'backgroundPosition': 'center',
+        'backgroundSize': 'cover',
+        color: 'black'
+      }
+  
+      const stake = {
+        backgroundImage: `url(${LikeCoinStake})`, backgroundRepeat: 'no-repeat',
+        'backgroundPosition': 'center',
+        'backgroundSize': 'cover',
+        color: 'black'
+      }
 
-    if (myAccount.get('locked') || unreadFollowRequests > 0) {
-      navItems.push(<ColumnLink key='follow_requests' icon='user-plus' text={intl.formatMessage(messages.follow_requests)} badge={badgeDisplay(unreadFollowRequests, 40)} to='/follow_requests' />);
-      height += 48;
-    }
+      if (myAccount.get('locked') || unreadFollowRequests > 0) {
+        navItems.push(<ColumnLink key='follow_requests' icon='user-plus' text={intl.formatMessage(messages.follow_requests)} badge={badgeDisplay(unreadFollowRequests, 40)} to='/follow_requests' />);
+      }
 
-    const airdrop = {
-      backgroundImage: `url(${LikeCoinAirdrop})`, backgroundRepeat: 'no-repeat',
-      'backgroundPosition': 'center',
-      'backgroundSize': 'cover',
-      color: 'black'
-    }
-
-    const stake = {
-      backgroundImage: `url(${LikeCoinStake})`, backgroundRepeat: 'no-repeat',
-      'backgroundPosition': 'center',
-      'backgroundSize': 'cover',
-      color: 'black'
-    }
-
-    if (!multiColumn) {
       navItems.push(
         <ColumnSubheading key='header-settings-crypto' text={'Cryptos'} />,
         <div style={stake} className="column-link" key='airdrop' icon='gears' text={'LIKE'}  ><a style={{
@@ -288,28 +266,25 @@ class GettingStarted extends ImmutablePureComponent {
     }
 
     return (
-      <Column bindToDocument={!multiColumn} label={intl.formatMessage(messages.menu)}>
-        {multiColumn && <div className='column-header__wrapper'>
-          <h1 className='column-header'>
-            <button>
-              <Icon id='bars' className='column-header__icon' fixedWidth />
-              <FormattedMessage id='getting_started.heading' defaultMessage='Getting started' />
-            </button>
-          </h1>
-        </div>}
+      <Column>
+        {(signedIn && !multiColumn) ? <NavigationContainer /> : <ColumnHeader title={intl.formatMessage(messages.menu)} icon='bars' multiColumn={multiColumn} />}
 
-        <div className='getting-started'>
-          <div className='getting-started__wrapper' style={{ height }}>
-            {!multiColumn && <NavigationContainer />}
+        <div className='getting-started scrollable scrollable--flex'>
+          <div className='getting-started__wrapper'>
             {navItems}
           </div>
 
           {!multiColumn && <div className='flex-spacer' />}
 
-          <LinkFooter withHotkeys={multiColumn} />
+          <LinkFooter />
         </div>
 
-        {multiColumn && showTrends && <TrendsContainer />}
+        {(multiColumn && showTrends) && <TrendsContainer />}
+
+        <Helmet>
+          <title>{intl.formatMessage(messages.menu)}</title>
+          <meta name='robots' content='noindex' />
+        </Helmet>
       </Column>
     );
   }

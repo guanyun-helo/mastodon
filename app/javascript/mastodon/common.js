@@ -11,4 +11,4 @@ export function start() {
   } catch (e) {
     // If called twice
   }
-};
+}

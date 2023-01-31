@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import ReactSwipeableViews from 'react-swipeable-views';
-import TabsBar, { links, getIndex, getLink } from './tabs_bar';
+// import TabsBar, { links, getIndex, getLink } from './tabs_bar';
 import { Link } from 'react-router-dom';
 import { getLikerId } from 'mastodon/actions/accounts';
 import connect from 'react-redux'
@@ -33,10 +32,8 @@ import {
   ListTimeline,
   Directory,
 } from '../../ui/util/async-components';
-import Icon from 'mastodon/components/icon';
 import ComposePanel from './compose_panel';
 import NavigationPanel from './navigation_panel';
-
 import { supportsPassiveEvents } from 'detect-passive-events';
 import { scrollRight } from '../../../scroll';
 import api from '../.././../api'
@@ -57,33 +54,23 @@ const componentMap = {
   'DIRECTORY': Directory,
 };
 
-const messages = defineMessages({
-  publish: { id: 'compose_form.publish', defaultMessage: 'Toot' },
-});
-
-const shouldHideFAB = path => path.match(/^\/statuses\/|^\/@[^/]+\/\d+|^\/publish|^\/explore|^\/getting-started|^\/start/);
-
-
-export default @((component) => injectIntl(component, { withRef: true }))
-class ColumnsArea extends ImmutablePureComponent {
+export default class ColumnsArea extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object.isRequired,
   };
 
   static propTypes = {
-    intl: PropTypes.object.isRequired,
     columns: ImmutablePropTypes.list.isRequired,
     isModalOpen: PropTypes.bool.isRequired,
     singleColumn: PropTypes.bool,
     children: PropTypes.node,
   };
 
-  // Corresponds to (max-width: 600px + (285px * 1) + (10px * 1)) in SCSS
-  mediaQuery = 'matchMedia' in window && window.matchMedia('(max-width: 895px)');
+  // Corresponds to (max-width: $no-gap-breakpoint + 285px - 1px) in SCSS
+  mediaQuery = 'matchMedia' in window && window.matchMedia('(max-width: 1174px)');
 
   state = {
-    shouldAnimate: false,
     renderComposePanel: !(this.mediaQuery && this.mediaQuery.matches),
     liker_id: "Click to bind",
     clapImg: LikeCoinClap,
@@ -92,9 +79,9 @@ class ColumnsArea extends ImmutablePureComponent {
   }
 
   componentWillReceiveProps() {
-    if (typeof this.pendingIndex !== 'number' && this.lastIndex !== getIndex(this.context.router.history.location.pathname)) {
-      this.setState({ shouldAnimate: false });
-    }
+    // if (typeof this.pendingIndex !== 'number' && this.lastIndex !== getIndex(this.context.router.history.location.pathname)) {
+    //   this.setState({ shouldAnimate: false });
+    // }
   }
 
   componentDidMount() {
@@ -118,7 +105,7 @@ class ColumnsArea extends ImmutablePureComponent {
       this.setState({ renderComposePanel: !this.mediaQuery.matches });
     }
 
-    this.lastIndex = getIndex(this.context.router.history.location.pathname);
+    // this.lastIndex = getIndex(this.context.router.history.location.pathname);
     this.isRtlLayout = document.getElementsByTagName('body')[0].classList.contains('rtl');
 
     this.setState({ shouldAnimate: true });
@@ -166,6 +153,8 @@ class ColumnsArea extends ImmutablePureComponent {
         }
       }
     })
+    this.isRtlLayout = document.getElementsByTagName('body')[0].classList.contains('rtl');
+
   }
 
   componentWillUpdate(nextProps) {
@@ -178,13 +167,6 @@ class ColumnsArea extends ImmutablePureComponent {
     if (this.props.singleColumn !== prevProps.singleColumn && !this.props.singleColumn) {
       this.node.addEventListener('wheel', this.handleWheel, supportsPassiveEvents ? { passive: true } : false);
     }
-
-    const newIndex = getIndex(this.context.router.history.location.pathname);
-
-    if (this.lastIndex !== newIndex) {
-      this.lastIndex = newIndex;
-      this.setState({ shouldAnimate: true });
-    }
   }
 
   componentWillUnmount() {
@@ -196,7 +178,7 @@ class ColumnsArea extends ImmutablePureComponent {
       if (this.mediaQuery.removeEventListener) {
         this.mediaQuery.removeEventListener('change', this.handleLayoutChange);
       } else {
-        this.mediaQuery.removeListener(this.handleLayouteChange);
+        this.mediaQuery.removeListener(this.handleLayoutChange);
       }
     }
   }
@@ -210,32 +192,7 @@ class ColumnsArea extends ImmutablePureComponent {
 
   handleLayoutChange = (e) => {
     this.setState({ renderComposePanel: !e.matches });
-  }
-
-  handleSwipe = (index) => {
-    this.pendingIndex = index;
-
-    const nextLinkTranslationId = links[index].props['data-preview-title-id'];
-    const currentLinkSelector = '.tabs-bar__link.active';
-    const nextLinkSelector = `.tabs-bar__link[data-preview-title-id="${nextLinkTranslationId}"]`;
-
-    // HACK: Remove the active class from the current link and set it to the next one
-    // React-router does this for us, but too late, feeling laggy.
-    document.querySelector(currentLinkSelector).classList.remove('active');
-    document.querySelector(nextLinkSelector).classList.add('active');
-
-    if (!this.state.shouldAnimate && typeof this.pendingIndex === 'number') {
-      this.context.router.history.push(getLink(this.pendingIndex));
-      this.pendingIndex = null;
-    }
-  }
-
-  handleAnimationEnd = () => {
-    if (typeof this.pendingIndex === 'number') {
-      this.context.router.history.push(getLink(this.pendingIndex));
-      this.pendingIndex = null;
-    }
-  }
+  };
 
   handleWheel = () => {
     if (typeof this._interruptScrollAnimation !== 'function') {
@@ -243,35 +200,19 @@ class ColumnsArea extends ImmutablePureComponent {
     }
 
     this._interruptScrollAnimation();
-  }
+  };
 
   setRef = (node) => {
     this.node = node;
-  }
-
-  renderView = (link, index) => {
-    const columnIndex = getIndex(this.context.router.history.location.pathname);
-    const title = this.props.intl.formatMessage({ id: link.props['data-preview-title-id'] });
-    const icon = link.props['data-preview-icon'];
-
-    const view = (index === columnIndex) ?
-      React.cloneElement(this.props.children) :
-      <ColumnLoading title={title} icon={icon} />;
-
-    return (
-      <div className='columns-area columns-area--mobile' key={index}>
-        {view}
-      </div>
-    );
-  }
+  };
 
   renderLoading = columnId => () => {
-    return columnId === 'COMPOSE' ? <DrawerLoading /> : <ColumnLoading />;
-  }
+    return columnId === 'COMPOSE' ? <DrawerLoading /> : <ColumnLoading multiColumn />;
+  };
 
   renderError = (props) => {
-    return <BundleColumnError {...props} />;
-  }
+    return <BundleColumnError multiColumn errorType='network' {...props} />;
+  };
 
   bindLikeCoinId() {
     if (location.href !== 'https://liker.social/web/timelines/home') {
@@ -285,23 +226,11 @@ class ColumnsArea extends ImmutablePureComponent {
     })
   }
 
-  render() {
-    const { columns, children, singleColumn, isModalOpen, intl } = this.props;
-    const { shouldAnimate, renderComposePanel } = this.state;
-
-    const columnIndex = getIndex(this.context.router.history.location.pathname);
+  render () {
+    const { columns, children, singleColumn, isModalOpen } = this.props;
+    const { renderComposePanel } = this.state;
 
     if (singleColumn) {
-      const floatingActionButton = shouldHideFAB(this.context.router.history.location.pathname) ? null : <Link key='floating-action-button' to='/publish' className='floating-action-button' aria-label={intl.formatMessage(messages.publish)}><Icon id='pencil' /></Link>;
-
-      const content = columnIndex !== -1 ? (
-        <ReactSwipeableViews key='content' hysteresis={0.2} threshold={15} index={columnIndex} onChangeIndex={this.handleSwipe} onTransitionEnd={this.handleAnimationEnd} animateTransitions={shouldAnimate} springConfig={{ duration: '400ms', delay: '0s', easeFunction: 'ease' }} style={{ height: '100%' }} disabled={disableSwiping}>
-          {links.map(this.renderView)}
-        </ReactSwipeableViews>
-      ) : (
-        <div key='content' className='columns-area columns-area--mobile'>{children}</div>
-      );
-
       return (
         <div className='columns-area__panels'>
           <div className='columns-area__panels__pane columns-area__panels__pane--compositional'>
@@ -310,9 +239,9 @@ class ColumnsArea extends ImmutablePureComponent {
             </div>
           </div>
 
-          <div className={`columns-area__panels__main ${floatingActionButton && 'with-fab'}`}>
-            <TabsBar key='tabs' />
-            {content}
+          <div className='columns-area__panels__main'>
+            <div className='tabs-bar__wrapper'><div id='tabs-bar__portal' /></div>
+            <div className='columns-area columns-area--mobile'>{children}</div>
           </div>
 
           <div className='columns-area__panels__pane columns-area__panels__pane--start columns-area__panels__pane--navigational'>
@@ -320,8 +249,6 @@ class ColumnsArea extends ImmutablePureComponent {
               <NavigationPanel bindLikeCoinId={this.bindLikeCoinId.bind(this)} clapImg={this.state.clapImg} liker_id={this.state.liker_id} />
             </div>
           </div>
-
-          {floatingActionButton}
         </div>
       );
     }

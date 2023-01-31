@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ActionBar from './action_bar';
 import Avatar from '../../../components/avatar';
-import Permalink from '../../../components/permalink';
+import { Link } from 'react-router-dom';
 import IconButton from '../../../components/icon_button';
 import { FormattedMessage } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
@@ -49,7 +49,7 @@ export default class NavigationBar extends ImmutablePureComponent {
   render () {
     return (
       <div className='navigation-bar'>
-        <Permalink style={{
+        <Link style={{
               backgroundImage: this.state.isSubscribedCivicLiker ? `url(${civic})` : null,
               backgroundSize: '50px 50px',
               display: 'flex',
@@ -59,16 +59,15 @@ export default class NavigationBar extends ImmutablePureComponent {
               width: 50,
               height: 50,
               backgroundRepeat: 'no-repeat'
-            }} href={this.props.account.get('url')} to={`/@${this.props.account.get('acct')}`}>
-        {/* <Permalink href={this.props.account.get('url')} to={`/@${this.props.account.get('acct')}`}> */}
+            }} to={`/@${this.props.account.get('acct')}`}>
           <span style={{ display: 'none' }}>{this.props.account.get('acct')}</span>
-          <Avatar account={this.props.account} size={40} />
-        </Permalink>
+          <Avatar account={this.props.account} size={46} />
+        </Link>
 
         <div className='navigation-bar__profile'>
-          <Permalink href={this.props.account.get('url')} to={`/@${this.props.account.get('acct')}`}>
+          <Link to={`/@${this.props.account.get('acct')}`}>
             <strong className='navigation-bar__profile-account'>@{this.props.account.get('acct')}</strong>
-          </Permalink>
+          </Link>
 
           <a href='/settings/profile' className='navigation-bar__profile-edit'><FormattedMessage id='navigation_bar.edit_profile' defaultMessage='Edit profile' /></a>
         </div>

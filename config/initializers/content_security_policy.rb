@@ -34,6 +34,7 @@ Rails.application.config.content_security_policy do |p|
   p.media_src       :self, :https, :data, assets_host
   p.frame_src       :self, :https
   p.manifest_src    :self, assets_host
+  p.form_action     :self
 
   if Rails.env.development?
     webpacker_urls = %w(ws http).map { |protocol| "#{protocol}#{Webpacker.dev_server.https? ? 's' : ''}://#{Webpacker.dev_server.host_with_port}" }
@@ -44,7 +45,7 @@ Rails.application.config.content_security_policy do |p|
     p.worker_src  :self, :blob, assets_host
   else
     p.connect_src :self, :data, :blob, assets_host, like_co, coingecko, like_pay, gam, gam_http,media_host, like_co, Rails.configuration.x.streaming_api_base_url
-    p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host, ga, ga_http, gam, gam_http
+    p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host, ga, ga_http, gam, gam_http, "'wasm-unsafe-eval'"
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host
   end
