@@ -9,6 +9,16 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { me } from '../initial_state';
 import classNames from 'classnames';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
+import LikeButton from '../../images/likebutton/like-clap';
+import LikeButtonGold from '../../images/likebutton/like-clap-gold';
+import { toast } from 'material-react-toastify';
+import { COMPOSE_SPOILER_TEXT_CHANGE } from '../actions/compose';
+import { debounce } from 'lodash';
+import storage from 'localforage';
+import {
+  PERMISSION_MANAGE_USERS,
+  PERMISSION_MANAGE_FEDERATION,
+} from 'mastodon/permissions';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -227,21 +237,28 @@ class StatusActionBar extends ImmutablePureComponent {
     navigator.clipboard.writeText(url);
   };
 
+  handleISCN = (iscn_id) => {
+    window.open(
+      `https://app.like.co/view/${encodeURIComponent(iscn_id)}`,
+      '_blank',
+    );
+  };
+
   handleHideClick = () => {
     this.props.onFilter();
   };
 
-  render () {
+  render() {
     const { status, relationship, intl, withDismiss, withCounters, scrollKey } = this.props;
     const { signedIn, permissions } = this.context.identity;
 
-    const anonymousAccess    = !signedIn;
-    const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
-    const pinnableStatus     = ['public', 'unlisted', 'private'].includes(status.get('visibility'));
+    const anonymousAccess = !signedIn;
+    const publicStatus = ['public', 'unlisted'].includes(status.get('visibility'));
+    const pinnableStatus = ['public', 'unlisted', 'private'].includes(status.get('visibility'));
     const mutingConversation = status.get('muted');
-    const account            = status.get('account');
-    const writtenByMe        = status.getIn(['account', 'id']) === me;
-    const isRemote           = status.getIn(['account', 'username']) !== status.getIn(['account', 'acct']);
+    const account = status.get('account');
+    const writtenByMe = status.getIn(['account', 'id']) === me;
+    const isRemote = status.getIn(['account', 'username']) !== status.getIn(['account', 'acct']);
 
     let menu = [];
 
@@ -348,40 +365,70 @@ class StatusActionBar extends ImmutablePureComponent {
     } else {
       reblogTitle = intl.formatMessage(messages.cannot_reblog);
     }
+    // let liker_id = account.get('liker_id') === null ? '' : account.get('liker_id');
+    let liker_id = 'guan';
+    const {totalLike, selfLike} = this.state;
+        const shareButton = ('share' in navigator) && publicStatus && (
+        <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.share)} icon='share-alt' onClick={this.handleShareClick} />
+        );
 
-    const shareButton = ('share' in navigator) && publicStatus && (
-      <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.share)} icon='share-alt' onClick={this.handleShareClick} />
-    );
+        const filterButton = this.props.onFilter && (
+        <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.hide)} icon='eye' onClick={this.handleHideClick} />
+        );
+        return (
+        <div className='status__action-bar'>
+          <IconButton className='status__action-bar__button' title={replyTitle} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} onClick={this.handleReplyClick} counter={status.get('replies_count')} obfuscateCount />
+          <IconButton className={classNames('status__action-bar__button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} counter={withCounters ? status.get('reblogs_count') : undefined} />
+          <IconButton className='status__action-bar__button star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
 
-    const filterButton = this.props.onFilter && (
-      <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.hide)} icon='eye' onClick={this.handleHideClick} />
-    );
 
-    return (
-      <div className='status__action-bar'>
-        <IconButton className='status__action-bar__button' title={replyTitle} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} onClick={this.handleReplyClick} counter={status.get('replies_count')} obfuscateCount />
-        <IconButton className={classNames('status__action-bar__button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} counter={withCounters ? status.get('reblogs_count') : undefined} />
-        <IconButton className='status__action-bar__button star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
-        <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} />
+          {/* <IconButton className={classNames('status__action-bar__button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='nft' onClick={this.handleReblogClick} counter={withCounters ? status.get('reblogs_count') : undefined} /> */}
 
-        {shareButton}
+          {publicStatus === true ? liker_id.length > 0 ? (
+            <IconButton
+              className='status__action-bar__button catpaw-icon'
+              animate
+              active={selfLike >= 1}
+              title={intl.formatMessage(messages.favourite)}
+              icon='paw'
+              onClick={this.handleLikeContent}
+              counter={totalLike <= 0 ? 0 : totalLike}
+            />
+          ) : null : null}
+          <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} />
 
-        {filterButton}
 
-        <div className='status__action-bar__dropdown'>
-          <DropdownMenuContainer
-            scrollKey={scrollKey}
-            disabled={anonymousAccess}
-            status={status}
-            items={menu}
-            icon='ellipsis-h'
-            size={18}
-            direction='right'
-            title={intl.formatMessage(messages.more)}
-          />
+          {status.get('iscn_id') ? null : shareButton}
+
+          {status.get('iscn_id') ? null : filterButton}
+
+          {status.get('iscn_id') ? null : (
+            <div className='status__action-bar__dropdown'>
+              <DropdownMenuContainer
+                scrollKey={scrollKey}
+                disabled={anonymousAccess}
+                status={status}
+                items={menu}
+                icon='ellipsis-h'
+                size={18}
+                direction='right'
+                title={intl.formatMessage(messages.more)}
+              />
+            </div>
+          )}
+
+          {status.get('iscn_id') ? (
+            <IconButton
+              className={classNames('status__action-bar__button nft-icon', {
+                reblogPrivate,
+              })}
+              title={reblogTitle}
+              icon='hexagon-vertical-nft'
+              onClick={this.handleISCN.bind(this, status.get('iscn_id'))}
+            />
+          ) : null}
         </div>
-      </div>
-    );
+        );
   }
 
 }

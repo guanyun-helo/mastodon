@@ -103,6 +103,14 @@ class Api::V1::StatusesController < Api::BaseController
     render json: json
   end
 
+  def update_support
+    puts params
+  end
+
+  def iscn
+    put params
+  end
+
   private
 
   def set_status

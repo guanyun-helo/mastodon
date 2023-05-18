@@ -1,0 +1,1393 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.navigation-panel__logo {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    .nav-btn {
+        height: 50px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .btn {
+            display: flex;
+            overflow: hidden;
+            max-height: 50px;
+            min-height: 1em;
+            padding: 0.5em 1em;
+            justify-content: center;
+            align-items: center;
+            grid-column-gap: 0.25em;
+            grid-row-gap: 0.25em;
+            border-radius: 10em;
+            background-color: #2dd98f;
+            transition: background-color 250ms, transform 250ms cubic-bezier(0.645, 0.045, 0.355, 1);
+            color: #080b18;
+            font-weight: 500;
+            text-decoration: none;
+            font-size: 12px;
+            width: 8rem;
+            .icon-medium {
+                width: 1.7em;
+                height: 1.7em;
+                min-height: 1.7em;
+                min-width: 1.7em;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+    }
+    .nav-btn:hover {
+        cursor: pointer;
+    }
+}
+.navigation-panel__logo {
+    display: flex;
+    flex-direction: row;
+}
+
+.wallet-drawer {
+    .wallet-drawer-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        overflow-y: scroll  ;
+        .logout {
+            position: absolute;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            line-height: 14px;
+            right: 3rem;
+            top: 4rem;
+            i {
+                font-size: 14px;
+            }
+        }
+        .logout:hover {
+            cursor: pointer;
+        }
+        .avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .name {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .wallet {
+            font-size: 16px;
+            color: gray;
+            margin-top: 10px;
+        }
+
+        .intro {
+            max-width: 80%;
+            font-size: 20px;
+            margin-top: 10px;
+            font-size: 18px;
+    line-height: 23px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            margin-top: 20px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .label {
+            font-size: 16px;
+        }
+
+        .value {
+            font-size: 24px;
+        }
+
+        .fan {
+            display: flex;
+            align-items: center;
+        }
+
+        .fan-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .fan-name {
+            font-size: 16px;
+        }
+
+        .lists {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            margin-top: 20px;
+            .bp4-tabs{
+                width: 100%;
+            }
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .list-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .item-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 10%;
+            object-fit: cover;
+        }
+
+        .item-name {
+            font-size: 16px;
+            margin-left: 10px;
+        }
+    }
+    @media screen and (max-width: 600px) {
+            .nft-list-container {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                background-color: $ui-base-color;
+                overflow-y: scroll;
+                min-height: 300px;
+                .nft-list {
+                    width: 100%;
+                    max-height: calc(100vh - 55px - 49px);
+                    box-shadow: 0 2px 10px var(--blackA7);
+                    background-color: $ui-base-color;
+                    // margin-top: 20px;
+    
+                    // --scrollbar-size: 10px;
+                    -ms-overflow-style: none;
+                    /* IE and Edge */
+                    --scrollbar-width: none;
+                    // overflow: scroll;
+                    /* Firefox */
+                    animation: resize;
+                    animation-duration: 0.33s;
+    
+                    .bp4-spinner {
+                        height: 200px;
+                    }
+                }
+    
+                .nft-list::-webkit-scrollbar {
+                    display: none;
+                }
+    
+                .nft-container {
+                    box-sizing: border-box;
+                    position: relative;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    justify-content: center;
+                    background-color: $ui-base-color;
+                    padding: 14px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    border-radius: 0px;
+                    // margin: 0 auto;
+                    border: 1px solid lighten($ui-base-color, 8%);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                    transition: all 0.33s ease-in-out;
+                    animation: fadeUp;
+                    animation-duration: 0.33s;
+    
+                    .bp4-tag {
+                        display: inline-flex;
+                        flex-direction: row;
+                        align-items: center;
+                        background-color: #5f6b7c;
+                        border: none;
+                        border-radius: 2px;
+                        box-shadow: none;
+                        color: #ffffff;
+                        font-size: 12px;
+                        line-height: 16px;
+                        max-width: 100%;
+                        min-height: 25px;
+                        min-width: 25px;
+                        padding: 2px 6px;
+                        position: absolute;
+                        top: 10px;
+                        left: 9px;
+                        border-radius: 50%;
+                        text-align: center;
+                        background: #6d6eff;
+                    }
+    
+                    // .nft-image {
+                    //     width: 100%;
+                    //     background-image: url("https://via.placeholder.com/400x300.png?text=NFT+Image");
+                    //     background-size: cover;
+                    //     background-position: center;
+                    //     border-radius: 10px;
+                    //     // min-height: 150px;
+                    //     margin-bottom: 10px;
+                    //     transition: all 0.33s ease-in-out;
+                    // }
+    
+                    .nft-info {
+                        margin-top: 20px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        width: 100%;
+                        transition: all 0.33s ease-in-out;
+    
+                        .nft-title {
+                            font-size: 16px;
+                            font-weight: bold;
+                            width: 100%;
+                            text-align: left;
+                            margin-bottom: 10px;
+                        }
+    
+                        .nft-description {
+                            font-size: 14px;
+                            line-height: 1.5;
+                            width: 100%;
+                            text-align: left;
+                            -webkit-line-clamp: 3; // 用来限制在一个块元素显示的文本的行数
+                            display: -webkit-box; // 将对象作为弹性伸缩盒模型显示
+                            // -webkit-box-orient: vertical; //设置或检查伸缩盒对象的子元素的排列方式
+                            // text-overflow: ellipsis; // 在多行文本的情况下，用...隐藏超出范围的文本
+                            // word-break: break-all;
+                            // overflow: hidden;
+                            // height: 140px;
+                        }
+                        .nft-labels {
+                            display: flex;
+                            flex-direction: row;
+                            flex-wrap: wrap;
+                            justify-content: space-between;
+                            font-family: serif;
+                            width: 100%;
+                            margin-bottom: 10px;
+    
+                            .label {
+                                display: flex;
+                                align-items: center;
+                                font-size: 14px;
+                                color: #28646e;
+                            }
+    
+                            .label span {
+                                // margin-left: 10px;
+                            }
+                        }
+                        .nft-actions {
+                            display: flex;
+                            flex-direction: row;
+                            .author {
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: center;
+                                align-items: center;
+    
+                                .author-avatar {
+                                    width: 50px;
+                                    height: 50px;
+                                    background-image: url("https://via.placeholder.com/50x50.png?text=Avatar");
+                                    background-size: cover;
+                                    background-position: center;
+                                    border-radius: 50%;
+                                    margin-right: 10px;
+                                }
+    
+                                .author-name {
+                                    font-size: 13px;
+                                    font-weight: bold;
+                                    width: 80px;
+                                    word-wrap: break-word;
+                                }
+                            }
+    
+                            .nft-buttons {
+                                display: flex;
+                                flex-direction: column;
+    
+                                .item {
+                                    color: $ui-base-color;
+                                    text-align: center;
+                                    display: inline-block;
+                                    padding: 5px 10px;
+                                    background-color: #aaf1e7;
+                                    font-size: 16px;
+                                    border-radius: 5px;
+                                    /* margin-right: 10px; */
+                                    cursor: pointer;
+                                    margin: 5px;
+                                }
+                            }
+                        }
+                    }
+                }
+    
+                .nft-container:hover {
+                    cursor: pointer;
+                    content: "";
+                    box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.3);
+                    z-index: 100;
+                    transition: all 0.33s ease-in-out;
+                    border-radius: 0px;
+                }
+    
+                .nft-container:focus {
+                    cursor: pointer;
+                    content: "";
+                    box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.3);
+                    z-index: 100;
+                    transition: all 0.3s ease-in-out;
+                }
+            }
+    
+            .back-to-top {
+                position: absolute;
+                z-index: 3;
+                bottom: 6rem;
+                right: 22px;
+                background: #6d6eff;
+                border-radius: 50%;
+                color: #ffffff;
+                padding: 10px;
+            }
+            .next {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background-color: $ui-base-color;
+                padding: 9px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                border-radius: 2px;
+                width: 100%;
+                margin: 0 auto;
+                border-bottom: 1px solid lighten($ui-base-color, 8%);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                transition: all 0.33s ease-in-out;
+                box-sizing: border-box;
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+    
+            .next:hover {
+                cursor: pointer;
+            }
+    }
+    @media screen and (min-width: 600px) {
+
+    
+            .nft-list-container {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                background-color: $ui-base-color;
+                overflow-y: scroll;
+                min-height: 300px;
+                .nft-list {
+                    width: 100%;
+                    max-height: calc(100vh - 55px - 49px);
+                    box-shadow: 0 2px 10px var(--blackA7);
+                    background-color: $ui-base-color;
+                    // margin-top: 20px;
+    
+                    // --scrollbar-size: 10px;
+                    -ms-overflow-style: none;
+                    /* IE and Edge */
+                    --scrollbar-width: none;
+                    // overflow: scroll;
+                    /* Firefox */
+                    animation: resize;
+                    animation-duration: 0.33s;
+    
+                    .bp4-spinner {
+                        height: 200px;
+                    }
+                }
+    
+                .nft-list::-webkit-scrollbar {
+                    display: none;
+                }
+    
+                .nft-container {
+                    box-sizing: border-box;
+                    position: relative;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: $ui-base-color;
+                    padding: 14px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    border-radius: 0px;
+                    // margin: 0 auto;
+                    border: 1px solid lighten($ui-base-color, 8%);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                    transition: all 0.33s ease-in-out;
+                    animation: fadeUp;
+                    animation-duration: 0.33s;
+    
+                    .bp4-tag {
+                        display: inline-flex;
+                        flex-direction: row;
+                        align-items: center;
+                        background-color: #5f6b7c;
+                        border: none;
+                        border-radius: 2px;
+                        box-shadow: none;
+                        color: #ffffff;
+                        font-size: 12px;
+                        line-height: 16px;
+                        max-width: 100%;
+                        min-height: 25px;
+                        min-width: 25px;
+                        padding: 2px 6px;
+                        position: absolute;
+                        top: 10px;
+                        left: 9px;
+                        border-radius: 50%;
+                        text-align: center;
+                        background: #6d6eff;
+                    }
+    
+                    // .nft-image {
+                    //     width: 45%;
+                    //     background-image: url("https://via.placeholder.com/400x300.png?text=NFT+Image");
+                    //     background-size: cover;
+                    //     background-position: center;
+                    //     border-radius: 10px;
+                    //     min-height: 150px;
+                    //     margin-right: 10px;
+                    //     transition: all 0.33s ease-in-out;
+                    // }
+    
+                    .nft-info {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        // width: 100%;
+                        transition: all 0.33s ease-in-out;
+                        margin-left: 20px;
+                        .nft-title {
+                            font-size: 16px;
+                            font-weight: bold;
+                            width: 100%;
+                            text-align: left;
+                            margin-bottom: 10px;
+                        }
+    
+                        .nft-description {
+                            font-size: 14px;
+                            line-height: 1.5;
+                            width: 100%;
+                            text-align: left;
+                            -webkit-line-clamp: 3; // 用来限制在一个块元素显示的文本的行数
+                            display: -webkit-box; // 将对象作为弹性伸缩盒模型显示
+                            // -webkit-box-orient: vertical; //设置或检查伸缩盒对象的子元素的排列方式
+                            // text-overflow: ellipsis; // 在多行文本的情况下，用...隐藏超出范围的文本
+                            // word-break: break-all;
+                            // overflow: hidden;
+                            // height: 140px;
+                        }
+                        .nft-labels {
+                            display: flex;
+                            flex-direction: row;
+                            flex-wrap: wrap;
+                            justify-content: space-between;
+                            font-family: serif;
+                            width: 100%;
+                            margin-bottom: 10px;
+    
+                            .label {
+                                display: flex;
+                                align-items: center;
+                                font-size: 14px;
+                                color: #28646e;
+                            }
+    
+                            .label span {
+                                // margin-left: 10px;
+                            }
+                        }
+                        .nft-actions {
+                            display: flex;
+                            flex-direction: row;
+                            .author {
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: center;
+                                align-items: center;
+    
+                                .author-avatar {
+                                    width: 50px;
+                                    height: 50px;
+                                    background-image: url("https://via.placeholder.com/50x50.png?text=Avatar");
+                                    background-size: cover;
+                                    background-position: center;
+                                    border-radius: 50%;
+                                    margin-right: 10px;
+                                }
+    
+                                .author-name {
+                                    font-size: 13px;
+                                    font-weight: bold;
+                                    width: 80px;
+                                    word-wrap: break-word;
+                                }
+                            }
+    
+                            .nft-buttons {
+                                display: flex;
+                                flex-direction: column;
+    
+                                .item {
+                                    color: $ui-base-color;
+                                    text-align: center;
+                                    display: inline-block;
+                                    padding: 5px 10px;
+                                    background-color: #aaf1e7;
+                                    font-size: 16px;
+                                    border-radius: 5px;
+                                    /* margin-right: 10px; */
+                                    cursor: pointer;
+                                    margin: 5px;
+                                }
+                            }
+                        }
+                    }
+                }
+    
+                .nft-container:hover {
+                    cursor: pointer;
+                    content: "";
+                    box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.3);
+                    z-index: 100;
+                    transition: all 0.33s ease-in-out;
+                    border-radius: 0px;
+                }
+    
+                .nft-container:focus {
+                    cursor: pointer;
+                    content: "";
+                    box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.3);
+                    z-index: 100;
+                    transition: all 0.3s ease-in-out;
+                }
+            }
+    
+            .back-to-top {
+                position: absolute;
+                z-index: 3;
+                bottom: 6rem;
+                right: 22px;
+                background: #6d6eff;
+                border-radius: 50%;
+                color: #ffffff;
+                padding: 10px;
+            }
+            .next {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background-color: $ui-base-color;
+                padding: 9px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                border-radius: 2px;
+                width: 100%;
+                margin: 0 auto;
+                border-bottom: 1px solid lighten($ui-base-color, 8%);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                transition: all 0.33s ease-in-out;
+                box-sizing: border-box;
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+    
+            .next:hover {
+                cursor: pointer;
+            }
+    }
+    
+}
+
+.bp4-dialog {
+    /*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+    hr {
+        height: 0; /* 1 */
+        color: inherit; /* 2 */
+        border-top-width: 1px; /* 3 */
+    }
+
+    /*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+    abbr:where([title]) {
+        -webkit-text-decoration: underline dotted;
+        text-decoration: underline dotted;
+    }
+
+    /*
+Remove the default font size and weight for headings.
+*/
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-size: inherit;
+        font-weight: inherit;
+    }
+
+    /*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+    a {
+        color: inherit;
+        text-decoration: inherit;
+    }
+
+    /*
+Add the correct font weight in Edge and Safari.
+*/
+
+    b,
+    strong {
+        font-weight: bolder;
+    }
+
+    /*
+1. Use the user's configured `mono` font family by default.
+2. Correct the odd `em` font sizing in all browsers.
+*/
+
+    code,
+    kbd,
+    samp,
+    pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
+        font-size: 1em; /* 2 */
+    }
+
+    /*
+Add the correct font size in all browsers.
+*/
+
+    small {
+        font-size: 80%;
+    }
+
+    /*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+    sub,
+    sup {
+        font-size: 75%;
+        line-height: 0;
+        position: relative;
+        vertical-align: baseline;
+    }
+
+    sub {
+        bottom: -0.25em;
+    }
+
+    sup {
+        top: -0.5em;
+    }
+
+    /*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+    table {
+        text-indent: 0; /* 1 */
+        border-color: inherit; /* 2 */
+        border-collapse: collapse; /* 3 */
+    }
+
+    /*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+        font-family: inherit; /* 1 */
+        font-size: 100%; /* 1 */
+        font-weight: inherit; /* 1 */
+        line-height: inherit; /* 1 */
+        color: inherit; /* 1 */
+        margin: 0; /* 2 */
+        padding: 0; /* 3 */
+    }
+
+    /*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+    button,
+    select {
+        text-transform: none;
+    }
+
+    /*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+    button,
+    [type="button"],
+    [type="reset"],
+    [type="submit"] {
+        -webkit-appearance: button; /* 1 */
+        background-color: transparent; /* 2 */
+        background-image: none; /* 2 */
+    }
+
+    /*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+    :-moz-focusring {
+        outline: auto;
+    }
+
+    /*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+    :-moz-ui-invalid {
+        box-shadow: none;
+    }
+
+    /*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+    progress {
+        vertical-align: baseline;
+    }
+
+    /*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button {
+        height: auto;
+    }
+
+    /*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+    [type="search"] {
+        -webkit-appearance: textfield; /* 1 */
+        outline-offset: -2px; /* 2 */
+    }
+
+    /*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+    ::-webkit-search-decoration {
+        -webkit-appearance: none;
+    }
+
+    /*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+    ::-webkit-file-upload-button {
+        -webkit-appearance: button; /* 1 */
+        font: inherit; /* 2 */
+    }
+
+    /*
+Add the correct display in Chrome and Safari.
+*/
+
+    summary {
+        display: list-item;
+    }
+
+    /*
+Removes the default spacing and border for appropriate elements.
+*/
+
+    blockquote,
+    dl,
+    dd,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    hr,
+    figure,
+    p,
+    pre {
+        margin: 0;
+    }
+
+    fieldset {
+        margin: 0;
+        padding: 0;
+    }
+
+    legend {
+        padding: 0;
+    }
+
+    ol,
+    ul,
+    menu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    /*
+Prevent resizing textareas horizontally by default.
+*/
+
+    textarea {
+        resize: vertical;
+    }
+
+    /*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+    input::-moz-placeholder,
+    textarea::-moz-placeholder {
+        opacity: 1; /* 1 */
+        color: #9ca3af; /* 2 */
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        opacity: 1; /* 1 */
+        color: #9ca3af; /* 2 */
+    }
+
+    /*
+Set the default cursor for buttons.
+*/
+
+    button,
+    [role="button"] {
+        cursor: pointer;
+    }
+
+    /*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+    :disabled {
+        cursor: default;
+    }
+
+    /*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+    img,
+    svg,
+    video,
+    canvas,
+    audio,
+    iframe,
+    embed,
+    object {
+        display: block; /* 1 */
+        vertical-align: middle; /* 2 */
+    }
+
+    /*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+    img,
+    video {
+        max-width: 100%;
+        height: auto;
+    }
+
+    *,
+    ::before,
+    ::after {
+        --tw-border-spacing-x: 0;
+        --tw-border-spacing-y: 0;
+        --tw-translate-x: 0;
+        --tw-translate-y: 0;
+        --tw-rotate: 0;
+        --tw-skew-x: 0;
+        --tw-skew-y: 0;
+        --tw-scale-x: 1;
+        --tw-scale-y: 1;
+        --tw-pan-x: ;
+        --tw-pan-y: ;
+        --tw-pinch-zoom: ;
+        --tw-scroll-snap-strictness: proximity;
+        --tw-ordinal: ;
+        --tw-slashed-zero: ;
+        --tw-numeric-figure: ;
+        --tw-numeric-spacing: ;
+        --tw-numeric-fraction: ;
+        --tw-ring-inset: ;
+        --tw-ring-offset-width: 0px;
+        --tw-ring-offset-color: #fff;
+        --tw-ring-color: rgb(59 130 246 / 0.5);
+        --tw-ring-offset-shadow: 0 0 #0000;
+        --tw-ring-shadow: 0 0 #0000;
+        --tw-shadow: 0 0 #0000;
+        --tw-shadow-colored: 0 0 #0000;
+        --tw-blur: ;
+        --tw-brightness: ;
+        --tw-contrast: ;
+        --tw-grayscale: ;
+        --tw-hue-rotate: ;
+        --tw-invert: ;
+        --tw-saturate: ;
+        --tw-sepia: ;
+        --tw-drop-shadow: ;
+        --tw-backdrop-blur: ;
+        --tw-backdrop-brightness: ;
+        --tw-backdrop-contrast: ;
+        --tw-backdrop-grayscale: ;
+        --tw-backdrop-hue-rotate: ;
+        --tw-backdrop-invert: ;
+        --tw-backdrop-opacity: ;
+        --tw-backdrop-saturate: ;
+        --tw-backdrop-sepia: ;
+    }
+
+    ::backdrop {
+        --tw-border-spacing-x: 0;
+        --tw-border-spacing-y: 0;
+        --tw-translate-x: 0;
+        --tw-translate-y: 0;
+        --tw-rotate: 0;
+        --tw-skew-x: 0;
+        --tw-skew-y: 0;
+        --tw-scale-x: 1;
+        --tw-scale-y: 1;
+        --tw-pan-x: ;
+        --tw-pan-y: ;
+        --tw-pinch-zoom: ;
+        --tw-scroll-snap-strictness: proximity;
+        --tw-ordinal: ;
+        --tw-slashed-zero: ;
+        --tw-numeric-figure: ;
+        --tw-numeric-spacing: ;
+        --tw-numeric-fraction: ;
+        --tw-ring-inset: ;
+        --tw-ring-offset-width: 0px;
+        --tw-ring-offset-color: #fff;
+        --tw-ring-color: rgb(59 130 246 / 0.5);
+        --tw-ring-offset-shadow: 0 0 #0000;
+        --tw-ring-shadow: 0 0 #0000;
+        --tw-shadow: 0 0 #0000;
+        --tw-shadow-colored: 0 0 #0000;
+        --tw-blur: ;
+        --tw-brightness: ;
+        --tw-contrast: ;
+        --tw-grayscale: ;
+        --tw-hue-rotate: ;
+        --tw-invert: ;
+        --tw-saturate: ;
+        --tw-sepia: ;
+        --tw-drop-shadow: ;
+        --tw-backdrop-blur: ;
+        --tw-backdrop-brightness: ;
+        --tw-backdrop-contrast: ;
+        --tw-backdrop-grayscale: ;
+        --tw-backdrop-hue-rotate: ;
+        --tw-backdrop-invert: ;
+        --tw-backdrop-opacity: ;
+        --tw-backdrop-saturate: ;
+        --tw-backdrop-sepia: ;
+    }
+    .lk-fixed {
+        position: fixed;
+    }
+    .lk-absolute {
+        position: absolute;
+    }
+    .lk-relative {
+        position: relative;
+    }
+    .lk-inset-0 {
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+    }
+    .lk-z-\[9999\] {
+        z-index: 9999;
+    }
+    .lk-mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .lk-mr-\[8px\] {
+        margin-right: 8px;
+    }
+    .lk-mt-\[8px\] {
+        margin-top: 8px;
+    }
+    .lk-ml-\[12px\] {
+        margin-left: 12px;
+    }
+    .lk-ml-\[8px\] {
+        margin-left: 8px;
+    }
+    .lk-mt-\[16px\] {
+        margin-top: 16px;
+    }
+    .lk-mt-\[12px\] {
+        margin-top: 12px;
+    }
+    .lk-mt-\[4px\] {
+        margin-top: 4px;
+    }
+    .lk-mb-\[24px\] {
+        margin-bottom: 24px;
+    }
+    .lk-mt-\[24px\] {
+        margin-top: 24px;
+    }
+    .lk-block {
+        display: block;
+    }
+    .lk-flex {
+        display: flex;
+    }
+    .lk-grid {
+        display: grid;
+    }
+    .lk-h-\[24px\] {
+        height: 24px;
+    }
+    .lk-h-\[12px\] {
+        height: 12px;
+    }
+    .lk-h-\[20px\] {
+        height: 20px;
+    }
+    .lk-h-\[48px\] {
+        height: 48px;
+    }
+    .lk-min-h-screen {
+        min-height: 100vh;
+    }
+    .lk-w-\[16px\] {
+        width: 16px;
+    }
+    .lk-w-full {
+        width: 100%;
+    }
+    .lk-w-\[12px\] {
+        width: 12px;
+    }
+    .lk-w-\[20px\] {
+        width: 20px;
+    }
+    .lk-w-\[48px\] {
+        width: 48px;
+    }
+    .lk-max-w-\[400px\] {
+        max-width: 400px;
+    }
+    .lk-shrink-0 {
+        flex-shrink: 0;
+    }
+    .lk-rotate-180 {
+        --tw-rotate: 180deg;
+        transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate))
+            skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+    }
+    .lk-cursor-pointer {
+        cursor: pointer;
+    }
+    .lk-grid-flow-row {
+        grid-auto-flow: row;
+    }
+    .lk-flex-col {
+        flex-direction: column;
+    }
+    .lk-items-start {
+        align-items: flex-start;
+    }
+    .lk-items-center {
+        align-items: center;
+    }
+    .lk-justify-center {
+        justify-content: center;
+    }
+    .lk-gap-\[8px\] {
+        gap: 8px;
+    }
+    .lk-gap-\[24px\] {
+        gap: 24px;
+    }
+    .lk-gap-\[12px\] {
+        gap: 12px;
+    }
+    .lk-gap-x-\[12px\] {
+        -moz-column-gap: 12px;
+        column-gap: 12px;
+    }
+    .lk-overflow-y-auto {
+        overflow-y: auto;
+    }
+    .lk-rounded-\[24px\] {
+        border-radius: 24px;
+    }
+    .lk-rounded-\[8px\] {
+        border-radius: 8px;
+    }
+    .lk-rounded-\[16px\] {
+        border-radius: 16px;
+    }
+    .lk-rounded-full {
+        border-radius: 9999px;
+    }
+    .lk-border-\[4px\] {
+        border-width: 4px;
+    }
+    .lk-border-solid {
+        border-style: solid;
+    }
+    .lk-border-gray-light {
+        --tw-border-opacity: 1;
+        border-color: rgb(235 235 235 / var(--tw-border-opacity));
+    }
+    .lk-bg-gray-lightest {
+        --tw-bg-opacity: 1;
+        background-color: rgb(247 247 247 / var(--tw-bg-opacity));
+    }
+    .lk-bg-like-cyan-light {
+        --tw-bg-opacity: 1;
+        background-color: rgb(170 241 231 / var(--tw-bg-opacity));
+    }
+    .lk-bg-\[black\]\/30 {
+        background-color: rgb(0 0 0 / 0.3);
+    }
+    .lk-bg-\[\#ebebeb\] {
+        --tw-bg-opacity: 1;
+        background-color: rgb(235 235 235 / var(--tw-bg-opacity));
+    }
+    .lk-bg-\[\#fff\] {
+        --tw-bg-opacity: 1;
+        background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+    }
+    .lk-p-\[16px\] {
+        padding: 16px;
+    }
+    .lk-p-\[24px\] {
+        padding: 24px;
+    }
+    .lk-p-\[4px\] {
+        padding: 4px;
+    }
+    .lk-px-\[16px\] {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    .lk-py-\[8px\] {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+    .lk-px-\[12px\] {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    .lk-py-\[24px\] {
+        padding-top: 24px;
+        padding-bottom: 24px;
+    }
+    .lk-text-left {
+        text-align: left;
+    }
+    .lk-text-center {
+        text-align: center;
+    }
+    .lk-text-\[14px\] {
+        font-size: 14px;
+    }
+    .lk-text-\[16px\] {
+        font-size: 16px;
+    }
+    .lk-text-\[12px\] {
+        font-size: 12px;
+    }
+    .lk-font-bold {
+        font-weight: 700;
+    }
+    .lk-leading-\[24px\] {
+        line-height: 24px;
+    }
+    .lk-leading-\[5\/3\] {
+        line-height: 5/3;
+    }
+    .lk-text-gray-dark {
+        --tw-text-opacity: 1;
+        color: rgb(74 74 74 / var(--tw-text-opacity));
+    }
+    .lk-text-like-green {
+        --tw-text-opacity: 1;
+        color: rgb(40 100 110 / var(--tw-text-opacity));
+    }
+    .lk-text-gray-light {
+        --tw-text-opacity: 1;
+        color: rgb(235 235 235 / var(--tw-text-opacity));
+    }
+    .lk-text-gray {
+        --tw-text-opacity: 1;
+        color: rgb(155 155 155 / var(--tw-text-opacity));
+    }
+    .lk-text-red {
+        --tw-text-opacity: 1;
+        color: rgb(227 80 80 / var(--tw-text-opacity));
+    }
+    .lk-text-\[\#28646e\] {
+        --tw-text-opacity: 1;
+        color: rgb(40 100 110 / var(--tw-text-opacity));
+    }
+    .lk-drop-shadow-xl {
+        --tw-drop-shadow: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));
+        filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate)
+            var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+    }
+    .lk-transition-colors {
+        transition-property: color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
+            -webkit-text-decoration-color;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+    }
+    .lk-transition-transform {
+        transition-property: transform;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+    }
+    .hover\:lk-border-like-cyan-light:hover {
+        --tw-border-opacity: 1;
+        border-color: rgb(170 241 231 / var(--tw-border-opacity));
+    }
+    .hover\:lk-bg-like-cyan:hover {
+        --tw-bg-opacity: 1;
+        background-color: rgb(80 227 194 / var(--tw-bg-opacity));
+    }
+    .hover\:lk-bg-\[\#f7f7f7\]:hover {
+        --tw-bg-opacity: 1;
+        background-color: rgb(247 247 247 / var(--tw-bg-opacity));
+    }
+    .hover\:lk-bg-\[\#e6e6e6\]:hover {
+        --tw-bg-opacity: 1;
+        background-color: rgb(230 230 230 / var(--tw-bg-opacity));
+    }
+    .active\:lk-bg-like-cyan-lightest:active {
+        --tw-bg-opacity: 1;
+        background-color: rgb(215 236 236 / var(--tw-bg-opacity));
+    }
+    .active\:lk-bg-\[\#ebebeb\]:active {
+        --tw-bg-opacity: 1;
+        background-color: rgb(235 235 235 / var(--tw-bg-opacity));
+    }
+    .active\:lk-bg-\[\#9b9b9b\]:active {
+        --tw-bg-opacity: 1;
+        background-color: rgb(155 155 155 / var(--tw-bg-opacity));
+    }
+    .lk-group:hover .group-hover\:lk-text-like-green {
+        --tw-text-opacity: 1;
+        color: rgb(40 100 110 / var(--tw-text-opacity));
+    }
+    @media (min-width: 640px) {
+        .sm\:lk-rounded-\[24px\] {
+            border-radius: 24px;
+        }
+
+        .sm\:lk-px-\[24px\] {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .sm\:lk-py-\[32px\] {
+            padding-top: 32px;
+            padding-bottom: 32px;
+        }
+
+        .sm\:lk-text-\[20px\] {
+            font-size: 20px;
+        }
+
+        .sm\:lk-text-\[16px\] {
+            font-size: 16px;
+        }
+    }
+}

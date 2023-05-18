@@ -20,6 +20,8 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { length } from 'stringz';
 import { countableText } from '../util/counter';
 import Icon from 'mastodon/components/icon';
+import { Card, Tag, Callout, Spinner, Elevation, Intent } from '@blueprintjs/core';
+import Api from '../../../api';
 
 const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
 
@@ -70,6 +72,32 @@ class ComposeForm extends ImmutablePureComponent {
   static defaultProps = {
     autoFocus: false,
   };
+
+  state = {
+    collapsed: true,
+    animating: false,
+    tags: [],
+  };
+
+  getTags() {
+    // eslint-disable-next-line promise/catch-or-return
+    Api().get('https://tags.vercel.app/api/taggroup').then(response => {
+      if (response.status === 200) {
+        this.setState({
+          tags: response.data.data,
+        });
+      }
+    });
+  }
+
+  toTag(tag) {
+    // this.context.router.history.push(`/tags/${tag.name}`, { tag: tag.name, color: 'green' });
+    this.handleChange({ target:{
+      value: this.props.text + `#${tag.name} `,
+    } });
+  }
+
+
 
   handleChange = (e) => {
     this.props.onChange(e.target.value);
@@ -141,10 +169,26 @@ class ComposeForm extends ImmutablePureComponent {
   };
 
   componentDidMount () {
+    this.getTags();
     this._updateFocusAndSelection({ });
+    // let tag = this.context.router.history.location.state ? this.context.router.history.location.state.tag : null;
+    // if(tag){
+    //   this.handleChange({ target:{ value: `#${tag} ` } });
+    // }
+    // eslint-disable-next-line no-unused-vars
+    this.context.router.history.listen((location, action) => {
+      let tag = this.context.router.history.location.state ? this.context.router.history.location.state.tag : null;
+
+      if(tag){
+        // this.handleChange({ target:{ value: `#${tag} ` } });
+      }
+    });
   }
 
   componentDidUpdate (prevProps) {
+    if (this.props.location !== prevProps.location) {
+      this.onRouteChanged();
+    }
     this._updateFocusAndSelection(prevProps);
   }
 
@@ -208,6 +252,7 @@ class ComposeForm extends ImmutablePureComponent {
 
   render () {
     const { intl, onPaste, autoFocus } = this.props;
+    const  { tags } = this.state;
     const disabled = this.props.isSubmitting;
 
     let publishText = '';
@@ -221,12 +266,13 @@ class ComposeForm extends ImmutablePureComponent {
     }
 
     return (
-      <form className='compose-form' onSubmit={this.handleSubmit}>
-        <WarningContainer />
+      <div className='toot-form'>
+        <form className='compose-form' onSubmit={this.handleSubmit}>
+          <WarningContainer />
 
-        <ReplyIndicatorContainer />
+          <ReplyIndicatorContainer />
 
-        <div className={`spoiler-input ${this.props.spoiler ? 'spoiler-input--visible' : ''}`} ref={this.setRef} aria-hidden={!this.props.spoiler}>
+          <div className={`spoiler-input ${this.props.spoiler ? 'spoiler-input--visible' : ''}`} ref={this.setRef} aria-hidden={!this.props.spoiler}>
           <AutosuggestInput
             placeholder={intl.formatMessage(messages.spoiler_placeholder)}
             value={this.props.spoilerText}
@@ -244,9 +290,9 @@ class ComposeForm extends ImmutablePureComponent {
             lang={this.props.lang}
             spellCheck
           />
-        </div>
+          </div>
 
-        <AutosuggestTextarea
+          <AutosuggestTextarea
           ref={this.setAutosuggestTextarea}
           placeholder={intl.formatMessage(messages.placeholder)}
           disabled={disabled}
@@ -270,31 +316,66 @@ class ComposeForm extends ImmutablePureComponent {
           </div>
         </AutosuggestTextarea>
 
-        <div className='compose-form__buttons-wrapper'>
-          <div className='compose-form__buttons'>
-            <UploadButtonContainer />
-            <PollButtonContainer />
-            <PrivacyDropdownContainer disabled={this.props.isEditing} />
-            <SpoilerButtonContainer />
-            <LanguageDropdown />
+          <div className='compose-form__buttons-wrapper'>
+            <div className='compose-form__buttons'>
+              <UploadButtonContainer />
+              <PollButtonContainer />
+              <PrivacyDropdownContainer disabled={this.props.isEditing} />
+              <SpoilerButtonContainer />
+              <LanguageDropdown />
+            </div>
+
+            <div className='character-counter__wrapper'>
+              <CharacterCounter max={1024} text={this.getFulltextForCharacterCounting()} />
+            </div>
           </div>
 
-          <div className='character-counter__wrapper'>
-            <CharacterCounter max={500} text={this.getFulltextForCharacterCounting()} />
+          <div className='compose-form__publish'>
+            <div className='compose-form__publish-button-wrapper'>
+              <Button
+                type='submit'
+                text={publishText}
+                disabled={!this.canSubmit()}
+                block
+              />
+            </div>
           </div>
-        </div>
+        </form>
+        <div className='interests-zone-form'>
+          {
+            tags.length === 0 ? (
+              <Spinner
+                size={30}
+              />
+            ) : (<div className='cards-container' variant='outlined' sx={{ width: 320 }}>
+              {tags.map((card) => (
+                <Card interactive elevation={Elevation.TWO} key={card.name} >{card.name}
+                  <div className='card-area'>
+                    {
+                      card.children.map(tag=>(
+                        // eslint-disable-next-line react/jsx-no-bind
+                        <Tag onClick={this.toTag.bind(this, tag)} minimal round key={tag.name} >{tag.name}</Tag>
+                      ))
+                    }
+                  </div>
 
-        <div className='compose-form__publish'>
-          <div className='compose-form__publish-button-wrapper'>
-            <Button
-              type='submit'
-              text={publishText}
-              disabled={!this.canSubmit()}
-              block
-            />
-          </div>
+                </Card>
+                // <Card onClick={this.toTag.bind(this, tag)} large minimal round key={tag.name} >{tag.name}</Card>
+
+              ))}
+              <Callout intent='success' title={'TIPS'}>
+                <Icon id='star' /> 點按 Tag 會自動出現在輸入框哦
+              </Callout>
+
+            </div>)
+          }
         </div>
-      </form>
+        {/* <Divider /> */}
+
+        {/* <Callout intent='success' title={'TIPS'}>
+          <Icon id='star' /> 點按 Tag 會自動出現在輸入框哦
+        </Callout> */}
+      </div>
     );
   }
 

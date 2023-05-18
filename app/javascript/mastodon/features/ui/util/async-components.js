@@ -34,6 +34,26 @@ export function ListTimeline () {
   return import(/* webpackChunkName: "features/list_timeline" */'../../list_timeline');
 }
 
+export function Interests () {
+  return import(/* webpackChunkName: "features/lists" */'../../interests');
+}
+
+export function WritingNft () {
+  return import(/* webpackChunkName: "features/lists" */'../../writing_nft');
+}
+
+export function WritingNftDetail () {
+  return import(/* webpackChunkName: "features/lists" */'../../writing_nft/components/nft_detail');
+}
+
+export function WritingNftIframe () {
+  return import(/* webpackChunkName: "features/lists" */'../../writing_nft/components/iframe');
+}
+
+export function LikerId () {
+  return import(/* webpackChunkName: "features/lists" */'../../LikerId');
+}
+
 export function Lists () {
   return import(/* webpackChunkName: "features/lists" */'../../lists');
 }

@@ -1,0 +1,109 @@
+.fui-FluentProvider {
+    div:only-child {
+        width: 100%;
+    }
+}
+
+.interests-zone {
+    background: lighten($ui-base-color, 4%);
+
+    min-height: 100px;
+    transition: all .33s ease-in;
+    justify-content: center;
+    /* align-items: center; */
+    display: flex;
+    h5 {
+        margin-bottom: 14px;
+        font-size: 16px;
+
+        a {
+            color: $primary-text-color;
+        }
+    }
+    .cards-container{
+        width: 100%;
+        .card-area{
+            margin-top: 5px;
+        }
+    }
+    .bp4-card {
+        transition: all .33s ease-in;
+        animation: fadeUp 1s;
+        padding: 14px;
+        border-bottom: 1px solid lighten($ui-base-color, 8%);
+        border-left: 1px solid lighten($ui-base-color, 8%);
+
+        background: lighten($ui-base-color, 4%);
+        overflow-y: scroll;
+        // height: 100%;
+        box-sizing: border-box;
+        box-shadow: none;
+
+        .bp4-tag {
+            margin: 5px;
+            color: $primary-text-color;
+        }
+
+        .bp4-tag:hover {
+            cursor: pointer;
+        }
+    }
+
+    .bp4-callout {
+        font-size: 15px;
+        letter-spacing: 3px;
+    }
+}
+
+.interests-zone-form{
+    // overflow-y: scroll;
+    background: darken($ui-base-color, 8%);
+    padding: 15px;
+    min-height: 100px;
+    transition: all .33s ease-in;
+    justify-content: center;
+    /* align-items: center; */
+    display: flex;
+    // height: 280px;
+    flex-direction: column;
+    h5 {
+        margin-bottom: 14px;
+        font-size: 16px;
+
+        a {
+            color: $primary-text-color;
+        }
+    }
+    .cards-container{
+        width: 100%;
+        height: 100%;
+        .card-area{
+            margin-top: 5px;
+        }
+    }
+    .bp4-card {
+        transition: all .33s ease-in;
+        animation: fadeUp 1s;
+        padding: 14px;
+
+        background: darken($ui-base-color, 8%);
+        overflow-y: scroll;
+        // height: 100%;
+        box-sizing: border-box;
+        box-shadow: none;
+        border: 0px;
+        .bp4-tag {
+            margin: 5px;
+            color: $primary-text-color;
+        }
+
+        .bp4-tag:hover {
+            cursor: pointer;
+        }
+    }
+
+    .bp4-callout {
+        font-size: 15px;
+        letter-spacing: 3px;
+    }
+}

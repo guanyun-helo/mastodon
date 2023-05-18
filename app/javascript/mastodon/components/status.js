@@ -15,12 +15,19 @@ import { MediaGallery, Video, Audio } from '../features/ui/util/async-components
 import { HotKeys } from 'react-hotkeys';
 import classNames from 'classnames';
 import Icon from 'mastodon/components/icon';
-import { displayMedia } from '../initial_state';
-import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
 
 // We use the component (and not the container) since we do not want
 // to use the progress bar to show download progress
 import Bundle from '../features/ui/components/bundle';
+import ISCN_dark from '../../images/likebutton/ISCN_dark';
+import ISCN_light from '../../images/likebutton/ISCN_light';
+import { displayMedia } from '../initial_state';
+import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
+import api from '../api';
+import civic from '../../images/likebutton/civic-liker.svg';
+// We use the component (and not the container) since we do not want
+// to use the progress bar to show download progress
+import storage from 'localforage';
 
 export const textForScreenReader = (intl, status, rebloggedByText = false) => {
   const displayName = status.getIn(['account', 'display_name']);
@@ -65,7 +72,6 @@ class Status extends ImmutablePureComponent {
   static contextTypes = {
     router: PropTypes.object,
   };
-
   static propTypes = {
     status: ImmutablePropTypes.map,
     account: ImmutablePropTypes.map,
@@ -99,6 +105,8 @@ class Status extends ImmutablePureComponent {
     cachedMediaWidth: PropTypes.number,
     scrollKey: PropTypes.string,
     deployPictureInPicture: PropTypes.func,
+    changeDrawer: PropTypes.func,
+    changeProfileAddress: PropTypes.func,
     pictureInPicture: ImmutablePropTypes.contains({
       inUse: PropTypes.bool,
       available: PropTypes.bool,
@@ -119,6 +127,8 @@ class Status extends ImmutablePureComponent {
   state = {
     showMedia: defaultMediaVisibility(this.props.status),
     statusId: undefined,
+    isSubscribedCivicLiker: false,
+    ISCNbage: ISCN_light,
     forceFilter: undefined,
   };
 
@@ -135,6 +145,23 @@ class Status extends ImmutablePureComponent {
 
   handleToggleMediaVisibility = () => {
     this.setState({ showMedia: !this.state.showMedia });
+  };
+
+  openNftProfile = () =>{
+    const status = this.props.status;
+    if(status){
+      // const account = status.get('account');
+      // const liker_id = account.get('liker_id');
+      // if(!liker_id) return;
+      api().get(`https://api.like.co/users/id/${'ckxpress'}/min`).then((res) => {
+        console.log(res);
+        if(res.data?.likeWallet){
+          this.props.changeProfileAddress(res.data?.likeWallet);
+          this.props.changeDrawer({ isDrawerOpen: true, drawerType: 'profile' });
+
+        }
+      });
+    }
   };
 
   handleClick = e => {
@@ -177,15 +204,15 @@ class Status extends ImmutablePureComponent {
     this.props.onTranslate(this._properStatus());
   };
 
-  renderLoadingMediaGallery () {
+  renderLoadingMediaGallery() {
     return <div className='media-gallery' style={{ height: '110px' }} />;
   }
 
-  renderLoadingVideoPlayer () {
+  renderLoadingVideoPlayer() {
     return <div className='video-player' style={{ height: '110px' }} />;
   }
 
-  renderLoadingAudioPlayer () {
+  renderLoadingAudioPlayer() {
     return <div className='audio-player' style={{ height: '110px' }} />;
   }
 
@@ -224,6 +251,39 @@ class Status extends ImmutablePureComponent {
     e.preventDefault();
     this.props.onReply(this._properStatus(), this.context.router.history);
   };
+
+  componentDidMount() {
+    if (document.body && document.body.classList.contains('theme-mastodon-light')) {
+      this.setState({
+        ISCNbage: ISCN_dark,
+      });
+    }
+    const status = this.props.status;
+    if(status){
+      const account = status.get('account');
+      const liker_id = account.get('liker_id');
+      if(!liker_id) return;
+      storage.getItem(liker_id, (err, value) => {
+        if (value) {
+          this.setState({
+            isSubscribedCivicLiker: value,
+          });
+          return;
+        }
+        if (!value ||　value === null) {
+          api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+            if (res.data.isSubscribedCivicLiker) {
+              this.setState({
+                isSubscribedCivicLiker: res.data.isSubscribedCivicLiker,
+              }, () => {
+                storage.setItem(liker_id, true);
+              });
+            }
+          });
+        }
+      });
+    }
+  }
 
   handleHotkeyFavourite = () => {
     this.props.onFavourite(this._properStatus());
@@ -294,7 +354,7 @@ class Status extends ImmutablePureComponent {
     this.setState({ forceFilter: true });
   };
 
-  _properStatus () {
+  _properStatus() {
     const { status } = this.props;
 
     if (status.get('reblog', null) !== null && typeof status.get('reblog') === 'object') {
@@ -308,14 +368,13 @@ class Status extends ImmutablePureComponent {
     this.node = c;
   };
 
-  render () {
+  render() {
     let media = null;
     let statusAvatar, prepend, rebloggedByText;
 
     const { intl, hidden, featured, unread, showThread, scrollKey, pictureInPicture } = this.props;
 
     let { status, account, ...other } = this.props;
-
     if (status === null) {
       return null;
     }
@@ -490,7 +549,7 @@ class Status extends ImmutablePureComponent {
     }
 
     if (account === undefined || account === null) {
-      statusAvatar = <Avatar account={status.get('account')} size={46} />;
+      statusAvatar = <Avatar account={status.get('account')} size={this.state.isSubscribedCivicLiker ? 40 : 48} />;
     } else {
       statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
@@ -506,9 +565,13 @@ class Status extends ImmutablePureComponent {
 
     return (
       <HotKeys handlers={handlers}>
-        <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
+        <div className={classNames('status__wrapper animate__animated animate__fadeIn animate__faster', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
           {prepend}
-
+          {/* <div className={`${status.get('iscn_id') ? 'iscn-bage animate__animated animate__heartBeat' : 'iscn-bage-disable'}`}>
+            <a target='_blank' href={`https://app.like.co/view/${encodeURIComponent(status.get('iscn_id'))}`}>
+              <img src={this.state.ISCNbage} />
+            </a>
+          </div> */}
           <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted })} data-id={status.get('id')}>
             <div className='status__info'>
               <a onClick={this.handleClick} href={`/@${status.getIn(['account', 'acct'])}\/${status.get('id')}`} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
@@ -516,13 +579,30 @@ class Status extends ImmutablePureComponent {
                 <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
               </a>
 
-              <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
-                <div className='status__avatar'>
-                  {statusAvatar}
-                </div>
+              <div className='status__info_container'>
 
-                <DisplayName account={status.get('account')} />
-              </a>
+                <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
+                  <div
+                    className='status__avatar' style={{
+                      backgroundImage: this.state.isSubscribedCivicLiker ? `url(${civic})` : null,
+                      backgroundSize: '50px 50px',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundRepeat: 'no-repeat',
+                    }}
+                  >
+                    {statusAvatar}
+                  </div>
+
+                  <DisplayName account={status.get('account')} />
+                </a>
+                <Icon onClick={this.openNftProfile} className='status-nft' id='nftBadge' type='self' >
+                  <div class='shine' />
+                </Icon>
+
+              </div>
             </div>
 
             <StatusContent

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import React from 'react';
 import Logo from 'mastodon/components/logo';
 import { Link, withRouter } from 'react-router-dom';
@@ -7,6 +8,8 @@ import Avatar from 'mastodon/components/avatar';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { openModal } from 'mastodon/actions/modal';
+import Button from 'mastodon/components/button';
+
 
 const Account = connect(state => ({
   account: state.getIn(['accounts', me]),
@@ -35,6 +38,14 @@ class Header extends React.PureComponent {
     location: PropTypes.object,
   };
 
+  isTag(){
+    let pathArray = this.props.history.location.pathname.split('/');
+    if(pathArray[1]  === 'tags'){
+      this.props.history.push('/publish', { tag: pathArray[2], color: 'green' });
+    }else{
+      this.props.history.push('/publish');
+    }
+  }
   render () {
     const { signedIn } = this.context.identity;
     const { location, openClosedRegistrationsModal } = this.props;
@@ -44,7 +55,7 @@ class Header extends React.PureComponent {
     if (signedIn) {
       content = (
         <>
-          {location.pathname !== '/publish' && <Link to='/publish' className='button'><FormattedMessage id='compose_form.publish_form' defaultMessage='Publish' /></Link>}
+          {location.pathname !== '/publish' && <Button onClick={this.isTag.bind(this)} className='button'><FormattedMessage id='compose_form.publish_form' defaultMessage='Publish' /></Button>}
           <Account />
         </>
       );

@@ -16,6 +16,10 @@ import {
   unbookmark,
   pin,
   unpin,
+  like,
+  superLiked,
+  getLikeCount,
+  getUserlikeCount,
 } from '../actions/interactions';
 import {
   muteStatus,
@@ -48,6 +52,7 @@ import { deployPictureInPicture } from '../actions/picture_in_picture';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { boostModal, deleteModal } from '../initial_state';
 import { showAlertForError } from '../actions/alerts';
+import { changeDrawer, changeProfileAddress } from 'mastodon/actions/app';
 
 const messages = defineMessages({
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -74,8 +79,10 @@ const makeMapStateToProps = () => {
 };
 
 const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
+  changeDrawer: drawer => dispatch(changeDrawer(drawer)),
+  changeProfileAddress: address => dispatch(changeProfileAddress(address)),
 
-  onReply (status, router) {
+  onReply(status, router) {
     dispatch((_, getState) => {
       let state = getState();
 
@@ -91,7 +98,7 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     });
   },
 
-  onModalReblog (status, privacy) {
+  onModalReblog(status, privacy) {
     if (status.get('reblogged')) {
       dispatch(unreblog(status));
     } else {
@@ -99,7 +106,7 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     }
   },
 
-  onReblog (status, e) {
+  onReblog(status, e) {
     if ((e && e.shiftKey) || !boostModal) {
       this.onModalReblog(status);
     } else {
@@ -107,7 +114,7 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     }
   },
 
-  onFavourite (status) {
+  onFavourite(status) {
     if (status.get('favourited')) {
       dispatch(unfavourite(status));
     } else {
@@ -115,7 +122,7 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     }
   },
 
-  onBookmark (status) {
+  onBookmark(status) {
     if (status.get('bookmarked')) {
       dispatch(unbookmark(status));
     } else {
@@ -123,7 +130,7 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     }
   },
 
-  onPin (status) {
+  onPin(status) {
     if (status.get('pinned')) {
       dispatch(unpin(status));
     } else {
@@ -131,14 +138,14 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     }
   },
 
-  onEmbed (status) {
+  onEmbed(status) {
     dispatch(openModal('EMBED', {
       url: status.get('url'),
       onError: error => dispatch(showAlertForError(error)),
     }));
   },
 
-  onDelete (status, history, withRedraft = false) {
+  onDelete(status, history, withRedraft = false) {
     if (!deleteModal) {
       dispatch(deleteStatus(status.get('id'), history, withRedraft));
     } else {
@@ -177,28 +184,43 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     dispatch(directCompose(account, router));
   },
 
-  onMention (account, router) {
+  onMention(account, router) {
     dispatch(mentionCompose(account, router));
   },
 
-  onOpenMedia (statusId, media, index) {
+  onOpenMedia(statusId, media, index) {
     dispatch(openModal('MEDIA', { statusId, media, index }));
   },
 
-  onOpenVideo (statusId, media, options) {
+  onOpenVideo(statusId, media, options) {
     dispatch(openModal('VIDEO', { statusId, media, options }));
   },
 
-  onBlock (status) {
+  onBlock(status) {
     const account = status.get('account');
     dispatch(initBlockModal(account));
   },
+  onLike(status, count, location, callback) {
+    return dispatch(like(status, count, location, callback));
+  },
 
-  onUnblock (account) {
+  getUserLikeCount(id, href, origin, callback) {
+    return dispatch(getUserlikeCount(id, href, origin, callback));
+  },
+
+  onSuperLiked(status, location, params, callBack) {
+    return dispatch(superLiked(status, location, params, callBack));
+  },
+
+  getLikeCount(likerId, encodedURL, callback) {
+    return dispatch(getLikeCount(likerId, encodedURL, callback));
+  },
+
+  onUnblock(account) {
     dispatch(unblockAccount(account.get('id')));
   },
 
-  onReport (status) {
+  onReport(status) {
     dispatch(initReport(status.get('account'), status));
   },
 
@@ -210,11 +232,11 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     dispatch(initMuteModal(account));
   },
 
-  onUnmute (account) {
+  onUnmute(account) {
     dispatch(unmuteAccount(account.get('id')));
   },
 
-  onMuteConversation (status) {
+  onMuteConversation(status) {
     if (status.get('muted')) {
       dispatch(unmuteStatus(status.get('id')));
     } else {
@@ -222,7 +244,7 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     }
   },
 
-  onToggleHidden (status) {
+  onToggleHidden(status) {
     if (status.get('hidden')) {
       dispatch(revealStatus(status.get('id')));
     } else {
@@ -230,11 +252,11 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     }
   },
 
-  onToggleCollapsed (status, isCollapsed) {
+  onToggleCollapsed(status, isCollapsed) {
     dispatch(toggleStatusCollapse(status.get('id'), isCollapsed));
   },
 
-  onBlockDomain (domain) {
+  onBlockDomain(domain) {
     dispatch(openModal('CONFIRM', {
       message: <FormattedMessage id='confirmations.domain_block.message' defaultMessage='Are you really, really sure you want to block the entire {domain}? In most cases a few targeted blocks or mutes are sufficient and preferable. You will not see content from that domain in any public timelines or your notifications. Your followers from that domain will be removed.' values={{ domain: <strong>{domain}</strong> }} />,
       confirm: intl.formatMessage(messages.blockDomainConfirm),
@@ -242,11 +264,11 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     }));
   },
 
-  onUnblockDomain (domain) {
+  onUnblockDomain(domain) {
     dispatch(unblockDomain(domain));
   },
 
-  deployPictureInPicture (status, type, mediaProps) {
+  deployPictureInPicture(status, type, mediaProps) {
     dispatch(deployPictureInPicture(status.get('id'), status.getIn(['account', 'id']), type, mediaProps));
   },
 

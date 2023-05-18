@@ -4,10 +4,10 @@ import { NavLink } from 'react-router-dom';
 import Icon from 'mastodon/components/icon';
 import classNames from 'classnames';
 
-const ColumnLink = ({ icon, text, to, href, method, badge, transparent, ...other }) => {
+const ColumnLink = ({ icon, type, text, to, href, method, badge, transparent, ...other }) => {
   const className = classNames('column-link', { 'column-link--transparent': transparent });
   const badgeElement = typeof badge !== 'undefined' ? <span className='column-link__badge'>{badge}</span> : null;
-  const iconElement = typeof icon === 'string' ? <Icon id={icon} fixedWidth className='column-link__icon' /> : icon;
+  const iconElement = typeof icon === 'string' ? <Icon type={type} id={icon} fixedWidth className='column-link__icon' /> : icon;
 
   if (href) {
     return (
@@ -36,6 +36,7 @@ ColumnLink.propTypes = {
   method: PropTypes.string,
   badge: PropTypes.node,
   transparent: PropTypes.bool,
+  type: PropTypes.string,
 };
 
 export default ColumnLink;

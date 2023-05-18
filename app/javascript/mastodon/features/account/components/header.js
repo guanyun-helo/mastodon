@@ -14,6 +14,10 @@ import ShortNumber from 'mastodon/components/short_number';
 import { NavLink } from 'react-router-dom';
 import DropdownMenuContainer from 'mastodon/containers/dropdown_menu_container';
 import AccountNoteContainer from '../containers/account_note_container';
+import civic from '../../../../images/likebutton/civic-liker.svg';
+import api from '../../../api';
+import storage from 'localforage';
+import CivicLiker from '../../../../images/likebutton/support-icon.svg';
 import FollowRequestNoteContainer from '../containers/follow_request_note_container';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
 import { Helmet } from 'react-helmet';
@@ -107,6 +111,19 @@ class Header extends ImmutablePureComponent {
     hidden: PropTypes.bool,
   };
 
+  state = {
+    isSubscribedCivicLiker: false,
+    balances: 0,
+    wallet: '',
+    price: {
+      last_updated_at: 0,
+      usd: 0,
+      usd_24h_change: 0,
+      usd_24h_vol: 0,
+      usd_market_cap: 0,
+    },
+  };
+
   openEditProfile = () => {
     window.open('/settings/profile', '_blank');
   };
@@ -163,10 +180,120 @@ class Header extends ImmutablePureComponent {
     });
   };
 
-  render () {
+  getCoinPrice() {
+    api().get('https://api.coingecko.com/api/v3/simple/price?ids=likecoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true').then(response => {
+
+      if (response.status === 200) {
+        this.setState({
+          price: response.data.likecoin,
+        });
+      }
+    });
+  }
+
+  getDelegation(cosmosWallet) {
+    // https://mainnet-node.like.co/cosmos/staking/v1beta1/delegations/cosmos1g2dpslkge0wmhgpdegeg0wq549syz8tjx48fhz
+    return api().get(`https://api.like.co/cosmos/lcd/cosmos/staking/v1beta1/delegations/${cosmosWallet}`);
+  }
+
+  getUnbonding(cosmosWallet) {
+    // https://mainnet-node.like.co/cosmos/staking/v1beta1/delegators/cosmos1g2dpslkge0wmhgpdegeg0wq549syz8tjx48fhz/unbonding_delegations
+    return api().get(`https://api.like.co/cosmos/lcd/cosmos/staking/v1beta1/delegators/${cosmosWallet}/unbonding_delegations`);
+  }
+
+  getBalances(cosmosWallet) {
+    return api().get(`https://api.like.co/cosmos/lcd/cosmos/bank/v1beta1/balances/${cosmosWallet}`);
+  }
+
+  componentDidUpdate() {
+
+
+    const { account } = this.props;
+    if (me === account.get('id')) {
+
+    }else{
+      this.setState({
+        balances: 0,
+      });
+    }
+    if (!account) {
+      return null;
+    }
+  }
+
+  componentDidMount() {
+    const account = this.props.account;
+    const liker_id = account.get('liker_id');
+    if (!liker_id) return;
+    this.getCoinPrice();
+
+    api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+      if (res.data.cosmosWallet) {
+        let balancesTotal = 0;
+        let wallet = res.data.cosmosWallet;
+
+        Promise.allSettled([this.getBalances(wallet), this.getDelegation(wallet), this.getUnbonding(wallet)]).then((res) => {
+          if (res[0].status === 'fulfilled') {
+            balancesTotal += Number(res[0].value.data.balances[0].amount) / 1000000000;
+          }
+          if (res[1].status === 'fulfilled') {
+            let delegatedBalances = 0;
+            res[1].value.data.delegation_responses.forEach((item) => {
+              delegatedBalances += Number(item.balance.amount) / 1000000000;
+            });
+            balancesTotal += delegatedBalances;
+          }
+          if (res[2].status === 'fulfilled') {
+            let unbondingBalances = 0;
+            res[2].value.data.unbonding_responses.forEach(item => {
+              item.entries.forEach((ele) => {
+                unbondingBalances += Number(ele.balance) / 1000000000;
+              });
+            });
+            balancesTotal += unbondingBalances;
+          }
+          this.setState({
+            balances: balancesTotal,
+            wallet: wallet,
+          });
+        });
+      }
+    });
+
+    storage.getItem(liker_id, (err, value) => {
+      if (value) {
+        this.setState({
+          isSubscribedCivicLiker: value,
+        });
+        return;
+      }
+      if (!value || value === null) {
+        api().get(`https://api.like.co/users/id/${liker_id}/min`).then((res) => {
+          if (res.data.isSubscribedCivicLiker) {
+            this.setState({
+              isSubscribedCivicLiker: res.data.isSubscribedCivicLiker,
+            }, () => {
+              storage.setItem(liker_id, true);
+            });
+          }
+        });
+      }
+    });
+  }
+
+  render() {
     const { account, hidden, intl, domain } = this.props;
     const { signedIn, permissions } = this.context.identity;
 
+    const { balances, price } = this.state;
+    let self = false;
+    if (me === account.get('id')) {
+      self = true;
+    }else{
+      this.setState({
+        balances: 0,
+      });
+    }
     if (!account) {
       return null;
     }
@@ -175,11 +302,11 @@ class Header extends ImmutablePureComponent {
     const isRemote     = account.get('acct') !== account.get('username');
     const remoteDomain = isRemote ? account.get('acct').split('@')[1] : null;
 
-    let info        = [];
-    let actionBtn   = '';
-    let bellBtn     = '';
-    let lockedIcon  = '';
-    let menu        = [];
+    let info = [];
+    let actionBtn = '';
+    let bellBtn = '';
+    let lockedIcon = '';
+    let menu = [];
 
     if (me !== account.get('id') && account.getIn(['relationship', 'followed_by'])) {
       info.push(<span key='followed_by' className='relationship-tag'><FormattedMessage id='account.follows_you' defaultMessage='Follows you' /></span>);
@@ -301,7 +428,7 @@ class Header extends ImmutablePureComponent {
       }
     }
 
-    const content         = { __html: account.get('note_emojified') };
+    const content = { __html: account.get('note_emojified') };
     const displayNameHtml = { __html: account.get('display_name_html') };
     const fields          = account.get('fields');
     const isLocal         = account.get('acct').indexOf('@') === -1;
@@ -318,6 +445,8 @@ class Header extends ImmutablePureComponent {
       badge = null;
     }
 
+    const liker_id = account.get('liker_id') || null;
+
     return (
       <div className={classNames('account__header', { inactive: !!account.get('moved') })} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
         {!(suspended || hidden || account.get('moved')) && account.getIn(['relationship', 'requested_by']) && <FollowRequestNoteContainer account={account} />}
@@ -332,8 +461,19 @@ class Header extends ImmutablePureComponent {
 
         <div className='account__header__bar'>
           <div className='account__header__tabs'>
-            <a className='avatar' href={account.get('avatar')} rel='noopener noreferrer' target='_blank' onClick={this.handleAvatarClick}>
-              <Avatar account={suspended || hidden ? undefined : account} size={90} />
+            <a
+              className='avatar' style={{
+                backgroundImage: this.state.isSubscribedCivicLiker ? `url(${civic})` : null,
+                backgroundSize: '94px 94px',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundRepeat: 'no-repeat',
+                height: '94px',
+              }} href={account.get('avatar')} rel='noopener noreferrer' target='_blank' onClick={this.handleAvatarClick}
+            >
+              <Avatar account={suspended || hidden ? undefined : account} size={70} />
             </a>
 
             {!suspended && (
@@ -353,9 +493,38 @@ class Header extends ImmutablePureComponent {
           <div className='account__header__tabs__name'>
             <h1>
               <span dangerouslySetInnerHTML={displayNameHtml} /> {badge}
-              <small>
-                <span>@{acct}</span> {lockedIcon}
-              </small>
+              <small>@{acct} {lockedIcon}</small>
+              {liker_id ?
+                <div
+                  className='civic-liker' style={{
+                    display: 'flex',
+                    'flexDirection': 'row',
+                    'alignItems': 'center',
+                    'fontSize': '13px',
+                    marginTop: '10px',
+                  }}
+                >
+                  <img src={CivicLiker} style={{ width: '27px' }} />
+                  <a style={{ marginLeft: '5px', color: '#50e3c2', textDecoration: 'none', fontWeight: 500 }} target='_blank' href={`https://liker.land/${this.state.wallet}?tab=created?utm_source=likersocial`}>Collect My Nft</a>
+                </div> : null
+
+              }
+
+              {self ? liker_id ?
+                <div
+                  className='civic-liker-asset' style={{
+                    display: 'flex',
+                    'flexDirection': 'row',
+                    'alignItems': 'center',
+                    'fontSize': '13px',
+                    marginTop: '10px',
+                  }}
+                >
+                  <a style={{ marginLeft: '5px', color: '#50e3c2', textDecoration: 'none', fontWeight: 500 }} target='_blank' href={`https://liker.land/${liker_id}/civic?utm_source=likersocial`}>LIKE balances:</a>
+                  <div> &nbsp; {balances.toFixed(2)} LIKE ≈ {(price.usd * balances).toFixed(2)} USD</div>
+                </div> : null
+
+                : null}
             </h1>
           </div>
 

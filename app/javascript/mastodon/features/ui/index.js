@@ -22,6 +22,9 @@ import BundleColumnError from './components/bundle_column_error';
 import UploadArea from './components/upload_area';
 import ColumnsAreaContainer from './containers/columns_area_container';
 import PictureInPicture from 'mastodon/features/picture_in_picture';
+import { ToastContainer } from 'material-react-toastify';
+import { NftDrawer } from '../nft_profile';
+// import 'material-react-toastify/dist/ReactToastify.css';
 import {
   Compose,
   Status,
@@ -54,18 +57,25 @@ import {
   FollowRecommendations,
   About,
   PrivacyPolicy,
+  Interests,
+  WritingNft,
+  WritingNftDetail,
+  WritingNftIframe,
+  LikerId,
 } from './util/async-components';
 import initialState, { me, owner, singleUserMode, showTrends, trendsAsLanding } from '../../initial_state';
 import { closeOnboarding, INTRODUCTION_VERSION } from 'mastodon/actions/onboarding';
 import Header from './components/header';
-
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
 // Without this it ends up in ~8 very commonly used bundles.
 import '../../components/status';
+import changeDrawer from '../../actions/app';
 
 const messages = defineMessages({
   beforeUnload: { id: 'ui.beforeunload', defaultMessage: 'Your draft will be lost if you leave Mastodon.' },
 });
+
+
 
 const mapStateToProps = state => ({
   layout: state.getIn(['meta', 'layout']),
@@ -76,6 +86,11 @@ const mapStateToProps = state => ({
   dropdownMenuIsOpen: state.getIn(['dropdown_menu', 'openId']) !== null,
   firstLaunch: state.getIn(['settings', 'introductionVersion'], 0) < INTRODUCTION_VERSION,
   username: state.getIn(['accounts', me, 'username']),
+  drawerParams: state.getIn(['meta', 'drawerParams']),
+  address: state.getIn(['meta', 'address']),
+  profileAddress: state.getIn(['meta', 'profileAddress']),
+  drawerType: state.getIn(['meta', 'drawerType']),
+
 });
 
 const keyMap = {
@@ -123,7 +138,7 @@ class SwitchingColumnsArea extends React.PureComponent {
     mobile: PropTypes.bool,
   };
 
-  componentWillMount () {
+  componentWillMount() {
     if (this.props.mobile) {
       document.body.classList.toggle('layout-single-column', true);
       document.body.classList.toggle('layout-multiple-columns', false);
@@ -133,7 +148,7 @@ class SwitchingColumnsArea extends React.PureComponent {
     }
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     if (![this.props.location.pathname, '/'].includes(prevProps.location.pathname)) {
       this.node.handleChildrenContentChange();
     }
@@ -150,7 +165,7 @@ class SwitchingColumnsArea extends React.PureComponent {
     }
   };
 
-  render () {
+  render() {
     const { children, mobile } = this.props;
     const { signedIn } = this.context.identity;
 
@@ -188,6 +203,11 @@ class SwitchingColumnsArea extends React.PureComponent {
           <WrappedRoute path='/lists/:id' component={ListTimeline} content={children} />
           <WrappedRoute path='/notifications' component={Notifications} content={children} />
           <WrappedRoute path='/favourites' component={FavouritedStatuses} content={children} />
+          <WrappedRoute path='/interests' component={Interests} content={children} />
+          <WrappedRoute path='/writingnft' component={WritingNft} content={children} />
+          <WrappedRoute path='/writingnft-detail/:nftid' component={WritingNftDetail} content={children} />
+          <WrappedRoute path='/writingnft-frame/:nftid' component={WritingNftIframe} content={children} />
+          <WrappedRoute path='/liker-id' component={LikerId} content={children} />
 
           <WrappedRoute path='/bookmarks' component={BookmarkedStatuses} content={children} />
           <WrappedRoute path='/pinned' component={PinnedStatuses} content={children} />
@@ -252,6 +272,10 @@ class UI extends React.PureComponent {
     layout: PropTypes.string.isRequired,
     firstLaunch: PropTypes.bool,
     username: PropTypes.string,
+    drawerParams:PropTypes.object,
+    profileAddress: PropTypes.string,
+    address: PropTypes.string,
+    drawerType: PropTypes.string,
   };
 
   state = {
@@ -385,7 +409,7 @@ class UI extends React.PureComponent {
     document.addEventListener('dragleave', this.handleDragLeave, false);
     document.addEventListener('dragend', this.handleDragEnd, false);
 
-    if ('serviceWorker' in  navigator) {
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', this.handleServiceWorkerPostMessage);
     }
 
@@ -408,7 +432,7 @@ class UI extends React.PureComponent {
     };
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     window.removeEventListener('focus', this.handleWindowFocus);
     window.removeEventListener('blur', this.handleWindowBlur);
     window.removeEventListener('beforeunload', this.handleBeforeUnload);
@@ -456,7 +480,7 @@ class UI extends React.PureComponent {
   };
 
   handleHotkeyFocusColumn = e => {
-    const index  = (e.key * 1) + 1; // First child is drawer, skip that
+    const index = (e.key * 1) + 1; // First child is drawer, skip that
     const column = this.node.querySelector(`.column:nth-child(${index})`);
     if (!column) return;
     const container = column.querySelector('.scrollable');
@@ -541,10 +565,13 @@ class UI extends React.PureComponent {
     this.context.router.history.push('/follow_requests');
   };
 
-  render () {
-    const { draggingOver } = this.state;
-    const { children, isComposing, location, dropdownMenuIsOpen, layout } = this.props;
+  onDrawerChange = (params) => {
+    this.props.dispatch(changeDrawer(params));
+  };
 
+  render() {
+    const { draggingOver } = this.state;
+    const { dispatch, profileAddress, drawerType, drawerParams, children, isComposing, location, dropdownMenuIsOpen, layout, address } = this.props;
     const handlers = {
       help: this.handleHotkeyToggleHelp,
       new: this.handleHotkeyNew,
@@ -571,16 +598,29 @@ class UI extends React.PureComponent {
       <HotKeys keyMap={keyMap} handlers={handlers} ref={this.setHotkeysRef} attach={window} focused>
         <div className={classNames('ui', { 'is-composing': isComposing })} ref={this.setRef} style={{ pointerEvents: dropdownMenuIsOpen ? 'none' : null }}>
           <Header />
-
+          <div style={{ zIndex: 10, position: 'absolute', height: '30px', width: '100%' }}>drawer: {profileAddress}</div>
           <SwitchingColumnsArea location={location} mobile={layout === 'mobile' || layout === 'single-column'}>
             {children}
           </SwitchingColumnsArea>
 
           {layout !== 'mobile' && <PictureInPicture />}
           <NotificationsContainer />
+          <ToastContainer
+            limit={2}
+            position='top-center'
+            autoClose={1000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
           <LoadingBarContainer className='loading-bar' />
           <ModalContainer />
           <UploadArea active={draggingOver} onClose={this.closeUploadModal} />
+          <NftDrawer dispatch={dispatch} drawerType={drawerType} profileAddress={profileAddress} address={address} drawerParams={drawerParams} />
         </div>
       </HotKeys>
     );

@@ -41,6 +41,7 @@ class ColumnHeader extends React.PureComponent {
   state = {
     collapsed: true,
     animating: false,
+    tags: [],
   };
 
   handleToggleClick = (e) => {
@@ -184,7 +185,6 @@ class ColumnHeader extends React.PureComponent {
             {(!collapsed || animating) && collapsedContent}
           </div>
         </div>
-
         {appendContent}
       </div>
     );
