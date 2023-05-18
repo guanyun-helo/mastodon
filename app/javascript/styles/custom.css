@@ -1,0 +1,53 @@
+@-moz-keyframes fadeUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0
+    }
+}
+
+@-webkit-keyframes fadeUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0
+    }
+}
+
+@-o-keyframes fadeUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0
+    }
+}
+
+@media (max-width:890px) {
+    .columns-area__panels__pane__inner{
+        animation: fadeInRight;
+        /* referring directly to the animation's @keyframe declaration */
+        animation-duration: .7s;
+        /* don't forget to set a duration! */
+        animation-timing-function: cubic-bezier(0, 0, 0, 1); 
+    }
+    .ui__header{
+        animation: fadeInDown;
+        /* referring directly to the animation's @keyframe declaration */
+        animation-duration: .7s;
+        /* don't forget to set a duration! */
+        animation-timing-function: cubic-bezier(0, 0, 0, 1); 
+    }
+}
+.item-list {
+    animation: fadeUp;
+    /* referring directly to the animation's @keyframe declaration */
+    animation-duration: .4s;
+    /* don't forget to set a duration! */
+}
+.columns-area__panels__main{
+    max-width: 600px !important;
+}
