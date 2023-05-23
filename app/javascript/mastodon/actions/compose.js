@@ -161,7 +161,6 @@ export function submitCompose(routerHistory) {
     }
 
     dispatch(submitComposeRequest());
-
     // If we're editing a post with media attachments, those have not
     // necessarily been changed on the server. Do it now in the same
     // API call.
@@ -200,6 +199,7 @@ export function submitCompose(routerHistory) {
         'Idempotency-Key': getState().getIn(['compose', 'idempotencyKey']),
       },
     }).then(function (response) {
+      console.log('response', response);
       if (routerHistory && (routerHistory.location.pathname === '/publish' || routerHistory.location.pathname === '/statuses/new') && window.history.state) {
         routerHistory.goBack();
       }

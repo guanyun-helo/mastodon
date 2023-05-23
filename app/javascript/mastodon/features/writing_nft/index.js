@@ -12,20 +12,12 @@ import { createSelector } from 'reselect';
 import Column from 'mastodon/components/column';
 import ColumnHeader from 'mastodon/components/column_header';
 import {
-  getTrending,
-  getTop,
-  getLikerInfoByAddress,
-  getOwnerByISCN,
-  getLatest,
-} from '../../utils/api/like';
-import {
   Tab,
   Tabs,
   Spinner,
   Icon,
 } from '@blueprintjs/core';
 
-import { WrappedSwitch, WrappedRoute } from '../ui/util/react_router_helpers';
 import NftList from './components/nft_list';
 import Macy from 'macy';
 
@@ -79,10 +71,10 @@ class WritingNft extends ImmutablePureComponent {
 
 
   componentDidMount() {
+    this.context.router.history.push('/writingnft/feature');
   }
 
   handleTabChange = (e) => {
-    console.log('e', e);
     this.setState(
       {
         currentTab: e,
@@ -94,9 +86,7 @@ class WritingNft extends ImmutablePureComponent {
     document.querySelector(`.nft-${this.state.currentTab}`).scrollTop = 0;
   }
   render() {
-    const { multiColumn } = this.props;
 
-    const { currentTab } = this.state;
     return (
 
       <div className='nft-zone'>

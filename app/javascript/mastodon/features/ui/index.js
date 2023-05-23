@@ -24,6 +24,7 @@ import ColumnsAreaContainer from './containers/columns_area_container';
 import PictureInPicture from 'mastodon/features/picture_in_picture';
 import { ToastContainer } from 'material-react-toastify';
 import { NftDrawer } from '../nft_profile';
+import PoetSoComponent from '../postcard/index';
 // import 'material-react-toastify/dist/ReactToastify.css';
 import {
   Compose,
@@ -598,7 +599,6 @@ class UI extends React.PureComponent {
       <HotKeys keyMap={keyMap} handlers={handlers} ref={this.setHotkeysRef} attach={window} focused>
         <div className={classNames('ui', { 'is-composing': isComposing })} ref={this.setRef} style={{ pointerEvents: dropdownMenuIsOpen ? 'none' : null }}>
           <Header />
-          <div style={{ zIndex: 10, position: 'absolute', height: '30px', width: '100%' }}>drawer: {profileAddress}</div>
           <SwitchingColumnsArea location={location} mobile={layout === 'mobile' || layout === 'single-column'}>
             {children}
           </SwitchingColumnsArea>
@@ -621,6 +621,7 @@ class UI extends React.PureComponent {
           <ModalContainer />
           <UploadArea active={draggingOver} onClose={this.closeUploadModal} />
           <NftDrawer dispatch={dispatch} drawerType={drawerType} profileAddress={profileAddress} address={address} drawerParams={drawerParams} />
+          <PoetSoComponent />
         </div>
       </HotKeys>
     );

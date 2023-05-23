@@ -1,5 +1,5 @@
 import { STORE_HYDRATE } from 'mastodon/actions/store';
-import { APP_LAYOUT_CHANGE, ADDRESS_CHANGE, DRAWER_CHANGE, PROFILE_ADDRESS_CHANGE } from 'mastodon/actions/app';
+import { APP_LAYOUT_CHANGE, ADDRESS_CHANGE, DRAWER_CHANGE, PROFILE_ADDRESS_CHANGE, SIGNER_CHANGE, INIT_CONNECT_METHODS } from 'mastodon/actions/app';
 import { Map as ImmutableMap } from 'immutable';
 import { layoutFromWindow } from 'mastodon/is_mobile';
 
@@ -15,6 +15,10 @@ const initialState = ImmutableMap({
 
 export default function meta(state = initialState, action) {
   switch(action.type) {
+  case INIT_CONNECT_METHODS:
+    return state.set('connectMethods', action.methods);
+  case SIGNER_CHANGE:
+    return state.set('signer', action.signer);
   case PROFILE_ADDRESS_CHANGE:
     return state.set('profileAddress', action.address);
   case ADDRESS_CHANGE:

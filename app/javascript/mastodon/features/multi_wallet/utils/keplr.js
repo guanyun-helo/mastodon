@@ -1,5 +1,5 @@
 export async function initKeplr(options, trys = 0) {
-  console.log(options);
+  console.log('init-keplr', options);
   if (!window.keplr || !window.getOfflineSignerAuto) {
     if (trys < options.initAttemptCount) {
       await new Promise(resolve => setTimeout(resolve, 1000));

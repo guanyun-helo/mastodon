@@ -2695,6 +2695,25 @@
     axios "^0.27.2"
     long "^4.0.0"
 
+"@likecoin/iscn-js@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@likecoin/iscn-js/-/iscn-js-0.5.3.tgz#eff19d705a2dc8cb3ad4764515b0d1f0972b216d"
+  integrity sha512-4EWrV0OkRBCrZUrgrs0syCDvF+cNQg8fDzsN8N+sKhpsaAez37LTKrEyoNw6h5dtCC38JhssMBNoVtO+ygtEWw==
+  dependencies:
+    "@likecoin/iscn-message-types" "^0.0.5"
+    axios "^0.27.2"
+    bech32 "^2.0.0"
+    bignumber.js "^9.0.1"
+    buffer "^6.0.3"
+    fast-json-stable-stringify "^2.1.0"
+
+"@likecoin/iscn-message-types@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@likecoin/iscn-message-types/-/iscn-message-types-0.0.5.tgz#1b1d883b89e2e1a7fcb10d25c0f2c4f5ee64dfa0"
+  integrity sha512-YJ0rwCREeFT2sk8gn8iGb0uQ7JGnSL8EhB5vZy9tDRxIgyy7BQsadxvFZLcX6OnJPbMBYWCyclUjC0Dih98FTg==
+  dependencies:
+    buffer "^6.0.3"
+
 "@likersocial/wallet-connector@^0.20.1":
   version "0.20.1"
   resolved "https://registry.yarnpkg.com/@likersocial/wallet-connector/-/wallet-connector-0.20.1.tgz#7c5bdbf000bb435a978ac765efb9c1b57ec563dc"
@@ -5815,6 +5834,11 @@ bech32@^1.1.4:
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
 
+bech32@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/bech32/-/bech32-2.0.0.tgz#078d3686535075c8c79709f054b1b226a133b355"
+  integrity sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==
+
 better-opn@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/better-opn/-/better-opn-2.1.1.tgz#94a55b4695dc79288f31d7d0e5f658320759f7c6"
@@ -5831,6 +5855,11 @@ big.js@^5.2.2:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
+
+bignumber.js@^9.0.1, bignumber.js@^9.1.1:
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.1.tgz#c4df7dc496bd849d4c9464344c1aa74228b4dac6"
+  integrity sha512-pHm4LsMJ6lzgNGVfZHjMoO8sdoRhOzOH4MLmY65Jg70bpxCKu5iOHNJyfF6OyvYw7t8Fpf35RuzUyqnQsj8Vig==
 
 binary-extensions@^1.0.0:
   version "1.13.1"
@@ -6970,7 +6999,7 @@ cosmjs-types@^0.5.1:
     long "^4.0.0"
     protobufjs "~6.11.2"
 
-cosmjs-types@^0.7.1:
+cosmjs-types@^0.7.1, cosmjs-types@^0.7.2:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/cosmjs-types/-/cosmjs-types-0.7.2.tgz#a757371abd340949c5bd5d49c6f8379ae1ffd7e2"
   integrity sha512-vf2uLyktjr/XVAgEq0DjMxeAWh1yYREe7AMHDKd7EiHVqxBPCaBS+qEEQUkXbR9ndnckqr1sUG8BQhazh4X5lA==
@@ -14215,6 +14244,11 @@ querystring@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
   integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
+
+querystring@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.1.tgz#40d77615bb09d16902a85c3e38aa8b5ed761c2dd"
+  integrity sha512-wkvS7mL/JMugcup3/rMitHmd9ecIGd2lhFhK9N3UUQ450h66d1r3Y9nvXzQAW1Lq+wyx61k/1pfKS5KuKiyEbg==
 
 querystringify@^2.1.1:
   version "2.2.0"

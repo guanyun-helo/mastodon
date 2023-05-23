@@ -733,9 +733,15 @@ body > [data-popper-placement] {
 
   .compose-form__publish {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-around;
+    align-items: center;
     min-width: 0;
     flex: 0 0 auto;
+    .bp4-control{
+      padding-top: 15px;
+      margin-bottom: 0px;
+      font-size: 10px;
+    }
 
     .compose-form__publish-button-wrapper {
       overflow: hidden;
@@ -1193,22 +1199,17 @@ body > [data-popper-placement] {
     flex-direction: row;
     align-items: center;
     .status-nft{
-      height: 25px;
-      width: 25px;
+      height: 22px;
+      width: 22px;
       margin-left: 15px;
-      .shine{
-        width : 25px;
-        height : 3px;
-        background : rgba(255,255,255,0.65);
-        transform: rotate(25deg);
-        animation : shine 7s infinite; 
+      svg{
+        width: 100%;
+        height: 100%;
+        fill: $classic-highlight-color;
       }
     }
     .status-nft:hover{
       cursor: pointer;
-      rotate: 90deg;
-      transition: 1s ease-in-out;
-      // animation: r;
     }
   }
 }
@@ -2484,8 +2485,11 @@ $ui-header-height: 55px;
     padding: 15px;
 
     .logo {
-      height: $ui-header-height - 30px;
+      height: $ui-header-height - 15px;
       width: auto;
+      .logo-slogn-path{
+        fill: $white;
+      }
     }
   }
 

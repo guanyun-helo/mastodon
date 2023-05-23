@@ -8,6 +8,8 @@ import ScrollContainer from 'mastodon/containers/scroll_container';
 import Column from 'mastodon/components/column';
 import ColumnHeader from 'mastodon/components/column_header';
 import _ from 'lodash';
+import { connect } from 'react-redux';
+
 import {
   getOwnerByISCN,
   getNFTbyID,
@@ -17,11 +19,36 @@ import {
   getNFTListByOwner,
   getLikerInfoByAddress,
   getCollectRankByCollecterAddress,
+  getNFTbyISCNID,
+  getNFTListByOwnerAddress,
 } from '../../../utils/api/like';
+
+
+import {
+  getChainNFTClassListingEndpoint,
+  getNFTPurchaseInfo,
+  postNFTPurchase,
+} from '../../../utils/api/likecoin';
+
+import {
+  NFT_INDEXER_LIMIT_MAX,
+  signTransferNFT,
+  signGrant,
+  signBuyNFT,
+  broadcastTx,
+  getNFTCountByClassId,
+  getISCNRecord,
+  getNFTClassCollectionType,
+  getFormattedNFTEvents,
+  parseNFTMetadataURL,
+  getNFTHistoryDataMap,
+  populateGrantEvent,
+  getUniqueAddressesFromEvent,
+} from '../../multi_wallet/utils/nft';
 
 import {
   Intent,
-  Button,
+  Tag,
   Callout,
   Spinner,
   Alert,
@@ -31,8 +58,17 @@ import {
 
 import Macy from 'macy';
 
+const mapStateToProps = (state) => ({
+  address: state.getIn(['meta', 'address']),
+  profileAddress: state.getIn(['meta', 'profileAddress']),
+  drawerType: state.getIn(['meta', 'drawerType']),
+  signer: state.getIn(['meta', 'signer']),
+});
+
+export default
+@connect(mapStateToProps)
 @injectIntl
-export default class NftList extends ImmutablePureComponent {
+class NftList extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object.isRequired,
@@ -174,17 +210,17 @@ export default class NftList extends ImmutablePureComponent {
     for (const item of temISCNList) {
       let owner = await getOwnerByISCN(item.parent.iscn_id_prefix);
       let liker = contentType === 'latest'
-        ? { data: likerInfo }
-        : await getLikerInfoByAddress(owner.data.owner);
+        ? likerInfo
+        : await getLikerInfoByAddress(owner.owner);
       let result = await getNFTmeta(item.id);
       let nftDetail = await getNFTbyID(item.id);
 
       if (result !== undefined) {
         temNftList.push({
-          liker: liker.data,
-          owner: owner.data,
-          ...result.data,
-          ...nftDetail.data,
+          ...result,
+          ...nftDetail,
+          liker: liker,
+          owner: owner,
         });
       }
     }
@@ -202,6 +238,7 @@ export default class NftList extends ImmutablePureComponent {
           },
           () => {
             if (this.state.macy === null) return;
+            console.log('recalculate',  this.state.nftList[this.state.nftList.length - 1].id);
             this.state.macy.recalculate(true);
             // this.observer();
           },
@@ -235,8 +272,10 @@ export default class NftList extends ImmutablePureComponent {
         document
           .querySelector(`.nft-list-${contentType}-container`)
           .addEventListener('scroll', () => {
+            console.log('scrolled');
             // Get the position and size of the box element relative to the viewport
             let elementId = this.state.currentElementId;
+            console.log('currentElementId', elementId);
             if (elementId === null) return;
             let rect = document
               .querySelector(`.${elementId}`)
@@ -252,8 +291,9 @@ export default class NftList extends ImmutablePureComponent {
 
             // Change the background color of the box element if it is in view
             if (inView) {
+              console.log('in view');
               if (this.state.isLoading) return;
-              this.getMore();
+              this.getMore(this.props.contentType);
             } else {
             }
           });
@@ -265,21 +305,21 @@ export default class NftList extends ImmutablePureComponent {
       'like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6',
     );
     // this.setState({
-    //   rawNftList: result.data.nfts,
-    //   nextKey: result.data.next_key,
+    //   rawNftList: result.nfts,
+    //   nextKey: result.next_key,
     // });
 
     let nftList = [];
-    nftList = result.data.nfts.slice(0, 5);
+    nftList = result.nfts.slice(0, 5);
     let temNftList = [];
     for (let nft of nftList) {
       let meta = await getNFTmeta(nft.class_id);
-      let creator = await getLikerInfoByAddress(meta.data.iscn_owner);
+      let creator = await getLikerInfoByAddress(meta.iscn_owner);
       let temNft = {
-        creator: creator,
-        meta: meta.data,
-        owner: this.props.likerInfo,
         ...nft,
+        creator: creator,
+        meta: meta,
+        owner: this.props.likerInfo,
       };
       temNftList.push(temNft);
     }
@@ -308,16 +348,16 @@ export default class NftList extends ImmutablePureComponent {
     for (const item of temISCNList) {
       let owner = await getOwnerByISCN(item.parent.iscn_id_prefix);
       let liker = type === 'latest'
-        ? { data: likerInfo }
-        : await getLikerInfoByAddress(owner.data.owner);
+        ? likerInfo
+        : await getLikerInfoByAddress(owner.owner);
       let result = await getNFTmeta(item.id);
       let nftDetail = await getNFTbyID(item.id);
       if (result !== undefined) {
         temNftList.push({
-          liker: liker.data,
-          owner: owner.data,
-          ...result.data,
-          ...nftDetail.data,
+          ...result,
+          ...nftDetail,
+          liker: liker,
+          owner: owner,
         });
       }
     }
@@ -347,10 +387,10 @@ export default class NftList extends ImmutablePureComponent {
     getNFTListByOwner('like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6', next)
       .then((result) => {
         let nftList = new Map();
-        if (result.data.nfts !== null) {
-          result.data.nfts.forEach((item) => {
-            if (item.data) {
-              nftList.set(item.data?.class_parent?.iscn_id_prefix, item);
+        if (result.nfts !== null) {
+          result.nfts.forEach((item) => {
+            if (item) {
+              nftList.set(item?.class_parent?.iscn_id_prefix, item);
             }
           });
         }
@@ -358,11 +398,11 @@ export default class NftList extends ImmutablePureComponent {
           rawNftList: new Map([...this.state.rawNftList].concat([...nftList])),
           isLoading: false,
         });
-        if (result.data.pagination?.next_key === null) {
+        if (result.pagination?.next_key === null) {
           return;
         }
-        if (result.data.pagination?.next_key !== null) {
-          this.getNFTListByOwner(addres, result.data.pagination?.next_key);
+        if (result.pagination?.next_key !== null) {
+          this.getNFTListByOwner(addres, result.pagination?.next_key);
         }
       })
       .catch((err) => {
@@ -375,18 +415,18 @@ export default class NftList extends ImmutablePureComponent {
       .then((result) => {
         this.setState(
           {
-            rawISCNList: result.data?.classes
-              ? [...this.state.rawISCNList, ...result.data.classes]
+            rawISCNList: result?.classes
+              ? [...this.state.rawISCNList, ...result.classes]
               : [...this.state.rawISCNList],
           },
           () => {
-            if (result.data.pagination?.next_key === undefined) {
+            if (result.pagination?.next_key === undefined) {
               this.filterNftList(this.props.contentType);
             }
           },
         );
-        if (result.data.pagination?.next_key === undefined) return;
-        this.getISCNListByOwner(address, result.data.pagination?.next_key);
+        if (result.pagination?.next_key === undefined) return;
+        this.getISCNListByOwner(address, result.pagination?.next_key);
       })
       .catch((err) => {
         console.log(err);
@@ -397,8 +437,8 @@ export default class NftList extends ImmutablePureComponent {
     let result = await getCollectRankByCollecterAddress(address);
     this.setState(
       {
-        rawCollectedList: result.data?.classes
-          ? [...this.state.rawCollectedList, ...result.data.classes]
+        rawCollectedList: result?.classes
+          ? [...this.state.rawCollectedList, ...result.classes]
           : [...this.state.rawCollectedList],
       },
       () => {
@@ -418,8 +458,70 @@ export default class NftList extends ImmutablePureComponent {
 
   getCoinPrice = async () => {
     let result = await getCoinPrice();
+    console.log('likecoin', result);
     this.setState({
-      likecoin: result.data?.likecoin,
+      likecoin: result?.likecoin,
+    });
+  };
+
+  goRead = (nft) => {
+    this.setState({
+      isDrawerDisplay: true,
+      currentReadingNft: nft,
+    });
+  };
+
+  goCollect = async (nft) => {
+    let ownerNftList = new Map();
+    const getNFTListByOwnerAddressFunction = async (address, next) => {
+      let result = await getNFTListByOwnerAddress(nft.ownerWallet, next);
+      result?.nfts.forEach((item) => {
+        ownerNftList.set(item.owner, item);
+      });
+    };
+    const getNftListINfo = async (id) => {
+      let result = await getChainNFTClassListingEndpoint(id);
+    };
+    let purchaseInfo = null;
+    const getNFTPurchasedInfo = async ({ iscnId, classId }) => {
+      let result = await getNFTPurchaseInfo({ iscnId, classId });
+      purchaseInfo = result;
+    };
+    // await getNftListINfo(nft.id);
+    console.log('nft', nft);
+    await getNFTListByOwnerAddressFunction(nft.iscn_owner);
+    await getNFTPurchasedInfo({ iscnId: nft.iscn_id, classId: nft.id });
+    let nftOne = ownerNftList.get(
+      'like17m4vwrnhjmd20uu7tst7nv0kap6ee7js69jfrs',
+    );
+    let nftDetail = await getNFTbyISCNID(nft.iscn_id);
+    let params = {
+      senderAddress: this.props.address,
+      classId: nftDetail.classId,
+      nftId: nftOne?.nfts[0],
+      seller: nftDetail.ownerWallet,
+      memo: 'First nft purchased by LikerSocial',
+      priceInLIKE: nftDetail.currentPrice,
+      signer: this.props.signer,
+    };
+
+    let res;
+    if (purchaseInfo === null) {
+      res = await signBuyNFT(params);
+    } else {
+      res = await signGrant({
+        senderAddress: params.senderAddress,
+        amountInLIKE: purchaseInfo.totalPrice,
+        signer: this.props.signer,
+        memo: 'First nft purchased from LikerSocial',
+      });
+    }
+    // let res = await signBuyNFT(params);
+    const { txHash, code } = await broadcastTx(res, this.props.signer);
+    let purchasedRes = await postNFTPurchase({
+      txHash,
+      classId: nft.id,
+      ts: Date.now(),
     });
   };
 
@@ -440,14 +542,70 @@ export default class NftList extends ImmutablePureComponent {
 
   render() {
     const { isLoading, nftList, rawNftList, likecoin } = this.state;
-    const { contentType, likerInfo } = this.props;
+    const { contentType, likerInfo, selected } = this.props;
+    console.log('nftList', nftList);
     return nftList.length === 0 ? (
       <Spinner className='nft-list-container next' size={20} />
     ) : (
-      <div className={`nft-list-container nft-list-${contentType}-container`}>
+      <div className={`nft-list-container nft-list-${contentType}-container`} style={{ 'display': selected === true ? 'flex' : 'none' }}>
         <div className={`nft-list nft-${contentType}`}>
           {nftList.map((nft, ndx) => (
             <div class={'nft-container'} key={nft.id}>
+              <div className='nft-info'>
+                <div class={'nft-title'}>{nft.name}</div>
+                <div class='nft-description '>{nft.description}</div>
+                <div className='nft-labels'>
+                  <div class='label'>
+                    <Tag>
+                      {' '}
+                      <span>
+                        Copies Sold: {nft.soldCount ? nft.soldCount : 0}
+                      </span>
+                    </Tag>
+                  </div>{' '}
+                  <div class='label'>
+                    <Tag>
+                      <span>
+                        Price:{' '}
+                        {(
+                          (nft.currentPrice)
+                        ).toFixed(1) + ' LIKE'}
+                      </span>
+                    </Tag>
+                  </div>{' '}
+                  {likecoin?.usd ? (
+                    <div class='label'>
+                      <Tag>
+                        {' '}
+                        <span>
+                          Price Usd:{' '}
+                          {(
+                            ((nft?.currentPrice) *
+                              likecoin?.usd)
+                          ).toFixed(2)}
+                        </span>
+                      </Tag>
+                    </div>
+                  ) : null}
+                </div>
+                <div className='nft-actions'>
+                  <div className='nft-buttons'>
+                    <div
+                      className={`nft-collect item ${nft.id}`}
+                      onClick={this.goRead.bind(this, nft)}
+                    >
+                      {' '}
+                      讀原文
+                    </div>
+                    <div
+                      className='nft-origial item'
+                      onClick={this.goCollect.bind(this, nft)}
+                    >
+                      立即收藏
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class='container'>
                 <div class='book'>
                   <div class='front'>
@@ -455,63 +613,33 @@ export default class NftList extends ImmutablePureComponent {
                       <img
                         className='nft-image'
                         alt={nft.name}
+                        // onClick={this.goNftDetail.bind(this, nft)}
                         src={`https://api.like.co/likernft/metadata/image/class_${nft.id}?size=450`}
                       />
-                      <div class={`nft-title  ${nft.id}`}>{nft.name}</div>
-                      <div class='nft-description '>{nft.description}</div>
+                      <div class={'nft-title'}>{nft.name}</div>
+                      <div class='author'>
+                        <div className='author-by'>Written by {'  '}</div>
+                        <img
+                          className='author-avatar'
+                          alt={nft.liker ? nft.liker.likeWallet : ''}
+                          src={nft.liker ? nft.liker.avatar : ''}
+                        />
+
+                        <div class={'author-name'}>{nft.liker.displayName}</div>
+                      </div>
                     </div>
                   </div>
                   <div class='left-side'>
                     <h2>
                       <img
                         className='author-avatar'
-                        alt={nft?.liker ? nft?.liker.likeWallet : ''}
-                        src={nft?.liker ? nft?.liker.avatar : ''}
+                        alt={nft.liker ? nft.liker.likeWallet : ''}
+                        src={nft.liker ? nft.liker.avatar : ''}
                       />
-                      <span>{nft?.liker.displayName}</span>
+                      <span>{nft.liker.displayName}</span>
 
                       {/* <span>{nft.name}</span> */}
                     </h2>
-                  </div>
-                </div>
-              </div>
-              <div className='nft-info'>
-                <div class={`nft-title  ${nft.id}`}>{nft.name}</div>
-                <div className='nft-labels'>
-                  <div class='label'>
-                    <span>
-                      Price:{' '}
-                      {nft.currentPrice.toFixed(0)}
-                      LIKE
-                    </span>
-                  </div>
-                  <div class='label'>
-                    <span>
-                      Copies Sold: {nft.soldCount ? nft.soldCount : 0}
-                    </span>
-                  </div>
-                  {/* <div class='label'>
-                    <span>
-                      Total Value:{' '}
-                      {nft.total_sold_value
-                        ? (nft.total_sold_value / 1000000000).toFixed(0)
-                        : 0}{' '}
-                      LIKE
-                    </span>
-                  </div> */}
-                </div>
-                <div className='nft-actions'>
-                  <div class='author'>
-                    <img
-                      className='author-avatar'
-                      alt={nft?.liker ? nft?.liker.likeWallet : ''}
-                      src={nft?.liker ? nft?.liker.avatar : ''}
-                    />
-
-                    <div class={'author-name'}>{nft?.liker.displayName}</div>
-                  </div>
-                  <div className='nft-buttons'>
-                    <div className='nft-origial item'>${ likecoin === null  ? (nft.currentPrice).toFixed(2):(nft.currentPrice * likecoin.usd).toFixed(2)}</div>
                   </div>
                 </div>
               </div>

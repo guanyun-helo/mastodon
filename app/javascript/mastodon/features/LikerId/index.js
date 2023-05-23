@@ -13,7 +13,7 @@ import LoadingIndicator from 'mastodon/components/loading_indicator';
 import ScrollableList from 'mastodon/components/scrollable_list';
 import Column from 'mastodon/components/column';
 import ColumnHeader from 'mastodon/components/column_header';
-import { Button, Card, Elevation } from '@blueprintjs/core';
+import { Button, Card, Elevation, Callout } from '@blueprintjs/core';
 import { getLikeAuth, getLikerId } from 'mastodon/actions/accounts';
 import { changeDrawer } from 'mastodon/actions/app';
 import api from '../../api';
@@ -40,6 +40,8 @@ const getOrderedLists = createSelector(
 
 const mapStateToProps = (state) => ({
   lists: getOrderedLists(state),
+  connectMethods: state.getIn(['meta', 'connectMethods']),
+  address: state.getIn(['meta', 'address']),
 });
 const mapDispatchToProps = (dispatch) => ({
   openDrawer: (type, props) => dispatch(changeDrawer(true)),
@@ -74,8 +76,7 @@ class LikerId extends ImmutablePureComponent {
       cosmosWallet: 'default',
       likeWallet: 'default',
       isSubscribedCivicLiker: true,
-      description:
-        'civicLikerSince: default',
+      description: 'civicLikerSince: default',
     },
   };
 
@@ -109,8 +110,16 @@ class LikerId extends ImmutablePureComponent {
     });
   }
 
+  connectWallet = () => {
+    this.props.connectMethods.connect();
+  };
+
+  disConnectWallet = () => {
+    this.props.connectMethods.disconnect();
+  };
+
   render() {
-    const { intl, lists, multiColumn, openDrawer } = this.props;
+    const { intl, lists, multiColumn, openDrawer, address } = this.props;
     const { user } = this.state;
     if (!lists) {
       return (
@@ -132,10 +141,6 @@ class LikerId extends ImmutablePureComponent {
         bindToDocument={!multiColumn}
         label={intl.formatMessage(messages.heading)}
       >
-        <Button onClick={()=>{
-          openDrawer();
-        }}
-        >openDrawer</Button>
         <ColumnHeader
           title={intl.formatMessage(messages.heading)}
           icon='list-ul'
@@ -149,25 +154,100 @@ class LikerId extends ImmutablePureComponent {
           bindToDocument={!multiColumn}
         >
           <div className='bind-liker-id'>
-            {user.user === 'default' ? (
-              <Button
-                onClick={this.bindLikeCoinId.bind(this)}
-                intent='danger'
-                size='large'
-                className='bind-liker-button'
-              >
-                {intl.formatMessage(messages.heading)}
-              </Button>
-            ) : (
-              <Card interactive elevation={Elevation.TWO}>
-                <div class='container'>
-                  <div class='profile'>
-                    <img src={user.avatar} alt='' class='avatar' />
-                    <div class='name'>{user.displayName}</div>
-                    <div class='wallet'>{user.likeWallet}</div>
-                    <div class='vip'>{user.isSubscribedCivicLiker? 'Civic Liker' : 'Liker'}</div>
-                    <div class='description'>{user.description}</div>
-                    <Button
+            {/* {address} */}
+
+            <div className='bind-area'>
+              <div className='bind-button-area'>
+                <Card interactive elevation={Elevation.TWO}>
+                  <h5>
+                    <a href='#'>Liker ID</a>
+                  </h5>
+                  <p>
+                    {user.displayName === 'default'
+                      ? 'not bind'
+                      : user.displayName}
+                  </p>
+                  <Button
+                    onClick={this.bindLikeCoinId.bind(this)}
+                    intent={user.displayName === 'default' ? 'success' : 'Warning'}
+                    size='large'
+                    className='bind-liker-button'
+                  >
+                    {user.displayName === 'default' ? intl.formatMessage(messages.heading) : intl.formatMessage(messages.rebind)}
+                  </Button>
+                </Card>
+                <Card interactive elevation={Elevation.TWO}>
+                  <h5>
+                    <a href='#'>Wallet Connect</a>
+                  </h5>
+                  <p>{address}</p>
+                  <Button
+                    onClick={address ? this.disConnectWallet : this.connectWallet}
+                    intent={address ? 'Warning' : 'success'}
+                    size='large'
+                    className='bind-liker-button'
+                  >
+                    {address ? 'Disconnect' : 'Connect wallet'}
+                  </Button>
+                </Card>
+              </div>
+              <Callout title='Tips'>
+                <ul>
+                  <li>
+                    LikerID: 指的是你通過 BindLikerID 功能綁定的
+                    ID，其承擔的作用是在拍手時發送和接收 LikeCoin。{' '}
+                  </li>
+                  <li>
+                    Wallet Connect: 指的是你通過 connect wallet 綁定的
+                    區塊鏈錢包，其承擔的功能是鑄造、購買、贈送 nft 功能。{' '}
+                  </li>
+                  <li>
+                    {' '}
+                    兩個功能並行不悖，LikerID 屬於 web2 世代, 而 Wallet Connect
+                    屬於 web3 世代，並且爲了保護你的隱私，Wallet Connect
+                    的設計是沙盒式的，其不留存個人資料。你可以任意綁定。{' '}
+                  </li>
+                </ul>
+              </Callout>
+            </div>
+
+            {/* <Card interactive elevation={Elevation.TWO}>
+              <div class='container'>
+                <div class='profile'>
+                  <img src={user.avatar} alt='' class='avatar' />
+                  <div class='name'>{user.displayName}</div>
+                  <div class='wallet'>{user.likeWallet}</div>
+                  <div class='vip'>{user.isSubscribedCivicLiker? 'Civic Liker' : 'Liker'}</div>
+                  <div class='description'>{user.description}</div>
+
+                  <div className='bind-area'>
+                    <Callout title='Tips'>
+                      <ul>
+                        <li>LikerID: 指的是你通過 BindLikerID 功能綁定的 ID，其承擔的作用是在拍手時發送和接收 LikeCoin。 </li>
+                        <li>Wallet Connect: 指的是你通過 connect wallet 綁定的 區塊鏈錢包，其承擔的功能是鑄造、購買、贈送 nft 功能。 </li>
+                        <li> 兩個功能並行不悖，LikerID 屬於 web2 世代, 而 Wallet Connect 屬於 web3 世代，並且爲了保護你的隱私，Wallet Connect 的設計是沙盒式的，其不留存個人資料。你可以任意綁定。 </li>
+                      </ul>
+                    </Callout>
+                    <div className='bind-button-area'>
+                      <Button
+                        onClick={this.bindLikeCoinId.bind(this)}
+                        intent='danger'
+                        size='large'
+                        className='bind-liker-button'
+                      >
+                        {intl.formatMessage(messages.rebind)}
+                      </Button>
+                      <Button
+                        onClick={this.connectWallet.bind(this)}
+                        intent='danger'
+                        size='large'
+                        className='bind-liker-button'
+                      >
+                        Connect wallet
+                      </Button>
+                    </div>
+                  </div>
+                  {/* <Button
                       onClick={this.bindLikeCoinId.bind(this)}
                       intent='danger'
                       size='large'
@@ -175,10 +255,9 @@ class LikerId extends ImmutablePureComponent {
                     >
                       {intl.formatMessage(messages.rebind)}
                     </Button>
-                  </div>
-                </div>
-              </Card>
-            )}
+                    </div>
+                    </div>
+                  </Card> */}
           </div>
         </ScrollableList>
         <Helmet>

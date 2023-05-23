@@ -20,8 +20,9 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { length } from 'stringz';
 import { countableText } from '../util/counter';
 import Icon from 'mastodon/components/icon';
-import { Card, Tag, Callout, Spinner, Elevation, Intent } from '@blueprintjs/core';
+import { Card, Tag, Callout, Spinner, Elevation, Checkbox } from '@blueprintjs/core';
 import Api from '../../../api';
+import localforage from 'localforage';
 
 const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
 
@@ -77,6 +78,15 @@ class ComposeForm extends ImmutablePureComponent {
     collapsed: true,
     animating: false,
     tags: [],
+    isChecked: false,
+  };
+
+  onCheckBoxChange = (e)=>{
+    this.setState({
+      isChecked: !this.state.isChecked,
+    }, ()=>{
+      localforage.setItem('isSetNft', this.state.isChecked);
+    });
   };
 
   getTags() {
@@ -168,8 +178,14 @@ class ComposeForm extends ImmutablePureComponent {
     }
   };
 
-  componentDidMount () {
+  componentDidMount = async () => {
     this.getTags();
+    let result = localforage.getItem('isSetNft');
+    if(result !== null){
+      this.setState({
+        isChecked: result,
+      });
+    }
 
     this._updateFocusAndSelection({ });
     // let tag = this.context.router.history.location.state ? this.context.router.history.location.state.tag : null;
@@ -184,7 +200,7 @@ class ComposeForm extends ImmutablePureComponent {
         // this.handleChange({ target:{ value: `#${tag} ` } });
       }
     });
-  }
+  };
 
   componentDidUpdate (prevProps) {
     if (this.props.location !== prevProps.location) {
@@ -253,7 +269,7 @@ class ComposeForm extends ImmutablePureComponent {
 
   render () {
     const { intl, onPaste, autoFocus } = this.props;
-    const  { tags } = this.state;
+    const  { tags, isChecked } = this.state;
     const disabled = this.props.isSubmitting;
 
     let publishText = '';
@@ -270,7 +286,6 @@ class ComposeForm extends ImmutablePureComponent {
       <div className='toot-form'>
         <form className='compose-form' onSubmit={this.handleSubmit}>
           <WarningContainer />
-
           <ReplyIndicatorContainer />
 
           <div className={`spoiler-input ${this.props.spoiler ? 'spoiler-input--visible' : ''}`} ref={this.setRef} aria-hidden={!this.props.spoiler}>
@@ -332,6 +347,7 @@ class ComposeForm extends ImmutablePureComponent {
           </div>
 
           <div className='compose-form__publish'>
+            <Checkbox onChange={this.onCheckBoxChange} checked={this.state.isChecked} label='Mint to NFT postcard' />
             <div className='compose-form__publish-button-wrapper'>
               <Button
                 type='submit'
