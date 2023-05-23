@@ -5,7 +5,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import Icon from 'mastodon/components/icon';
 import { changeDrawer } from 'mastodon/actions/app';
-import { Tab, Tabs, Drawer, DrawerSize } from '@blueprintjs/core';
+import { Tab, Tabs, Drawer, DrawerSize, Callout } from '@blueprintjs/core';
 import NftList from './component/nft_list';
 import { Tooltip2 } from '@blueprintjs/popover2';
 import {
@@ -29,6 +29,7 @@ export class NftDrawer extends React.Component {
   state = {
     address: '',
     profileAddress: '',
+    currentTab: 'latest',
   };
   componentDidUpdate() {
     const { address, profileAddress, drawerParams } = this.props;
@@ -49,14 +50,29 @@ export class NftDrawer extends React.Component {
     }
   }
 
+  handleTabChange = (e) => {
+    this.setState({
+      currentTab: e,
+    });
+  };
+
   getProfile = async (address) => {
     let result = await getLikerInfoByAddress(address);
+    if (result === undefined) {
+      result = {
+        avatar: 'https://like.co/_nuxt/img/62834a5.svg',
+        displayName: 'Liker',
+        description: '',
+        likeWallet: address,
+        isRegistered: false,
+      };
+    }
     let sales = await getSaleStatsByAddress(address);
     let coinPrice = await getCoinPrice(address);
     this.setState({
-      profile: result.data,
-      saleStats: sales.data,
-      coinPrice: coinPrice.data?.likecoin,
+      profile: result,
+      saleStats: sales,
+      coinPrice: coinPrice?.likecoin,
     });
   };
   closeWalletDrawer = () => {
@@ -67,7 +83,6 @@ export class NftDrawer extends React.Component {
   render() {
     const { intl, lists, multiColumn, drawerParams } = this.props;
     const { address, profile, saleStats, coinPrice, currentTab } = this.state;
-
     if (!profile?.likeWallet) return <>1</>;
     return (
       <div class='nft-drawer'>
@@ -80,6 +95,15 @@ export class NftDrawer extends React.Component {
           size={screen.width > 600 ? '50%' : '90%'}
         >
           <div class='wallet-drawer-container'>
+            {profile.isRegistered === false ? (
+              <Callout>
+                你似乎還沒有用此錢包註冊 LikerID{' '}
+                <a target='_blank' href='https://like.co/in/register'>
+                  點此
+                </a>
+                註冊吧！
+              </Callout>
+            ) : null}
             <img src={profile.avatar} alt='Avatar' class='avatar' />
             {/* <div className='logout' onClick={this.disconnect}>
               <Icon id='right-from-bracket' className='column-link__icon' />
@@ -105,10 +129,10 @@ export class NftDrawer extends React.Component {
                 <div class='value'>{saleStats.createdCollectorCount}</div>
               </div>
               <div class='stat'>
-                <div class='label'>Saled Value</div>
+                <div class='label'>NFT Value</div>
                 <div class='value'>
-                  {saleStats.collectedValue} LIKE ≈{' '}
-                  {coinPrice?.likecoin
+                  {saleStats.collectedValue} LIKE{' '}
+                  {+' ≈ ' + coinPrice?.likecoin
                     ? `${(
                       saleStats.collectedValue * coinPrice?.likecoin?.usd
                     ).toFixed(1)} USD`
@@ -117,38 +141,63 @@ export class NftDrawer extends React.Component {
               </div>
             </div>
             <div class='lists'>
-              <Tabs
-                id='nft-tabs'
-                onChange={this.handleTabChange}
-                selectedTabId={currentTab}
-              >
-                <Tab
-                  id='latest'
-                  title='我創作的 NFT'
-                  panel={
-                    <NftList
-                      likerInfo={profile}
-                      address={address !== 0 ? address : ''}
-                      selected={currentTab === 'latest' ? true : false}
-                      contentType='latest'
+              <div className='profile-nft-zone'>
+                <ul>
+                  <button
+                    id='latest'
+                    type='button'
+                    className={`tab ${currentTab === 'latest' ? 'active' : ''}`}
+                    onClick={() => this.handleTabChange('latest')}
+                  >
+                    我創作的 NFT {currentTab}
+                  </button>
+                  <button
+                    id='collect'
+                    type='button'
+                    className={`tab ${
+                      currentTab === 'collect' ? 'active' : ''
+                    }`}
+                    onClick={() => this.handleTabChange('collect')}
+                  >
+                    我收藏的 NFT
+                  </button>
+                </ul>
+                <div className='tab-content'>
+                  <NftList
+                    className='nft-list-collect'
+                    likerInfo={profile}
+                    address={address.length !== 0 ? address : ''}
+                    selected={currentTab === 'collect' ? true : false}
+                    contentType='collect'
+                  />
+
+                  <NftList
+                    className='nft-list-latest'
+                    likerInfo={profile}
+                    address={address.length !== 0 ? address : ''}
+                    selected={currentTab === 'latest' ? true : false}
+                    contentType='latest'
+                  />
+                </div>
+              </div>
+              {/* <Tabs
+                    id='nft-tabs'
+                    onChange={this.handleTabChange}
+                    selectedTabId={currentTab}
+                  >
+                    <Tab
+                      id='latest'
+                      title='我創作的 NFT'
+                      panel={<NftList likerInfo={profile} address={sessionAccounts.length !== 0 ? sessionAccounts[0].address : ''} selected={currentTab === 'latest' ? true : false} contentType='latest' />}
+                      panelClassName='nft-list-latest'
                     />
-                  }
-                  panelClassName='nft-list-latest'
-                />
-                <Tab
-                  id='collect'
-                  title='我收藏的 NFT'
-                  panel={
-                    <NftList
-                      likerInfo={profile}
-                      address={address !== 0 ? address : ''}
-                      selected={currentTab === 'collect' ? true : false}
-                      contentType='collect'
+                    <Tab
+                      id='collect'
+                      title='我收藏的 NFT'
+                      panel={<NftList likerInfo={profile} address={sessionAccounts.length !== 0 ? sessionAccounts[0].address : ''} selected={currentTab === 'collect' ? true : false} contentType='collect' />}
+                      panelClassName='nft-list-collect'
                     />
-                  }
-                  panelClassName='nft-list-collect'
-                />
-              </Tabs>
+                  </Tabs> */}
             </div>
           </div>
         </Drawer>

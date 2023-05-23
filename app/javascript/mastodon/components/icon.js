@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import NftBadge from '../../images/likecoin/nft-badge';
 import NftIcon from '../../images/likecoin/nft-icon';
 import Clap from '../../images/likecoin/clap';
+import Wallet from '../../images/likecoin/wallet';
 
 export default class Icon extends React.PureComponent {
 
@@ -28,6 +29,7 @@ export default class Icon extends React.PureComponent {
           <NftBadge style={{ display: id === 'nftBadge' ?  'block': 'none' }} />
           <NftIcon style={{ display: id === 'nftIcon' ?  'block': 'none' }} />
           <Clap style={{ display: id === 'clap' ?  'block': 'none' }} />
+          <Wallet style={{ display: id === 'wallet' ?  'block': 'none' }} />
         </i>
       );
     }else{

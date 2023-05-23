@@ -20,6 +20,15 @@ export const changeLayout = layout => ({
 export const ADDRESS_CHANGE = 'ADDRESS_CHANGE';
 export const DRAWER_CHANGE = 'DRAWER_CHANGE';
 export const PROFILE_ADDRESS_CHANGE = 'PROFILE_ADDRESS_CHANGE';
+export const SIGNER_CHANGE = 'SIGNER_ADDRESS';
+export const INIT_CONNECT_METHODS = 'INIT_CONNECT_METHODS';
+
+export const initConnectMethods = (methods) => {
+  return ({
+    type: INIT_CONNECT_METHODS,
+    methods: methods,
+  });
+};
 
 export const changeDrawer = (drawerParams) => {
   return ({
@@ -37,6 +46,13 @@ export const changeProfileAddress = address => {
   return ({
     type: PROFILE_ADDRESS_CHANGE,
     address,
+  });
+};
+
+export const changeSigner = signer => {
+  return ({
+    type: SIGNER_CHANGE,
+    signer,
   });
 };
 

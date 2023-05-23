@@ -7,6 +7,7 @@ const { readFileSync } = require('fs');
 
 const configPath = resolve('config', 'webpacker.yml');
 const settings = load(readFileSync(configPath), 'utf8')[env.RAILS_ENV || env.NODE_ENV];
+console.log('settings=>>>>>>>>>>>>>>>>>>>>>>>>>>', settings);
 
 const themePath = resolve('config', 'themes.yml');
 const themes = load(readFileSync(themePath), 'utf8');
