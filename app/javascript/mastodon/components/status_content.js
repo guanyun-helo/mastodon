@@ -7,8 +7,6 @@ import classnames from 'classnames';
 import PollContainer from 'mastodon/containers/poll_container';
 import Icon from 'mastodon/components/icon';
 import { autoPlayGif, languages as preloadedLanguages, translationEnabled } from 'mastodon/initial_state';
-import opencc from 'opencc-js';
-const converter = opencc.Converter({ from: 'cn', to: 'tw' });
 
 const MAX_HEIGHT = 706; // 22px * 32 (+ 2px padding at the top)
 
@@ -223,15 +221,15 @@ class StatusContent extends React.PureComponent {
     const hidden = this.props.onExpandedToggle ? !this.props.expanded : this.state.hidden;
     const renderReadMore = this.props.onClick && status.get('collapsed');
     const renderTranslate = translationEnabled && this.context.identity.signedIn && this.props.onTranslate && ['public', 'unlisted'].includes(status.get('visibility')) && status.get('contentHtml').length > 0 && status.get('language') !== null && intl.locale !== status.get('language');
-    const content = { __html: converter(status.get('translation') ? status.getIn(['translation', 'content']) : status.get('contentHtml')) };
-    const spoilerContent = { __html: converter(status.get('spoilerHtml') )};
+    const content = { __html: status.get('translation') ? status.getIn(['translation', 'content']) : status.get('contentHtml') };
+    const spoilerContent = { __html: status.get('spoilerHtml') };
     const lang = status.get('translation') ? intl.locale : status.get('language');
     const classNames = classnames('status__content', {
       'status__content--with-action': this.props.onClick && this.context.router,
       'status__content--with-spoiler': status.get('spoiler_text').length > 0,
       'status__content--collapsed': renderReadMore,
     });
-    
+
     const readMoreButton = renderReadMore && (
       <button className='status__content__read-more-button' onClick={this.props.onClick} key='read-more'>
         <FormattedMessage id='status.read_more' defaultMessage='Read more' /><Icon id='angle-right' fixedWidth />

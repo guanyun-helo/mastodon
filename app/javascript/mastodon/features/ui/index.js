@@ -24,7 +24,7 @@ import ColumnsAreaContainer from './containers/columns_area_container';
 import PictureInPicture from 'mastodon/features/picture_in_picture';
 import { ToastContainer } from 'material-react-toastify';
 import { NftDrawer } from '../nft_profile';
-import PoetSoComponent from '../postcard/index';
+import PoetSo from '../postcard/index';
 // import 'material-react-toastify/dist/ReactToastify.css';
 import {
   Compose,
@@ -91,7 +91,9 @@ const mapStateToProps = state => ({
   address: state.getIn(['meta', 'address']),
   profileAddress: state.getIn(['meta', 'profileAddress']),
   drawerType: state.getIn(['meta', 'drawerType']),
-
+  isMintNftOpen: state.getIn(['meta', 'isMintNftOpen']),
+  nftStatus: state.getIn(['meta', 'nftStatus']),
+  signer: state.getIn(['meta', 'signer']),
 });
 
 const keyMap = {
@@ -572,7 +574,8 @@ class UI extends React.PureComponent {
 
   render() {
     const { draggingOver } = this.state;
-    const { dispatch, profileAddress, drawerType, drawerParams, children, isComposing, location, dropdownMenuIsOpen, layout, address } = this.props;
+    const { address, signer, nftStatus, isMintNftOpen, dispatch, profileAddress, drawerType, drawerParams, children, isComposing, location, dropdownMenuIsOpen, layout } = this.props;
+    console.log('isMintNftOpen', isMintNftOpen);
     const handlers = {
       help: this.handleHotkeyToggleHelp,
       new: this.handleHotkeyNew,
@@ -594,7 +597,41 @@ class UI extends React.PureComponent {
       goToMuted: this.handleHotkeyGoToMuted,
       goToRequests: this.handleHotkeyGoToRequests,
     };
+    const tweet = {
+      'media': 'https://dplsgtvuyo356.cloudfront.net/media_attachments/files/110/422/383/700/284/186/original/5643b77331166bd3.png',
+      'tweet': {
+        'id': '1468677317888348160',
+        'text': 'I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,',
+        'created_at': '2021-12-08T05:57:29.000Z',
+        'public_metrics': {
+          'retweet_count': 10701,
+          'reply_count': 12575,
+          'like_count': 190463,
+          'quote_count': 1009,
+        },
+        'author_id': '44196397',
+        'media': 'https://dplsgtvuyo356.cloudfront.net/media_attachments/files/110/422/383/700/284/186/original/5643b77331166bd3.png',
+      },
+      'data': {
+        'id': '1468677317888348160',
+        'text': 'I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,',
+        'created_at': '2021-12-08T05:57:29.000Z',
+        'public_metrics': {
+          'retweet_count': 10701,
+          'reply_count': 12575,
+          'like_count': 190463,
+          'quote_count': 1009,
+        },
+        'author_id': '44196397',
+      },
 
+      'user': {
+        'id': '44196397',
+        'name': 'Editor',
+        'username': 'Editor',
+        'profile_image_url': 'https://dplsgtvuyo356.cloudfront.net/accounts/avatars/106/282/397/367/132/067/original/c742403531f5e530.jpeg',
+      },
+    };
     return (
       <HotKeys keyMap={keyMap} handlers={handlers} ref={this.setHotkeysRef} attach={window} focused>
         <div className={classNames('ui', { 'is-composing': isComposing })} ref={this.setRef} style={{ pointerEvents: dropdownMenuIsOpen ? 'none' : null }}>
@@ -621,7 +658,7 @@ class UI extends React.PureComponent {
           <ModalContainer />
           <UploadArea active={draggingOver} onClose={this.closeUploadModal} />
           <NftDrawer dispatch={dispatch} drawerType={drawerType} profileAddress={profileAddress} address={address} drawerParams={drawerParams} />
-          <PoetSoComponent />
+          <PoetSo address={address} isOpen={isMintNftOpen} nftStatus={nftStatus} signer={signer} />
         </div>
       </HotKeys>
     );

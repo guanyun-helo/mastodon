@@ -141,9 +141,7 @@ class ComposeForm extends ImmutablePureComponent {
     if (!this.canSubmit()) {
       return;
     }
-
-    this.props.onSubmit(this.context.router ? this.context.router.history : null);
-
+    this.props.onSubmit(this.context.router ? this.context.router.history : null, this.state.isChecked);
     if (e) {
       e.preventDefault();
     }
@@ -180,7 +178,7 @@ class ComposeForm extends ImmutablePureComponent {
 
   componentDidMount = async () => {
     this.getTags();
-    let result = localforage.getItem('isSetNft');
+    let result = await localforage.getItem('isSetNft');
     if(result !== null){
       this.setState({
         isChecked: result,

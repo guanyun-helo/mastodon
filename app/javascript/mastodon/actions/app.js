@@ -22,6 +22,22 @@ export const DRAWER_CHANGE = 'DRAWER_CHANGE';
 export const PROFILE_ADDRESS_CHANGE = 'PROFILE_ADDRESS_CHANGE';
 export const SIGNER_CHANGE = 'SIGNER_ADDRESS';
 export const INIT_CONNECT_METHODS = 'INIT_CONNECT_METHODS';
+export const CHANGE_NFT_STATUS = 'CHANGE_NFT_STATUS';
+export const IS_MINT_NFT_OPEN = 'IS_MINT_NFT_OPEN';
+
+export const openMintNftDrawer = (isOpen) => {
+  return ({
+    type: IS_MINT_NFT_OPEN,
+    isOpen: isOpen,
+  });
+};
+
+export const changeNftStatus = (status) => {
+  return ({
+    type: CHANGE_NFT_STATUS,
+    status: status,
+  });
+};
 
 export const initConnectMethods = (methods) => {
   return ({

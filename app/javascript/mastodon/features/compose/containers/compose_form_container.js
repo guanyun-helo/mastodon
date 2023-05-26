@@ -35,8 +35,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeCompose(text));
   },
 
-  onSubmit(router) {
-    dispatch(submitCompose(router));
+  onSubmit(router, isChecked) {
+    dispatch(submitCompose(router, isChecked));
   },
 
   onClearSuggestions() {

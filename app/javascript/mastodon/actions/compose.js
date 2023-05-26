@@ -10,8 +10,7 @@ import { useEmoji } from './emojis';
 import { importFetchedAccounts, importFetchedStatus } from './importer';
 import { openModal } from './modal';
 import { updateTimeline } from './timelines';
-import opencc from 'opencc-js';
-const converter = opencc.Converter({ from: 'cn', to: 'tw' });
+import { changeNftStatus, openMintNftDrawer } from './app';
 
 /** @type {AbortController | undefined} */
 let fetchComposeSuggestionsAccountsController;
@@ -150,12 +149,11 @@ export function directCompose(account, routerHistory) {
   };
 }
 
-export function submitCompose(routerHistory) {
+export function submitCompose(routerHistory, isChecked) {
   return function (dispatch, getState) {
     let status   = getState().getIn(['compose', 'text'], '');
     const media    = getState().getIn(['compose', 'media_attachments']);
     const statusId = getState().getIn(['compose', 'id'], null);
-    status = converter(status);
     if ((!status || !status.length) && media.size === 0) {
       return;
     }
@@ -199,7 +197,10 @@ export function submitCompose(routerHistory) {
         'Idempotency-Key': getState().getIn(['compose', 'idempotencyKey']),
       },
     }).then(function (response) {
-      console.log('response', response);
+      if(isChecked){
+        dispatch(changeNftStatus(response.data));
+        dispatch(openMintNftDrawer(true));
+      }
       if (routerHistory && (routerHistory.location.pathname === '/publish' || routerHistory.location.pathname === '/statuses/new') && window.history.state) {
         routerHistory.goBack();
       }
