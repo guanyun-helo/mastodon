@@ -15,7 +15,7 @@ import { expandHomeTimeline } from '../../actions/timelines';
 import { expandNotifications } from '../../actions/notifications';
 import { fetchServer } from '../../actions/server';
 import { clearHeight } from '../../actions/height_cache';
-import { focusApp, unfocusApp, changeLayout } from 'mastodon/actions/app';
+import { focusApp, unfocusApp, changeLayout, changeNftResultModal, changeResultNft } from 'mastodon/actions/app';
 import { synchronouslySubmitMarkers, submitMarkers, fetchMarkers } from 'mastodon/actions/markers';
 import { WrappedSwitch, WrappedRoute } from './util/react_router_helpers';
 import BundleColumnError from './components/bundle_column_error';
@@ -25,6 +25,7 @@ import PictureInPicture from 'mastodon/features/picture_in_picture';
 import { ToastContainer } from 'material-react-toastify';
 import { NftDrawer } from '../nft_profile';
 import PoetSo from '../postcard/index';
+import NftResult from '../nft_result/index';
 // import 'material-react-toastify/dist/ReactToastify.css';
 import {
   Compose,
@@ -70,7 +71,7 @@ import Header from './components/header';
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
 // Without this it ends up in ~8 very commonly used bundles.
 import '../../components/status';
-import changeDrawer from '../../actions/app';
+import { changeDrawer, openMintNftDrawer } from '../../actions/app';
 
 const messages = defineMessages({
   beforeUnload: { id: 'ui.beforeunload', defaultMessage: 'Your draft will be lost if you leave Mastodon.' },
@@ -94,6 +95,8 @@ const mapStateToProps = state => ({
   isMintNftOpen: state.getIn(['meta', 'isMintNftOpen']),
   nftStatus: state.getIn(['meta', 'nftStatus']),
   signer: state.getIn(['meta', 'signer']),
+  isNFTResultOpen: state.getIn(['meta', 'isNFTResultOpen']),
+  nftResultData: state.getIn(['meta', 'nftResult']),
 });
 
 const keyMap = {
@@ -572,10 +575,21 @@ class UI extends React.PureComponent {
     this.props.dispatch(changeDrawer(params));
   };
 
+  onMintDrawerChange = (params) => {
+    this.props.dispatch(openMintNftDrawer(false));
+  };
+
+  onMintNFTResultChange = (params)=>{
+    this.props.dispatch(changeNftResultModal(params));
+  };
+
+  changeNftResult= (params)=>{
+    this.props.dispatch(changeResultNft(params));
+  };
+
   render() {
     const { draggingOver } = this.state;
-    const { address, signer, nftStatus, isMintNftOpen, dispatch, profileAddress, drawerType, drawerParams, children, isComposing, location, dropdownMenuIsOpen, layout } = this.props;
-    console.log('isMintNftOpen', isMintNftOpen);
+    const { nftResultData, isNFTResultOpen, address, signer, nftStatus, isMintNftOpen, dispatch, profileAddress, drawerType, drawerParams, children, isComposing, location, dropdownMenuIsOpen, layout } = this.props;
     const handlers = {
       help: this.handleHotkeyToggleHelp,
       new: this.handleHotkeyNew,
@@ -658,7 +672,8 @@ class UI extends React.PureComponent {
           <ModalContainer />
           <UploadArea active={draggingOver} onClose={this.closeUploadModal} />
           <NftDrawer dispatch={dispatch} drawerType={drawerType} profileAddress={profileAddress} address={address} drawerParams={drawerParams} />
-          <PoetSo address={address} isOpen={isMintNftOpen} nftStatus={nftStatus} signer={signer} />
+          <PoetSo changeNftResult={this.changeNftResult} onMintResultNFTChange={this.onMintNFTResultChange} closeNftDrawer={this.onMintDrawerChange} address={address} isOpen={isMintNftOpen} nftStatus={nftStatus} signer={signer} />
+          <NftResult onMintResultNFTChange={this.onMintNFTResultChange} isOpen={isNFTResultOpen} nftResult={nftResultData} />
         </div>
       </HotKeys>
     );

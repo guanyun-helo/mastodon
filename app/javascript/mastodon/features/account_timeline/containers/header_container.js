@@ -88,8 +88,8 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     dispatch(mentionCompose(account, router));
   },
 
-  onDirect (account, router) {
-    dispatch(directCompose(account, router));
+  onDirect (account, router, nft) {
+    dispatch(directCompose(account, router, nft));
   },
 
   onReblogToggle (account) {

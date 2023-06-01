@@ -92,9 +92,8 @@ export const WalletConnectQRCodeDialog = ({ type, uri, onClose }) => {
     setDialogOpen(false);
     if (onClose) onClose();
   }
-  console.log('isMobile', isMobile);
   return (
-    <Dialog isOpen={isDialogOpen} onClose={closeDialog}>
+    <Dialog className='multichain-wallet' isOpen={isDialogOpen} onClose={closeDialog}>
       <h1 className='lk-flex lk-items-center lk-gap-x-[12px] lk-text-[#28646e] lk-font-bold'>
         <SignInIcon className='lk-w-[20px] lk-h-[20px] lk-shrink-0' />
         <span>

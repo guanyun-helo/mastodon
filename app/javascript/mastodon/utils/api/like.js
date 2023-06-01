@@ -2,7 +2,32 @@
 import axios from 'axios';
 import { format } from 'date-fns';
 import localforage from 'localforage';
-import { get } from 'lodash';
+
+
+export async function getChainNFTIdList (classId) {
+  let url = `https://mainnet-node.like.co/likechain/likenft/v1/owner?class_id=${classId}`;
+  let result = null;
+  let cache = await localforage.getItem(url);
+  const getData = () => {
+    return axios
+      .get(url)
+      .then((res) => {
+        localforage.setItem(url, res.data);
+        return res.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  if(cache === null){
+    result = await getData();
+  }else{
+    getData();
+    result = cache;
+  }
+  return result;
+}
+
 
 export async function getCoinPrice() {
   let url =
@@ -38,8 +63,6 @@ export async function getTrending() {
   let url = `https://mainnet-node.like.co/likechain/likenft/v1/ranking?ignore_list=like17m4vwrnhjmd20uu7tst7nv0kap6ee7js69jfrs&ignore_list=like1yney2cqn5qdrlc50yr5l53898ufdhxafqz9gxp&after=${sevenDaysAgoUnix}&before=${nowUnix}&created_after=${sevenDaysAgoUnix}&created_before=${nowUnix}&stakeholder_name=&creator=&collector=&type=&limit=100`;
   let result = null;
   let cache = await localforage.getItem(url);
-
-  console.log('cache', cache);
 
   const getData = () => {
     return axios
@@ -118,6 +141,7 @@ export async function getNFTmeta(nftid) {
   let url = `https://api.like.co/likernft/metadata?iscn_id&class_id=${nftid}`;
   let result = null;
   let cache = await localforage.getItem(url);
+  console.log('cache', cache);
   const getData = () => {
     return axios
       .get(url)
@@ -228,7 +252,6 @@ export async function getLikerInfoByAddress(address) {
   };
   if(cache === null){
     result = await getData();
-    console.log('result=>>>!!!!!!!!!!!!!!!!!', result);
   }else{
     getData();
     result = cache;
@@ -277,7 +300,6 @@ export async function getOwnerByISCN(ISCN) {
   };
   if(cache === null){
     result = await getData();
-    console.log('result=>>', result);
   }else{
     getData();
     result = cache;
@@ -309,7 +331,7 @@ export async function getNFTmetaByISCN(nftid) {
 }
 
 export async function getISCNListByOwner(address, next) {
-  let url = `https://mainnet-node.like.co/likechain/likenft/v1/class?iscn_owner=like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6&reverse=true&key=${
+  let url = `https://mainnet-node.like.co/likechain/likenft/v1/class?iscn_owner=${address}&reverse=true&key=${
     next ? next : ''
   }`;
   let result = null;
@@ -362,7 +384,8 @@ export async function getNFTListByOwner(address, next) {
 
 export async function getCollectRankByCollecterAddress(address, next) {
   let originUnix = format(new Date(2000, 0, 1), 't');
-  let url = `https://mainnet-node.like.co/likechain/likenft/v1/ranking?ignore_list=like17m4vwrnhjmd20uu7tst7nv0kap6ee7js69jfrs&ignore_list=like1yney2cqn5qdrlc50yr5l53898ufdhxafqz9gxp&created_after=${originUnix}&order_by=sold_count&stakeholder_name=&include_owner=false&creator=&collector=${address}&type=&limit=100`;
+  // https://mainnet-node.like.co/likechain/likenft/v1/nft?owner=like1h6p7gdh5c0qkz0gwyus2rumg74tg5yrmrweu8s&expand_classes=1&pagination.limit=100
+  let url = `https://mainnet-node.like.co/likechain/likenft/v1/nft?owner=${address}&expand_classes=1&pagination.limit=100`;
   let result = null;
   let cache = await localforage.getItem(url);
   const getData = () => {
@@ -436,6 +459,30 @@ export async function getNFTbyISCNID(ISCN) {
 // https://mainnet-node.like.co/cosmos/nft/v1beta1/nfts?owner=like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6
 export async function getNFTListByOwnerAddress(classId) {
   let url = `https://mainnet-node.like.co/cosmos/nft/v1beta1/nfts?owner=${classId}`;
+  let result = null;
+  let cache = await localforage.getItem(url);
+  const getData = () => {
+    return axios
+      .get(url)
+      .then((res) => {
+        localforage.setItem(url, res.data);
+        return res.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  if(cache === null){
+    result = await getData();
+  }else{
+    getData();
+    result = cache;
+  }
+  return result;
+}
+
+export async function getISCNById(id){
+  let url = `https://mainnet-node.like.co/iscn/records/id?iscn_id=${id}`;
   let result = null;
   let cache = await localforage.getItem(url);
   const getData = () => {

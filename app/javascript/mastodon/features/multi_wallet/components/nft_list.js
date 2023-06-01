@@ -132,8 +132,8 @@ class NftList extends ImmutablePureComponent {
                   description:
                     '',
                   keywords: '',
-                  name: '哩哩扣扣 #23 回顧 Solana 的扭曲生態如何形成',
-                  url: 'https://leafwind.tw/2022/12/19/lilicoco-23-solana/',
+                  name: '',
+                  url: '',
                   usageInfo: '',
                   version: 1,
                 },
@@ -147,14 +147,14 @@ class NftList extends ImmutablePureComponent {
                   {
                     contributionType: 'http://schema.org/author',
                     entity: {
-                      '@id': 'like1p6xz8ma7xmra64susvp8lxpqlx48skg9e86c9d',
+                      '@id': '',
                       description:
-                        '在日軟體工程師｜資料科學與工程｜熱衷於觀察科技與人性\r\n\u003ca href="https://t.me/all_about_data"\u003e加入TG資料森友會群組\u003c/a\u003e｜\u003ca href="https://leafwind.tw/2020/12/06/about/"\u003e 關於我 \u003c/a\u003e',
+                        '',
                       identifier: [
                         {
                           '@type': 'PropertyValue',
                           propertyID: 'LikeCoin Wallet',
-                          value: 'like1p6xz8ma7xmra64susvp8lxpqlx48skg9e86c9d',
+                          value: '',
                         },
                       ],
                       name: 'leafwind',
@@ -238,7 +238,6 @@ class NftList extends ImmutablePureComponent {
           },
           () => {
             if (this.state.macy === null) return;
-            console.log('recalculate',  this.state.nftList[this.state.nftList.length - 1].id);
             this.state.macy.recalculate(true);
             // this.observer();
           },
@@ -272,10 +271,8 @@ class NftList extends ImmutablePureComponent {
         document
           .querySelector(`.nft-list-${contentType}-container`)
           .addEventListener('scroll', () => {
-            console.log('scrolled');
             // Get the position and size of the box element relative to the viewport
             let elementId = this.state.currentElementId;
-            console.log('currentElementId', elementId);
             if (elementId === null) return;
             let rect = document
               .querySelector(`.${elementId}`)
@@ -291,7 +288,6 @@ class NftList extends ImmutablePureComponent {
 
             // Change the background color of the box element if it is in view
             if (inView) {
-              console.log('in view');
               if (this.state.isLoading) return;
               this.getMore(this.props.contentType);
             } else {
@@ -458,7 +454,6 @@ class NftList extends ImmutablePureComponent {
 
   getCoinPrice = async () => {
     let result = await getCoinPrice();
-    console.log('likecoin', result);
     this.setState({
       likecoin: result?.likecoin,
     });
@@ -488,7 +483,6 @@ class NftList extends ImmutablePureComponent {
       purchaseInfo = result;
     };
     // await getNftListINfo(nft.id);
-    console.log('nft', nft);
     await getNFTListByOwnerAddressFunction(nft.iscn_owner);
     await getNFTPurchasedInfo({ iscnId: nft.iscn_id, classId: nft.id });
     let nftOne = ownerNftList.get(
@@ -543,7 +537,6 @@ class NftList extends ImmutablePureComponent {
   render() {
     const { isLoading, nftList, rawNftList, likecoin } = this.state;
     const { contentType, likerInfo, selected } = this.props;
-    console.log('nftList', nftList);
     return nftList.length === 0 ? (
       <Spinner className='nft-list-container next' size={20} />
     ) : (

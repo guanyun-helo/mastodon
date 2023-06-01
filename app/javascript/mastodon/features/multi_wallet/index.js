@@ -44,7 +44,13 @@ import Icon from 'mastodon/components/icon';
 import { connect } from 'react-redux';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 
-import { changeAddress, changeDrawer, changeSigner, changeProfileAddress, initConnectMethods } from 'mastodon/actions/app';
+import {
+  changeAddress,
+  changeDrawer,
+  changeSigner,
+  changeProfileAddress,
+  initConnectMethods,
+} from 'mastodon/actions/app';
 import {
   Tab,
   Tabs,
@@ -66,9 +72,13 @@ import {
   Menu,
   MenuDivider,
 } from '@blueprintjs/core';
-import NftList from './components/nft_list';
 import { Popover2 } from '@blueprintjs/popover2';
-import { getLikerInfoByAddress, getSaleStatsByAddress, getCoinPrice, getCollectRankByCollecterAddress } from '../../utils/api/like';
+import {
+  getLikerInfoByAddress,
+  getSaleStatsByAddress,
+  getCoinPrice,
+  getCollectRankByCollecterAddress,
+} from '../../utils/api/like';
 
 const CONTAINER_ID = 'likecoin-wallet-connector';
 const SESSION_KEY = 'likecoin_wallet_connector_session';
@@ -77,7 +87,7 @@ const WC_BRIGDE = 'https://bridge.walletconnect.org';
 const mapStateToProps = (state) => ({
   connectMethod: state.getIn(['meta', 'connect']),
 });
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   changeDrawer: (drawerParams) => dispatch(changeDrawer(drawerParams)),
   changeAddress: (address) => dispatch(changeAddress(address)),
   changeSigner: (signer) => dispatch(changeSigner(signer)),
@@ -88,7 +98,7 @@ const mapDispatchToProps = dispatch => ({
 export default
 @connect(mapStateToProps, mapDispatchToProps)
 @injectIntl
-class LikeCoinWalletConnector extends ImmutablePureComponent{
+class LikeCoinWalletConnector extends ImmutablePureComponent {
 
   static propTypes = {
     params: PropTypes.object,
@@ -372,25 +382,27 @@ class LikeCoinWalletConnector extends ImmutablePureComponent{
     if (!result) throw new Error('ACCOUNT_INIT_FAILED');
     this.setState({
       __accountChangeListener: () => {
+        console.log('accoutn', methodType);
         this.handleAccountChange(methodType);
       },
+    }, ()=>{
+      switch (methodType) {
+      case LikeCoinWalletConnectorMethodType.Keplr:
+        listenKeplrKeyStoreChange(this.state._accountChangeListener);
+        break;
+      case LikeCoinWalletConnectorMethodType.Cosmostation:
+        listenCosmostationAccountChange(this.state._accountChangeListener);
+        break;
+      case LikeCoinWalletConnectorMethodType.Leap:
+        listenLeapKeyStoreChange(this.state._accountChangeListener);
+        break;
+      default:
+        break;
+      }
     });
     // this.state._accountChangeListener = () => {
     //   this.handleAccountChange(methodType);
     // };
-    switch (methodType) {
-    case LikeCoinWalletConnectorMethodType.Keplr:
-      listenKeplrKeyStoreChange(this.state._accountChangeListener);
-      break;
-    case LikeCoinWalletConnectorMethodType.Cosmostation:
-      listenCosmostationAccountChange(this.state._accountChangeListener);
-      break;
-    case LikeCoinWalletConnectorMethodType.Leap:
-      listenLeapKeyStoreChange(this.state._accountChangeListener);
-      break;
-    default:
-      break;
-    }
     this.saveSession({
       method: methodType,
       accounts: [...result.accounts],
@@ -453,15 +465,19 @@ class LikeCoinWalletConnector extends ImmutablePureComponent{
     }
     return undefined;
   };
-  getLikerProfile = async (session)=>{
-    let result = await getLikerInfoByAddress('like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6');
+  getLikerProfile = async (session) => {
+    let result = await getLikerInfoByAddress(
+      'like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6',
+    );
     this.setState({
       profile: result,
     });
   };
 
   getSaleStats = async (session) => {
-    let result = await getSaleStatsByAddress('like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6');
+    let result = await getSaleStatsByAddress(
+      'like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6',
+    );
     this.setState({
       saleStats: result,
     });
@@ -524,6 +540,12 @@ class LikeCoinWalletConnector extends ImmutablePureComponent{
   handleAccountChange = (methodType) => {
     this.state._events.emit('account_change', methodType);
   };
+  handleWallectAccountChange = async (method)=>{
+    const connection = await this.init(method);
+    this.handleConnection(connection);
+    this.props.changeSigner(connection.offlineSigner);
+
+  };
 
   async connect() {
     const connection = await this.openConnectionMethodSelectionDialog();
@@ -541,7 +563,7 @@ class LikeCoinWalletConnector extends ImmutablePureComponent{
       walletAddress: account.address,
       offlineSigner: offlineSigner,
     });
-    this.once('account_change', this.handleAccountChange);
+    this.once('account_change', this.handleWallectAccountChange);
   }
   openWalletDrawer = () => {
     this.props.changeDrawer({ isDrawerOpen: true, drawerType: 'profile' });
@@ -552,14 +574,14 @@ class LikeCoinWalletConnector extends ImmutablePureComponent{
       isWalletDrawerOpen: false,
     });
   };
-  getCoinPrice = async () =>{
+  getCoinPrice = async () => {
     let result = await getCoinPrice();
     this.setState({
       coinPrice: result,
     });
   };
 
-  componentDidMount = async()=> {
+  componentDidMount = async () => {
     this.setState({
       options: {
         chainId: 'likecoin-mainnet-2',
@@ -605,17 +627,23 @@ class LikeCoinWalletConnector extends ImmutablePureComponent{
       isLoading: false,
     });
     this.getCoinPrice();
-    this.props.initConnectMethods({ connect: this.connect.bind(this), disconnect: this.disconnect.bind(this) });
+    this.props.initConnectMethods({
+      connect: this.connect.bind(this),
+      disconnect: this.disconnect.bind(this),
+    });
   };
 
-  copyAddress = () =>{
+  copyAddress = () => {
     const { sessionAccounts } = this.state;
     const address = sessionAccounts[0].address;
-    navigator.clipboard.writeText(address).then(()=> {
-      console.log('Copied!');
-    }, ()=> {
-      console.log('Copy error');
-    });
+    navigator.clipboard.writeText(address).then(
+      () => {
+        console.log('Copied!');
+      },
+      () => {
+        console.log('Copy error');
+      },
+    );
   };
 
   render() {
@@ -635,11 +663,19 @@ class LikeCoinWalletConnector extends ImmutablePureComponent{
       currentTab,
     } = this.state;
 
-    const FileMenu = ()=>(
+    const FileMenu = () => (
       <Menu className='wallet-nft-list'>
-        <MenuItem onClick={this.openWalletDrawer} text='Dashboard' icon='dashboard'  />
-        <MenuItem onClick={this.copyAddress} text='Copy Address' icon='hand-right'  />
-        <MenuItem onClick={this.disconnect} text='Logout' icon='log-out'  />
+        <MenuItem
+          onClick={this.openWalletDrawer}
+          text='Dashboard'
+          icon='dashboard'
+        />
+        <MenuItem
+          onClick={this.copyAddress}
+          text='Copy Address'
+          icon='hand-right'
+        />
+        <MenuItem onClick={this.disconnect} text='Logout' icon='log-out' />
         {/* <MenuItem text='Close' icon='add-to-folder'  /> */}
         {/* <MenuDivider /> */}
         {/* <MenuItem text='Save' icon='floppy-disk' /> */}
@@ -650,13 +686,14 @@ class LikeCoinWalletConnector extends ImmutablePureComponent{
     );
     return (
       <div class='wallet-nav-btn'>
-        <div
-          target='_blank'
-          aria-current='page'
-          class='wallet-connect-button'
-        >
+        <div target='_blank' aria-current='page' class='wallet-connect-button'>
           <div class='icon'>
-            <svg className='logo' width='174.73' height='177.488' viewBox='82.635 36.256 174.73 177.488'>
+            <svg
+              className='logo'
+              width='174.73'
+              height='177.488'
+              viewBox='82.635 36.256 174.73 177.488'
+            >
               <defs>
                 <filter
                   id='303cbcbf-05ff-4625-9ec2-291fef8ab4f6'
@@ -822,7 +859,14 @@ class LikeCoinWalletConnector extends ImmutablePureComponent{
                 content={<FileMenu shouldDismissPopover={false} />}
                 renderTarget={({ isOpen, ref, ...p }) => (
                   // <div {...p} active={isOpen} elementRef={ref} intent={Intent.PRIMARY} text={'click'}>{sessionAccounts[0].address.slice(0, 7)}... </div>
-                  <Button minimal='true' {...p} active={isOpen} elementRef={ref} intent={Intent.PRIMARY} text={`${sessionAccounts[0].address.slice(0, 11)}...`} />
+                  <Button
+                    minimal='true'
+                    {...p}
+                    active={isOpen}
+                    elementRef={ref}
+                    intent={Intent.PRIMARY}
+                    text={`${sessionAccounts[0].address.slice(0, 11)}...`}
+                  />
                 )}
               />
             ) : (

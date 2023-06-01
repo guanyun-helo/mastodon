@@ -46,8 +46,8 @@ export default class Header extends ImmutablePureComponent {
     this.props.onMention(this.props.account, this.context.router.history);
   };
 
-  handleDirect = () => {
-    this.props.onDirect(this.props.account, this.context.router.history);
+  handleDirect = (account, history, nft) => {
+    this.props.onDirect(this.props.account, this.context.router.history, nft);
   };
 
   handleReport = () => {

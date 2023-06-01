@@ -212,6 +212,176 @@ class StatusActionBar extends ImmutablePureComponent {
     onUnblockDomain(account.get('acct').split('@')[1]);
   };
 
+  componentDidMount() {
+    const { status } = this.props;
+    const account = status.get('account');
+    const id = status.get('id');
+    const liker_id = account.get('liker_id');
+    this.setState({
+      liker_id: liker_id,
+    });
+
+    storage.getItem(id, (err, value) => {
+      if (value !== null) {
+        this.setState(value);
+      }
+      if (value === null) {
+        const url = `${location.origin}/web/statuses/${id}`;
+        if (
+          this.props.hidden === false ||
+          this.props.contextType === 'thread'
+        ) {
+          this.props.getLikeCount(liker_id, url, (count) => {
+            this.setState(
+              {
+                totalLike: count.data.total,
+              },
+              () => {
+                storage.setItem(id, this.state);
+              },
+            );
+          });
+
+          setTimeout(() => {
+            this.props.getUserLikeCount(
+              id,
+              location.href,
+              location.origin,
+              (res) => {
+                let data = {};
+                try {
+                  data = JSON.parse(res.data.data);
+                  this.setState(
+                    {
+                      selfLike: data?.count || 0,
+                    },
+                    () => {
+                      storage.setItem(id, this.state);
+                    },
+                  );
+                } catch (error) {}
+              },
+            );
+          }, 500);
+        }
+      }
+      if (err) {
+        const url = `${location.origin}/web/statuses/${id}`;
+        if (
+          this.props.hidden === false ||
+          this.props.contextType === 'thread'
+        ) {
+          this.props.getLikeCount(liker_id, url, (count) => {
+            this.setState(
+              {
+                totalLike: count.data.total,
+              },
+              () => {
+                storage.setItem(id, this.state);
+              },
+            );
+          });
+
+          setTimeout(() => {
+            this.props.getUserLikeCount(
+              id,
+              location.href,
+              location.origin,
+              (res) => {
+                let data = {};
+                try {
+                  data = JSON.parse(res.data.data);
+
+                  this.setState(
+                    {
+                      selfLike: data?.count || 0,
+                    },
+                    () => {
+                      storage.setItem(id, this.state);
+                    },
+                  );
+                } catch (error) {}
+              },
+            );
+          }, 500);
+        }
+      }
+    });
+  }
+
+  handleLikeContent = () => {
+
+    if (this.state.selfLike === 4) {
+      if (!this.props.status.get('favourited')) {
+        this.props.onFavourite(this.props.status);
+      }
+    }
+    if (this.state.selfLike >= 5) {
+      return;
+    }
+    this.setState(
+      {
+        selfLike: this.state.selfLike + 1,
+        totalLike: this.state.totalLike + 1,
+        clickLike: this.state.clickLike + 1,
+      },
+      () => {
+        this.sendLike();
+      },
+    );
+  };
+
+  sendLike = debounce(() => {
+    this.props.onLike(
+      this.props.status,
+      this.state.selfLike === 6 ? 5 : this.state.clickLike,
+      location,
+      (res) => {
+        this.setState(
+          {
+            clickLike: 0,
+          },
+          () => {
+            if (res.data.data === 'OK') {
+              storage.setItem(this.props.status.get('id'), this.state);
+            }
+          },
+        );
+        if (res.data.code === 401) {
+          toast.info('鄉民，請先綁定 LikeCoin Id！');
+          this.setState(
+            {
+              selfLike: 0,
+              totalLike: this.state.totalLike - this.state.selfLike,
+            },
+            () => {
+              // storage.setItem(this.props.status.get('id'), this.state)
+            },
+          );
+        }
+        if (res.data.data === 'INVALID_LIKE') {
+          // this.setState({
+          //   selfLike: 0,
+          //   totalLike: this.state.totalLike - this.state.selfLike
+          // }, () => {
+          //   storage.setItem(this.props.status.get('id'), this.state)
+          // })
+        }
+        if (res.data.data === 'CANNOT_SELF_LIKE') {
+          this.setState(
+            {
+              selfLike: 0,
+              totalLike: this.state.totalLike - this.state.selfLike,
+            },
+            () => {
+              // storage.setItem(this.props.status.get('id'), this.state)
+            },
+          );
+        }
+      },
+    );
+  }, 1000);
+
   handleOpen = () => {
     this.context.router.history.push(`/@${this.props.status.getIn(['account', 'acct'])}/${this.props.status.get('id')}`);
   };
