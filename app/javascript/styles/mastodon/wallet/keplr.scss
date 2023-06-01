@@ -13,6 +13,7 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+        color: #000;
         .wallet-connect-button {
             display: flex;
             overflow: hidden;
@@ -1409,4 +1410,7 @@ Constrain images and videos to the parent width and preserve their intrinsic asp
     .bp4-heading{
         color: $white;
     }
+}
+.multichain-wallet{
+    color: #000;
 }

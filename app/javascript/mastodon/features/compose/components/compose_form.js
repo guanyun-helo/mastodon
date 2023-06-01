@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 import React from 'react';
 import CharacterCounter from './character_counter';
 import Button from '../../../components/button';
@@ -17,24 +18,46 @@ import UploadFormContainer from '../containers/upload_form_container';
 import WarningContainer from '../containers/warning_container';
 import LanguageDropdown from '../containers/language_dropdown_container';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import axios from 'axios';
 import { length } from 'stringz';
 import { countableText } from '../util/counter';
 import Icon from 'mastodon/components/icon';
-import { Card, Tag, Callout, Spinner, Elevation, Checkbox } from '@blueprintjs/core';
+import {
+  Card,
+  Tag,
+  Callout,
+  Spinner,
+  Elevation,
+  Checkbox,
+} from '@blueprintjs/core';
 import Api from '../../../api';
 import localforage from 'localforage';
 
-const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
+const allowedAroundShortCode =
+  '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
 
 const messages = defineMessages({
-  placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What is on your mind?' },
-  spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Write your warning here' },
+  placeholder: {
+    id: 'compose_form.placeholder',
+    defaultMessage: 'What is on your mind?',
+  },
+  spoiler_placeholder: {
+    id: 'compose_form.spoiler_placeholder',
+    defaultMessage: 'Write your warning here',
+  },
   publish: { id: 'compose_form.publish', defaultMessage: 'Publish' },
-  publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
-  saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Save changes' },
+  publishLoud: {
+    id: 'compose_form.publish_loud',
+    defaultMessage: '{publish}!',
+  },
+  saveChanges: {
+    id: 'compose_form.save_changes',
+    defaultMessage: 'Save changes',
+  },
 });
 
-export default @injectIntl
+export default
+@injectIntl
 class ComposeForm extends ImmutablePureComponent {
 
   static contextTypes = {
@@ -68,6 +91,7 @@ class ComposeForm extends ImmutablePureComponent {
     isInReply: PropTypes.bool,
     singleColumn: PropTypes.bool,
     lang: PropTypes.string,
+    destroyNft: PropTypes.func,
   };
 
   static defaultProps = {
@@ -81,33 +105,38 @@ class ComposeForm extends ImmutablePureComponent {
     isChecked: false,
   };
 
-  onCheckBoxChange = (e)=>{
-    this.setState({
-      isChecked: !this.state.isChecked,
-    }, ()=>{
-      localforage.setItem('isSetNft', this.state.isChecked);
-    });
+  onCheckBoxChange = (e) => {
+    this.setState(
+      {
+        isChecked: !this.state.isChecked,
+      },
+      () => {
+        localforage.setItem('isSetNft', this.state.isChecked);
+      },
+    );
   };
 
   getTags() {
     // eslint-disable-next-line promise/catch-or-return
-    Api().get('https://tags.vercel.app/api/taggroup').then(response => {
-      if (response.status === 200) {
-        this.setState({
-          tags: response.data.data,
-        });
-      }
-    });
+    Api()
+      .get('https://tags.vercel.app/api/taggroup')
+      .then((response) => {
+        if (response.status === 200) {
+          this.setState({
+            tags: response.data.data,
+          });
+        }
+      });
   }
 
   toTag(tag) {
     // this.context.router.history.push(`/tags/${tag.name}`, { tag: tag.name, color: 'green' });
-    this.handleChange({ target:{
-      value: this.props.text + `#${tag.name} `,
-    } });
+    this.handleChange({
+      target: {
+        value: this.props.text + `#${tag.name} `,
+      },
+    });
   }
-
-
 
   handleChange = (e) => {
     this.props.onChange(e.target.value);
@@ -120,15 +149,26 @@ class ComposeForm extends ImmutablePureComponent {
   };
 
   getFulltextForCharacterCounting = () => {
-    return [this.props.spoiler? this.props.spoilerText: '', countableText(this.props.text)].join('');
+    return [
+      this.props.spoiler ? this.props.spoilerText : '',
+      countableText(this.props.text),
+    ].join('');
   };
 
   canSubmit = () => {
-    const { isSubmitting, isChangingUpload, isUploading, anyMedia } = this.props;
+    const { isSubmitting, isChangingUpload, isUploading, anyMedia } =
+      this.props;
     const fulltext = this.getFulltextForCharacterCounting();
-    const isOnlyWhitespace = fulltext.length !== 0 && fulltext.trim().length === 0;
+    const isOnlyWhitespace =
+      fulltext.length !== 0 && fulltext.trim().length === 0;
 
-    return !(isSubmitting || isUploading || isChangingUpload || length(fulltext) > 1024 || (isOnlyWhitespace && !anyMedia));
+    return !(
+      isSubmitting ||
+      isUploading ||
+      isChangingUpload ||
+      length(fulltext) > 1024 ||
+      (isOnlyWhitespace && !anyMedia)
+    );
   };
 
   handleSubmit = (e) => {
@@ -141,7 +181,10 @@ class ComposeForm extends ImmutablePureComponent {
     if (!this.canSubmit()) {
       return;
     }
-    this.props.onSubmit(this.context.router ? this.context.router.history : null, this.state.isChecked);
+    this.props.onSubmit(
+      this.context.router ? this.context.router.history : null,
+      this.state.isChecked,
+    );
     if (e) {
       e.preventDefault();
     }
@@ -170,37 +213,66 @@ class ComposeForm extends ImmutablePureComponent {
   handleFocus = () => {
     if (this.composeForm && !this.props.singleColumn) {
       const { left, right } = this.composeForm.getBoundingClientRect();
-      if (left < 0 || right > (window.innerWidth || document.documentElement.clientWidth)) {
+      if (
+        left < 0 ||
+        right > (window.innerWidth || document.documentElement.clientWidth)
+      ) {
         this.composeForm.scrollIntoView();
       }
     }
   };
-
+  blobToImage = (blob) => {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(blob);
+      let img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      img.src = url;
+    });
+  };
   componentDidMount = async () => {
     this.getTags();
     let result = await localforage.getItem('isSetNft');
-    if(result !== null){
+    if (result !== null) {
       this.setState({
         isChecked: result,
       });
     }
+    const { nft } = this.props;
+    if (nft) {
+      let img = ` https://api.like.co/likernft/metadata/image/class_${nft.classId}?size=480`;
+      let res = await axios.get(img, {
+        responseType: 'blob',
+      });
+      let blob = res.data;
+      this.props.onPaste([blob]);
+      this.props.onChange(`
+      😘 嗨嗨，我送了你這個 NFT，快來看看吧！
+      https://liker.land/zh-Hant/nft/class/${nft.classId}
+      `);
+      this.props.destroyNft();
+    }
 
-    this._updateFocusAndSelection({ });
+    this._updateFocusAndSelection({});
     // let tag = this.context.router.history.location.state ? this.context.router.history.location.state.tag : null;
     // if(tag){
     //   this.handleChange({ target:{ value: `#${tag} ` } });
     // }
     // eslint-disable-next-line no-unused-vars
     this.context.router.history.listen((location, action) => {
-      let tag = this.context.router.history.location.state ? this.context.router.history.location.state.tag : null;
+      let tag = this.context.router.history.location.state
+        ? this.context.router.history.location.state.tag
+        : null;
 
-      if(tag){
+      if (tag) {
         // this.handleChange({ target:{ value: `#${tag} ` } });
       }
     });
   };
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     if (this.props.location !== prevProps.location) {
       this.onRouteChanged();
     }
@@ -216,25 +288,33 @@ class ComposeForm extends ImmutablePureComponent {
     if (this.props.focusDate && this.props.focusDate !== prevProps.focusDate) {
       let selectionEnd, selectionStart;
 
-      if (this.props.preselectDate !== prevProps.preselectDate && this.props.isInReply) {
-        selectionEnd   = this.props.text.length;
+      if (
+        this.props.preselectDate !== prevProps.preselectDate &&
+        this.props.isInReply
+      ) {
+        selectionEnd = this.props.text.length;
         selectionStart = this.props.text.search(/\s/) + 1;
       } else if (typeof this.props.caretPosition === 'number') {
         selectionStart = this.props.caretPosition;
-        selectionEnd   = this.props.caretPosition;
+        selectionEnd = this.props.caretPosition;
       } else {
-        selectionEnd   = this.props.text.length;
+        selectionEnd = this.props.text.length;
         selectionStart = selectionEnd;
       }
 
       // Because of the wicg-inert polyfill, the activeElement may not be
       // immediately selectable, we have to wait for observers to run, as
       // described in https://github.com/WICG/inert#performance-and-gotchas
-      Promise.resolve().then(() => {
-        this.autosuggestTextarea.textarea.setSelectionRange(selectionStart, selectionEnd);
-        this.autosuggestTextarea.textarea.focus();
-      }).catch(console.error);
-    } else if(prevProps.isSubmitting && !this.props.isSubmitting) {
+      Promise.resolve()
+        .then(() => {
+          this.autosuggestTextarea.textarea.setSelectionRange(
+            selectionStart,
+            selectionEnd,
+          );
+          this.autosuggestTextarea.textarea.focus();
+        })
+        .catch(console.error);
+    } else if (prevProps.isSubmitting && !this.props.isSubmitting) {
       this.autosuggestTextarea.textarea.focus();
     } else if (this.props.spoiler !== prevProps.spoiler) {
       if (this.props.spoiler) {
@@ -253,31 +333,46 @@ class ComposeForm extends ImmutablePureComponent {
     this.spoilerText = c;
   };
 
-  setRef = c => {
+  setRef = (c) => {
     this.composeForm = c;
   };
 
   handleEmojiPick = (data) => {
-    const { text }     = this.props;
-    const position     = this.autosuggestTextarea.textarea.selectionStart;
-    const needsSpace   = data.custom && position > 0 && !allowedAroundShortCode.includes(text[position - 1]);
+    const { text } = this.props;
+    const position = this.autosuggestTextarea.textarea.selectionStart;
+    const needsSpace =
+      data.custom &&
+      position > 0 &&
+      !allowedAroundShortCode.includes(text[position - 1]);
 
     this.props.onPickEmoji(position, data, needsSpace);
   };
 
-  render () {
+  render() {
     const { intl, onPaste, autoFocus } = this.props;
-    const  { tags, isChecked } = this.state;
+    const { tags, isChecked } = this.state;
     const disabled = this.props.isSubmitting;
 
     let publishText = '';
 
     if (this.props.isEditing) {
       publishText = intl.formatMessage(messages.saveChanges);
-    } else if (this.props.privacy === 'private' || this.props.privacy === 'direct') {
-      publishText = <span className='compose-form__publish-private'><Icon id='lock' /> {intl.formatMessage(messages.publish)}</span>;
+    } else if (
+      this.props.privacy === 'private' ||
+      this.props.privacy === 'direct'
+    ) {
+      publishText = (
+        <span className='compose-form__publish-private'>
+          <Icon id='lock' /> {intl.formatMessage(messages.publish)}
+        </span>
+      );
     } else {
-      publishText = this.props.privacy !== 'unlisted' ? intl.formatMessage(messages.publishLoud, { publish: intl.formatMessage(messages.publish) }) : intl.formatMessage(messages.publish);
+      publishText =
+        this.props.privacy !== 'unlisted'
+          ? intl.formatMessage(messages.publishLoud, {
+            publish: intl.formatMessage(messages.publish),
+          })
+          : intl.formatMessage(messages.publish);
     }
 
     return (
@@ -286,7 +381,13 @@ class ComposeForm extends ImmutablePureComponent {
           <WarningContainer />
           <ReplyIndicatorContainer />
 
-          <div className={`spoiler-input ${this.props.spoiler ? 'spoiler-input--visible' : ''}`} ref={this.setRef} aria-hidden={!this.props.spoiler}>
+          <div
+            className={`spoiler-input ${
+              this.props.spoiler ? 'spoiler-input--visible' : ''
+            }`}
+            ref={this.setRef}
+            aria-hidden={!this.props.spoiler}
+          >
             <AutosuggestInput
               placeholder={intl.formatMessage(messages.spoiler_placeholder)}
               value={this.props.spoilerText}
@@ -340,12 +441,19 @@ class ComposeForm extends ImmutablePureComponent {
             </div>
 
             <div className='character-counter__wrapper'>
-              <CharacterCounter max={1024} text={this.getFulltextForCharacterCounting()} />
+              <CharacterCounter
+                max={1024}
+                text={this.getFulltextForCharacterCounting()}
+              />
             </div>
           </div>
 
           <div className='compose-form__publish'>
-            <Checkbox onChange={this.onCheckBoxChange} checked={this.state.isChecked} label='Mint to NFT postcard' />
+            <Checkbox
+              onChange={this.onCheckBoxChange}
+              checked={this.state.isChecked}
+              label='Mint to NFT postcard'
+            />
             <div className='compose-form__publish-button-wrapper'>
               <Button
                 type='submit'
@@ -357,33 +465,38 @@ class ComposeForm extends ImmutablePureComponent {
           </div>
         </form>
         <div className='interests-zone-form'>
-          {
-            tags.length === 0 ? (
-              <Spinner
-                size={30}
-              />
-            ) : (<div className='cards-container' variant='outlined' sx={{ width: 320 }}>
+          {tags.length === 0 ? (
+            <Spinner size={30} />
+          ) : (
+            <div
+              className='cards-container'
+              variant='outlined'
+              sx={{ width: 320 }}
+            >
               {tags.map((card) => (
-                <Card interactive elevation={Elevation.TWO} key={card.name} >{card.name}
+                <Card interactive elevation={Elevation.TWO} key={card.name}>
+                  {card.name}
                   <div className='card-area'>
-                    {
-                      card.children.map(tag=>(
-                        // eslint-disable-next-line react/jsx-no-bind
-                        <Tag onClick={this.toTag.bind(this, tag)} minimal round key={tag.name} >{tag.name}</Tag>
-                      ))
-                    }
+                    {card.children.map((tag) => (
+                      // eslint-disable-next-line react/jsx-no-bind
+                      <Tag
+                        onClick={this.toTag.bind(this, tag)}
+                        minimal
+                        round
+                        key={tag.name}
+                      >
+                        {tag.name}
+                      </Tag>
+                    ))}
                   </div>
-
                 </Card>
                 // <Card onClick={this.toTag.bind(this, tag)} large minimal round key={tag.name} >{tag.name}</Card>
-
               ))}
               <Callout intent='success' title={'TIPS'}>
                 <Icon id='star' /> 點按 Tag 會自動出現在輸入框哦
               </Callout>
-
-            </div>)
-          }
+            </div>
+          )}
         </div>
         {/* <Divider /> */}
 

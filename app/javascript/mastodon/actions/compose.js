@@ -77,6 +77,14 @@ export const COMPOSE_CHANGE_MEDIA_FOCUS       = 'COMPOSE_CHANGE_MEDIA_FOCUS';
 
 export const COMPOSE_SET_STATUS = 'COMPOSE_SET_STATUS';
 
+export const DESTROY_NFT = 'DESTROY_NFT';
+
+export function destroyNft(){
+  return {
+    type: DESTROY_NFT,
+  };
+}
+
 const messages = defineMessages({
   uploadErrorLimit: { id: 'upload_error.limit', defaultMessage: 'File upload limit exceeded.' },
   uploadErrorPoll:  { id: 'upload_error.poll', defaultMessage: 'File upload not allowed with polls.' },
@@ -138,11 +146,12 @@ export function mentionCompose(account, routerHistory) {
   };
 }
 
-export function directCompose(account, routerHistory) {
+export function directCompose(account, routerHistory, nft) {
   return (dispatch, getState) => {
     dispatch({
       type: COMPOSE_DIRECT,
       account: account,
+      nft: nft,
     });
 
     ensureComposeIsVisible(getState, routerHistory);

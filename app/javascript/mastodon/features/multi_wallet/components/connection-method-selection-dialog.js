@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl-new';
 import { isMobile as isMobileDevice } from '@walletconnect/browser-utils';
 import { LikeCoinWalletConnectorMethodType } from '../types';
 import { SignInIcon } from './icons/sign-in';
@@ -79,7 +79,7 @@ export const ConnectionMethodSelectionDialog = ({
   onConnect,
   isConnectionMethodSelectDialogOpen,
 }) => {
-  const intl = initIntl();
+  const intl = useIntl();
   const [isDialogOpen, setDialogOpen] = React.useState(true);
   const isMobile = React.useMemo(isMobileDevice, []);
   const isKeplrNotInstalled = !isMobile && !window.keplr;
@@ -146,7 +146,7 @@ export const ConnectionMethodSelectionDialog = ({
     if (onClose) onClose();
   }
   return (
-    <Dialog isOpen={isDialogOpen} onClose={closeDialog}>
+    <Dialog className='multichain-wallet' isOpen={isDialogOpen} onClose={closeDialog}>
       {!(isKeplrNotInstalled && keplrInstallCTAPreset === 'fancy-banner') && (
         <h1 className="lk-flex lk-items-center lk-gap-x-[12px] lk-text-like-green lk-font-bold lk-mb-[24px]">
           <SignInIcon className="lk-w-[20px] lk-h-[20px] lk-shrink-0" />

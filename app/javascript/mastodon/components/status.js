@@ -153,7 +153,7 @@ class Status extends ImmutablePureComponent {
       // const account = status.get('account');
       // const liker_id = account.get('liker_id');
       // if(!liker_id) return;
-      api().get(`https://api.like.co/users/id/${'ckxpress'}/min`).then((res) => {
+      api().get(`https://api.like.co/users/id/${'guanyun'}/min`).then((res) => {
         console.log(res);
         if(res.data?.likeWallet){
           this.props.changeProfileAddress(res.data?.likeWallet);

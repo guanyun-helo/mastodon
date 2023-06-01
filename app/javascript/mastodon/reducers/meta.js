@@ -1,5 +1,5 @@
 import { STORE_HYDRATE } from 'mastodon/actions/store';
-import { IS_MINT_NFT_OPEN, APP_LAYOUT_CHANGE, ADDRESS_CHANGE, DRAWER_CHANGE, PROFILE_ADDRESS_CHANGE, SIGNER_CHANGE, INIT_CONNECT_METHODS, CHANGE_NFT_STATUS } from 'mastodon/actions/app';
+import { NFT_RESULT, IS_MINT_NFT_OPEN, APP_LAYOUT_CHANGE, ADDRESS_CHANGE, DRAWER_CHANGE, PROFILE_ADDRESS_CHANGE, SIGNER_CHANGE, INIT_CONNECT_METHODS, CHANGE_NFT_STATUS , IS_NFT_RESULT_OPEN} from 'mastodon/actions/app';
 import { Map as ImmutableMap } from 'immutable';
 import { layoutFromWindow } from 'mastodon/is_mobile';
 
@@ -18,6 +18,10 @@ const initialState = ImmutableMap({
 
 export default function meta(state = initialState, action) {
   switch(action.type) {
+  case NFT_RESULT:
+    return state.set('nftResult', action.nft);
+  case IS_NFT_RESULT_OPEN:
+    return state.set('isNFTResultOpen', action.isOpen);
   case IS_MINT_NFT_OPEN:
     return state.set('isMintNftOpen', action.isOpen);
   case CHANGE_NFT_STATUS:

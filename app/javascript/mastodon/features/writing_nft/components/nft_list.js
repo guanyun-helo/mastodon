@@ -131,8 +131,8 @@ class NftList extends ImmutablePureComponent {
                   '@type': 'Article',
                   description: '',
                   keywords: '',
-                  name: '哩哩扣扣 #23 回顧 Solana 的扭曲生態如何形成',
-                  url: 'https://leafwind.tw/2022/12/19/lilicoco-23-solana/',
+                  name: '',
+                  url: '',
                   usageInfo: '',
                   version: 1,
                 },
@@ -146,14 +146,14 @@ class NftList extends ImmutablePureComponent {
                   {
                     contributionType: 'http://schema.org/author',
                     entity: {
-                      '@id': 'like1p6xz8ma7xmra64susvp8lxpqlx48skg9e86c9d',
+                      '@id': '',
                       description:
-                        '在日軟體工程師｜資料科學與工程｜熱衷於觀察科技與人性\r\n\u003ca href="https://t.me/all_about_data"\u003e加入TG資料森友會群組\u003c/a\u003e｜\u003ca href="https://leafwind.tw/2020/12/06/about/"\u003e 關於我 \u003c/a\u003e',
+                        '',
                       identifier: [
                         {
                           '@type': 'PropertyValue',
                           propertyID: 'LikeCoin Wallet',
-                          value: 'like1p6xz8ma7xmra64susvp8lxpqlx48skg9e86c9d',
+                          value: '',
                         },
                       ],
                       name: 'leafwind',

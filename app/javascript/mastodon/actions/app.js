@@ -24,6 +24,22 @@ export const SIGNER_CHANGE = 'SIGNER_ADDRESS';
 export const INIT_CONNECT_METHODS = 'INIT_CONNECT_METHODS';
 export const CHANGE_NFT_STATUS = 'CHANGE_NFT_STATUS';
 export const IS_MINT_NFT_OPEN = 'IS_MINT_NFT_OPEN';
+export const IS_NFT_RESULT_OPEN = 'IS_NFT_RESULT_OPEN';
+export const NFT_RESULT = 'NFT_RESULT';
+
+export const changeResultNft = (nft) => {
+  return ({
+    type: NFT_RESULT,
+    nft: nft,
+  });
+};
+
+export const changeNftResultModal = (isOpen) => {
+  return ({
+    type: IS_NFT_RESULT_OPEN,
+    isOpen: isOpen,
+  });
+};
 
 export const openMintNftDrawer = (isOpen) => {
   return ({

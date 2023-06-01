@@ -367,10 +367,6 @@ class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleLikeContent = () => {
-    // if (me === this.props.status.get('account').get('id')) {
-    //   toast.info('鄉民，不能給自己拍手哦！');
-    //   return;
-    // }
 
     if (this.state.selfLike === 4) {
       if (!this.props.status.get('favourited')) {

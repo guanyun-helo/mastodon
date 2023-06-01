@@ -9,6 +9,7 @@ import {
   changeComposeSpoilerText,
   insertEmojiCompose,
   uploadCompose,
+  destroyNft,
 } from '../../../actions/compose';
 
 const mapStateToProps = state => ({
@@ -27,12 +28,17 @@ const mapStateToProps = state => ({
   anyMedia: state.getIn(['compose', 'media_attachments']).size > 0,
   isInReply: state.getIn(['compose', 'in_reply_to']) !== null,
   lang: state.getIn(['compose', 'language']),
+  nft: state.getIn(['compose', 'nft']),
 });
 
 const mapDispatchToProps = (dispatch) => ({
 
   onChange(text) {
     dispatch(changeCompose(text));
+  },
+
+  destroyNft() {
+    dispatch(destroyNft());
   },
 
   onSubmit(router, isChecked) {

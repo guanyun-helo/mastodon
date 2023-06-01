@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import regexifyString from 'regexify-string';
-
+import { format } from 'date-fns';
 import Poll from './poll.js';
 
 const verifiedIcon = <img id='badge' src='/verified.png' />;
 
 function Tweet(props){
-
   const verified = props.user.verified ? verifiedIcon : null;
 
   let tweetText = props.tweet.content;
@@ -86,7 +85,6 @@ function Tweet(props){
 
   if (blueArr.length && props.boxBackground){
     const blueStr = blueArr.join('|');
-    console.log('blueStr', blueArr);
     const regex = new RegExp(blueStr, 'g');
     const result = regexifyString({
       pattern: regex,
@@ -124,8 +122,6 @@ function Tweet(props){
     boxShadow: props.boxShadow ? 'rgba(0,0,0,0.1) 0px 8px 24px 0px' : 'none',
   };
 
-  // console.log(props.tweet.poll);
-
   const quoted = props.quoted;
 
   let quotedDiv = null;
@@ -158,7 +154,6 @@ function Tweet(props){
 
     </div>);
   }
-  console.log('props.tweet.poll', props.tweet.poll);
   return (
     <div id='tweet' style={boxStyle}>
       <div>
@@ -177,8 +172,7 @@ function Tweet(props){
       {quotedDiv}
       {props.tweet.poll === null ? null : <Poll poll={props.tweet.poll} />}
 
-
-      <div className='date' style={props.boxText ? { color: props.boxText.color } : ''}>{props.tweet.created_at}</div>
+      <div className='date' style={props.boxText ? { color: props.boxText.color } : ''}>{format(new Date(props.tweet.created_at).getTime(), 'H:mm:ss')} {format(new Date(props.tweet.created_at).getTime(), 'MMM d,yyyy')}</div>
     </div>
   );
 }

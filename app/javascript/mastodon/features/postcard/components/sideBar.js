@@ -4,40 +4,42 @@ import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-
 function SideBar(props) {
-
   return (
     <div id='customization'>
-      <label className='section'>NFT PostCard Name</label>
+      <label className='section'>明信片標題</label>
 
-      <InputGroup value={props.postCardName} onChange={props.onPostCardNameChange} className='nft-postcard-name'>
-        <InputGroup.Text id='basic-addon1'>NFT PostCard Name</InputGroup.Text>
+      <InputGroup
+        value={props.postCardName}
+        onChange={props.onPostCardNameChange}
+        className='nft-postcard-name'
+      >
+        <InputGroup.Text id='basic-addon1'>明信片標題</InputGroup.Text>
         <Form.Control
-          placeholder='NFT PostCard Name'
+          placeholder='不填寫的話會自動取得內容前十個字哦！'
           aria-label='PostCardName'
           aria-describedby='basic-addon1'
         />
       </InputGroup>
-      <label className='section'>Customization</label>
+      <label className='section'>自定</label>
       <div id='switches'>
-        <span className='sub-section'>Tweet card</span>
+        <span className='sub-section'>嘟嘟卡</span>
 
         <Form.Switch
-          label='Rounded corners'
+          label='圓角'
           id='corner-switch'
           onChange={props.onSwitchRounded}
           defaultChecked
         />
 
         <Form.Switch
-          label='Border'
+          label='邊框'
           id='border-switch'
           onChange={props.onSwitchBorder}
         />
 
         <Form.Switch
-          label='White background'
+          label='純白背景'
           id='background-switch'
           onChange={props.onSwitchBoxBackground}
           checked={props.solid ? props.boxBackground : true}
@@ -45,30 +47,29 @@ function SideBar(props) {
         />
 
         <Form.Switch
-          label='Shadow'
+          label='陰影'
           id='shadow-switch'
           onChange={props.onSwitchShadow}
           defaultChecked
         />
 
         <Form.Switch
-          label='Image crop'
+          label='附圖剪裁'
           id='crop-switch'
           onChange={props.onSwitchImageCrop}
           disabled={!props.imageCropDisabled}
         />
-
       </div>
 
-      <span className='sub-section'>Background</span>
+      <span className='sub-section'>背景色</span>
 
       {props.children}
 
-      <span className='sub-section'>Size</span>
+      <span className='sub-section'>大小</span>
 
       <Form.Check
         inline
-        label='square'
+        label='較窄'
         type={'radio'}
         value='square'
         onChange={props.onSwitchImageSize}
@@ -77,7 +78,7 @@ function SideBar(props) {
       />
       <Form.Check
         inline
-        label='wide'
+        label='較寬'
         value='wide'
         onChange={props.onSwitchImageSize}
         checked={props.imageSize === 'wide'}
@@ -86,12 +87,20 @@ function SideBar(props) {
       />
 
       <button onClick={props.onGenerate}>
-        Mint Toot to Nft PostCard
-        {props.genLoading && <Spinner className='gen-spinner' animation='border' role='status' variant='light' size='sm'>
-          <span className='visually-hidden'>Loading...</span>
-        </Spinner>}
+        {props.genLoading ? (
+          <Spinner
+            className='gen-spinner'
+            animation='border'
+            role='status'
+            variant='light'
+            size='sm'
+          >
+            <span style={{ color: '#fff' }} className='visually-hidden'>鑄造中....</span>
+          </Spinner>
+        ) : (
+          '鑄造成 NFT 明信片'
+        )}
       </button>
-
     </div>
   );
 }
