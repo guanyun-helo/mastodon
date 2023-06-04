@@ -243,9 +243,7 @@ export const postNFTPurchase = ({ txHash, iscnId, classId, ts }) => {
   //   https://api.like.co/likernft/purchase?tx_hash=CB28ADFC26FE37089E6F4805473F5EE36D8E07CCCA8128490A50E7E7AD2216AB&iscn_id=&class_id=likenft182288lhkn8cawaj3lccrhla72v4h6g093z2ulqlncc8wq5xcvncswm0zn5&ts=1684575456403
   return axios.post(`${LIKECOIN_API_BASE}/likernft/purchase?${querystring.stringify(
     qsPayload,
-  )}`).catch(err=>{
-    console.log(err);
-  });
+  )}`);
 };
 
 export const postNFTTransfer = ({ txHash, classId, nftId }) => {

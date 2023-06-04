@@ -19,7 +19,7 @@ import {
   getNFTbyISCNID,
   getNFTListByOwnerAddress,
 } from '../../../utils/api/like';
-
+import { changeNftResultModal, changeResultNft } from 'mastodon/actions/app';
 import {
   getChainNFTClassListingEndpoint,
   getNFTPurchaseInfo,
@@ -53,16 +53,23 @@ import {
 } from '@blueprintjs/core';
 
 import Macy from 'macy';
+import { toast } from 'material-react-toastify';
 
 const mapStateToProps = (state) => ({
   address: state.getIn(['meta', 'address']),
   profileAddress: state.getIn(['meta', 'profileAddress']),
   drawerType: state.getIn(['meta', 'drawerType']),
   signer: state.getIn(['meta', 'signer']),
+  connectMethods: state.getIn(['meta', 'connectMethods']),
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  changeNftResultModal: (params) => dispatch(changeNftResultModal(params)),
+  changeResultNft: (params) => dispatch(changeResultNft(params)),
 });
 
 export default
-@connect(mapStateToProps)
+@connect(mapStateToProps, mapDispatchToProps)
 @injectIntl
 class NftList extends ImmutablePureComponent {
 
@@ -147,8 +154,7 @@ class NftList extends ImmutablePureComponent {
                     contributionType: 'http://schema.org/author',
                     entity: {
                       '@id': '',
-                      description:
-                        '',
+                      description: '',
                       identifier: [
                         {
                           '@type': 'PropertyValue',
@@ -216,18 +222,12 @@ class NftList extends ImmutablePureComponent {
       });
       nftList = [];
       for (let nft of classes) {
-        console.log('nft', nft);
         let owner = await getOwnerByISCN(nft.parent.iscn_id_prefix);
-        console.log('owner',owner);
 
         let likerInfo = await getLikerInfoByAddress(owner.owner);
-        console.log('likerInfo',likerInfo);
 
         let meta = await getNFTmeta(nft.id);
 
-        console.log('owner',owner);
-        console.log('likerInfo',likerInfo);
-        console.log('meta',meta);
         if (owner === undefined) {
           owner = this.getDummy(0);
         }
@@ -365,8 +365,6 @@ class NftList extends ImmutablePureComponent {
       nftList = [];
       for (let nft of classes) {
         let owner = await getOwnerByISCN(nft.parent.iscn_id_prefix);
-        console.log('nft=>', nft);
-        console.log('owner', owner);
         let likerInfo = await getLikerInfoByAddress(owner.owner);
         let meta = await getNFTmeta(nft.id);
         let temNft = { ...nft, meta: meta, owner: likerInfo };
@@ -516,9 +514,16 @@ class NftList extends ImmutablePureComponent {
   };
 
   goCollect = async (nft) => {
+    if(this.props.signer === null){
+      // let signer = await props.connectMethods.initIfNecessary();
+      await this.props.connectMethods.initWallet();
+      // await props.connectMethods.connect();
+      return;
+      // await props.changeSigner(signer.offlineSigner);
+    }
     let ownerNftList = new Map();
     const getNFTListByOwnerAddressFunction = async (address, next) => {
-      let result = await getNFTListByOwnerAddress(nft.id, next);
+      let result = await getNFTListByOwnerAddress(nft.meta.iscn_owner, next);
       result?.owners.forEach((item) => {
         ownerNftList.set(item.owner, item);
       });
@@ -529,25 +534,28 @@ class NftList extends ImmutablePureComponent {
     let purchaseInfo = null;
     const getNFTPurchasedInfo = async ({ iscnId, classId }) => {
       let result = await getNFTPurchaseInfo({ iscnId, classId });
-      purchaseInfo = result;
+      purchaseInfo = result.data;
     };
+    if(purchaseInfo === undefined){
+      toast.info('此 nft 暫時不對外售賣');
+    }
     // await getNftListINfo(nft.id);
     await getNFTListByOwnerAddressFunction(nft.meta.iscn_owner);
     await getNFTPurchasedInfo({ iscnId: nft.meta.iscn_id, classId: nft.id });
     let nftOne = ownerNftList.get(
       'like17m4vwrnhjmd20uu7tst7nv0kap6ee7js69jfrs',
     );
+
     let nftDetail = await getNFTbyISCNID(nft.meta.iscn_id);
     let params = {
       senderAddress: this.props.address,
       classId: nftDetail.classId,
       nftId: nftOne?.nfts[0],
       seller: nftDetail.ownerWallet,
-      memo: 'First nft purchased by LikerSocial',
+      memo: 'Purchased from LikerSocial',
       priceInLIKE: nftDetail.currentPrice,
       signer: this.props.signer,
     };
-
     let res;
     if (purchaseInfo === null) {
       res = await signBuyNFT(params);
@@ -556,7 +564,7 @@ class NftList extends ImmutablePureComponent {
         senderAddress: params.senderAddress,
         amountInLIKE: purchaseInfo.totalPrice,
         signer: this.props.signer,
-        memo: 'First nft purchased from LikerSocial',
+        memo: 'Purchased from LikerSocial',
       });
     }
     // let res = await signBuyNFT(params);
@@ -565,7 +573,18 @@ class NftList extends ImmutablePureComponent {
       txHash,
       classId: nft.id,
       ts: Date.now(),
+    }).catch((err)=>{
+      if(err.response.data === 'GRANTER_AMOUNT_NOT_ENOUGH'){
+        toast.error('錢包餘額不足哦，請充值後再試！');
+      }else{
+        toast.error(err.response.data);
+      }
     });
+    if(purchasedRes.data?.classId){
+      this.props.changeResultNft(purchasedRes.data);
+      this.props.changeNftResultModal(true);
+    }
+
   };
 
   onConfirmCancel = () => {
@@ -610,7 +629,6 @@ class NftList extends ImmutablePureComponent {
   };
 
   componentWillUnmount() {
-    console.log('remove');
   }
 
   componentWillReceiveProps() {}
@@ -757,7 +775,7 @@ class NftList extends ImmutablePureComponent {
             </div>
           ))}
           {rawNftList.length === nftList.length ? (
-            <div className='next'> Nothing more... </div>
+            <div className='next'> THE END... </div>
           ) : isLoading === true ? (
             <Spinner size={20} />
           ) : (

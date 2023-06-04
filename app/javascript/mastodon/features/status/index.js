@@ -147,7 +147,6 @@ const makeMapStateToProps = () => {
 
   const mapStateToProps = (state, props) => {
     const status = getStatus(state, { id: props.params.statusId });
-
     let ancestorsIds = Immutable.List();
     let descendantsIds = Immutable.List();
 

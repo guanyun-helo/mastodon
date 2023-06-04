@@ -178,7 +178,7 @@ class LikerId extends ImmutablePureComponent {
                 </Card>
                 <Card interactive elevation={Elevation.TWO}>
                   <h5>
-                    <a href='#'>Wallet Connect</a>
+                    <a href='#'>Wallet Connect(手機連接仍不穩定，爲保證體驗，優先使用電腦綁定)</a>
                   </h5>
                   <p>{address}</p>
                   <Button

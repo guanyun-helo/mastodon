@@ -3,6 +3,7 @@ import api from '../api';
 import { deleteFromTimelines } from './timelines';
 import { importFetchedStatus, importFetchedStatuses, importFetchedAccount } from './importer';
 import { ensureComposeIsVisible, setComposeToStatus } from './compose';
+import { changeNftStatus, openMintNftDrawer } from './app';
 
 export const STATUS_FETCH_REQUEST = 'STATUS_FETCH_REQUEST';
 export const STATUS_FETCH_SUCCESS = 'STATUS_FETCH_SUCCESS';
@@ -47,10 +48,9 @@ export function fetchStatusRequest(id, skipLoading) {
   };
 }
 
-export function fetchStatus(id, forceFetch = false) {
+export function fetchStatus(id, forceFetch = false, isMintNft) {
   return (dispatch, getState) => {
     const skipLoading = !forceFetch && getState().getIn(['statuses', id], null) !== null;
-
     dispatch(fetchContext(id));
 
     if (skipLoading) {
@@ -60,6 +60,10 @@ export function fetchStatus(id, forceFetch = false) {
     dispatch(fetchStatusRequest(id, skipLoading));
 
     api(getState).get(`/api/v1/statuses/${id}`).then(response => {
+      if(isMintNft){
+        dispatch(changeNftStatus(response.data));
+        dispatch(openMintNftDrawer(true));
+      }
       dispatch(importFetchedStatus(response.data));
       dispatch(fetchStatusSuccess(skipLoading));
     }).catch(error => {
@@ -230,31 +234,31 @@ export function muteStatus(id) {
   };
 }
 
-export function support(loadedStatusId,fromId,cb) {
+export function support(loadedStatusId, fromId, cb) {
   return (dispatch, getState) => {
     api(getState).post(`/api/v1/statuses/${loadedStatusId}/support?liker=${fromId}`, { liker: fromId, statusId: loadedStatusId }).then((data) => {
-      cb(data)
+      cb(data);
     }).catch(error => {
     });
   };
-};
+}
 
-export function getSupportLikers(statusId,cb) {
+export function getSupportLikers(statusId, cb) {
   return (dispatch, getState) => {
     api(getState).get(`/api/v1/statuses/${statusId}/support_likers?statusId=${statusId}`).then((data) => {
-      cb(data)
+      cb(data);
     }).catch(error => {
     });
   };
-};
+}
 
-export function setISCN(statusId,ISCNID) {
+export function setISCN(statusId, ISCNID) {
   return (dispatch, getState) => {
     api(getState).post(`/api/v1/statuses/${statusId}/iscn?iscn_id=${ISCNID}`).then(() => {
     }).catch(error => {
     });
   };
-};
+}
 
 export function muteStatusRequest(id) {
   return {

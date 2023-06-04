@@ -409,7 +409,7 @@ class StatusActionBar extends ImmutablePureComponent {
 
   handleISCN = (iscn_id) => {
     window.open(
-      `https://app.like.co/view/${encodeURIComponent(iscn_id)}`,
+      `https://liker.land/zh-Hant/nft/class/${iscn_id}`,
       '_blank',
     );
   };
@@ -567,38 +567,19 @@ class StatusActionBar extends ImmutablePureComponent {
           ) : null : null}
           <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} />
 
-
-          {status.get('iscn_id') ? null : shareButton}
-
-          {status.get('iscn_id') ? null : filterButton}
-
-          {status.get('iscn_id') ? null : (
-            <div className='status__action-bar__dropdown'>
-              <DropdownMenuContainer
-                scrollKey={scrollKey}
-                disabled={anonymousAccess}
-                status={status}
-                items={menu}
-                icon='ellipsis-h'
-                size={18}
-                direction='right'
-                title={intl.formatMessage(messages.more)}
-              />
-            </div>
-          )}
-
-          {status.get('iscn_id') ? (
-            <IconButton
-              className={classNames('status__action-bar__button nft-icon', {
-                reblogPrivate,
-              })}
-              title={reblogTitle}
-              icon='hexagon-vertical-nft'
-              onClick={this.handleISCN.bind(this, status.get('iscn_id'))}
-            />
-          ) : null}
-        </div>
-        );
+        {status.get('iscn_id') ? (
+          <IconButton
+            className={classNames('status__action-bar__button nft-icon', {
+              reblogPrivate,
+            })}
+            title={reblogTitle}
+            icon='nftIcon'
+            type='self'
+            onClick={this.handleISCN.bind(this, status.get('iscn_id'))}
+          />
+        ) : null}
+      </div>
+    );
   }
 
 }

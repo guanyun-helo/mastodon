@@ -52,6 +52,7 @@ import {
   InputGroup,
   Dialog,
   DialogBody,
+  Button as BlueButton,
 } from '@blueprintjs/core';
 import {
   getOwnerByISCN,
@@ -201,6 +202,8 @@ const mapStateToProps = (state) => ({
   signer: state.getIn(['meta', 'signer']),
   isNFTResultOpen: state.getIn(['meta', 'isNFTResultOpen']),
   nftResultData: state.getIn(['meta', 'nftResult']),
+  connectMethods: state.getIn(['meta', 'connectMethods']),
+
 });
 export default
 @connect(mapStateToProps)
@@ -316,6 +319,13 @@ class Header extends ImmutablePureComponent {
   };
 
   transferNft = async (nft) => {
+    if(this.props.signer === null){
+      // let signer = await props.connectMethods.initIfNecessary();
+      await this.props.connectMethods.initWallet();
+      // await props.connectMethods.connect();
+      return;
+      // await props.changeSigner(signer.offlineSigner);
+    }
     const { wallet, memo, selectNftId } = this.state;
     let params = {
       fromAddress: this.props.address,
@@ -325,6 +335,7 @@ class Header extends ImmutablePureComponent {
       memo: memo === undefined ? '' : memo,
       signer: this.props.signer,
     };
+    debugger
     const signData = await signTransferNFT(params);
     const { txHash, code } = await broadcastTx(signData, this.props.signer);
     this.setState({
@@ -384,7 +395,6 @@ class Header extends ImmutablePureComponent {
   componentDidMount() {
     const account = this.props.account;
     let liker_id = account.get('liker_id');
-    liker_id = 'guanyun';
     if (!liker_id) return;
     this.getCoinPrice();
 
@@ -455,6 +465,13 @@ class Header extends ImmutablePureComponent {
   }
 
   changeNftDrawer = async () => {
+    if(this.props.signer === null){
+      // let signer = await props.connectMethods.initIfNecessary();
+      await this.props.connectMethods.initWallet();
+      // await props.connectMethods.connect();
+      return;
+      // await props.changeSigner(signer.offlineSigner);
+    }
     this.setState(
       {
         isSendNftDrawerOpen: !this.state.isSendNftDrawerOpen,
@@ -490,10 +507,8 @@ class Header extends ImmutablePureComponent {
         document
           .querySelector('.my-nft-list')
           .addEventListener('scroll', () => {
-            console.log('scrolled');
             // Get the position and size of the box element relative to the viewport
             let elementId = this.state.currentElementId;
-            console.log('currentElementId', elementId);
             if (elementId === null) return;
             let rect = document
               .querySelector(`.${elementId}`)
@@ -509,7 +524,6 @@ class Header extends ImmutablePureComponent {
 
             // Change the background color of the box element if it is in view
             if (inView) {
-              console.log('in view');
               if (this.state.isLoading) return;
               this.getMore(this.props.contentType);
             } else {
@@ -634,7 +648,6 @@ class Header extends ImmutablePureComponent {
           }
         });
       }
-      console.log('nftIds', nftIds);
       if (result !== undefined) {
         temNftList.push({
           ...result,
@@ -1094,7 +1107,6 @@ class Header extends ImmutablePureComponent {
     }
 
     let liker_id = account.get('liker_id') || null;
-    liker_id = 'guanyun';
     return (
       <div
         className={classNames('account__header', {
@@ -1250,17 +1262,17 @@ class Header extends ImmutablePureComponent {
                             ) : null}
                           </div>
                           <div className='nft-actions'>
-                            <div className='nft-buttons'>
+                            <div className='nft-buttons' style={{ marginRight: '5px' }}>
                               <div className={'nft-origial'}> 將 </div>{' '}
                             </div>
-                            <HTMLSelect
+                            {' '}<HTMLSelect
                               defaultValue={nft.nftIds[0]}
                               onChange={this.selectNftId}
                               options={nft.nftIds}
                               style={{ maxWidth: '10vw' }}
-                            />
+                            />{' '}
 
-                            <div className='nft-buttons'>
+                            <div className='nft-buttons' style={{ marginLeft: '5px' }}>
                               <div className={`nft-collect ${nft.id}`}>
                                 {' '}
                                 贈送給 {liker_id}
@@ -1374,8 +1386,8 @@ class Header extends ImmutablePureComponent {
             title='是否通過私信告訴他此次贈送！'
             icon='info-sign'
           >
-            <Button onClick={this.tellGift}>告訴他！</Button>
-            <Button onCLick={this.handleCloseTX}> 不啦！</Button>
+            <BlueButton onClick={this.tellGift}>告訴他！</BlueButton>
+            <BlueButton onCLick={this.handleCloseTX}> 不啦！</BlueButton>
           </Dialog>
           {!(suspended || hidden) && (
             <div className='account__header__extra'>

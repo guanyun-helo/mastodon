@@ -29,7 +29,7 @@ export class NftDrawer extends React.Component {
   state = {
     address: '',
     profileAddress: '',
-    currentTab: 'latest',
+    currentTab: 'collect',
   };
   componentDidUpdate() {
     const { address, profileAddress, drawerParams } = this.props;
@@ -79,7 +79,7 @@ export class NftDrawer extends React.Component {
     this.setState({
       address: '',
       profileAddress: '',
-      currentTab: 'latest',
+      currentTab: 'collect',
     });
     this.props.dispatch(changeDrawer({ isDrawerOpen: false }));
   };
@@ -151,16 +151,6 @@ export class NftDrawer extends React.Component {
                 <div className='profile-nft-zone'>
                   <ul>
                     <button
-                      id='latest'
-                      type='button'
-                      className={`tab ${
-                        currentTab === 'latest' ? 'active' : ''
-                      }`}
-                      onClick={() => this.handleTabChange('latest')}
-                    >
-                      我創作的 NFT
-                    </button>
-                    <button
                       id='collect'
                       type='button'
                       className={`tab ${
@@ -170,10 +160,19 @@ export class NftDrawer extends React.Component {
                     >
                       我收藏的 NFT
                     </button>
+                    <button
+                      id='latest'
+                      type='button'
+                      className={`tab ${
+                        currentTab === 'latest' ? 'active' : ''
+                      }`}
+                      onClick={() => this.handleTabChange('latest')}
+                    >
+                      我創作的 NFT
+                    </button>
                   </ul>
                   <div className='tab-content'>
                     {' '}
-                    {profileAddress}
                     {drawerParams.isDrawerOpen === true ? (
                       <>
                         <NftList
