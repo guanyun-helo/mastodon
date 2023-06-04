@@ -10,7 +10,7 @@ import SideBar from './sideBar';
 import PhotoUpload from './photoUpload';
 import { GRADIENTS } from './gradientColor';
 
-const serverErrorMsg = 'Twitter server error';
+const serverErrorMsg = 'server error';
 
 const blackFilter = `linear-gradient(
           rgba(0, 0, 0, 0.7),

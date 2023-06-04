@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { nanoid } from 'nanoid';
+import { fetchStatus } from '../../../actions/statuses';
 
 import IconButton from '../../../components/icon_button';
 import ImmutablePropTypes from 'react-immutable-proptypes';
@@ -93,11 +94,14 @@ const messages = defineMessages({
 
 const mapStateToProps = (state, { status }) => ({
   relationship: state.getIn(['relationships', status.getIn(['account', 'id'])]),
+  originStatus: state.getIn(['statuses', status.getIn(['account', 'id'])]),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setISCN: (statusID, ISCNID) => dispatch(setISCN(statusID, ISCNID)),
+  fetchStatus: (params, isForceFetch, isMintNft)=>dispatch(fetchStatus(params, isForceFetch, isMintNft)),
 });
+
 let requestLock = false;
 
 export default
@@ -337,7 +341,12 @@ class ActionBar extends React.PureComponent {
     });
 
   openISCN = () => {
+
     const { status } = this.props;
+    this.props.fetchStatus(Object.fromEntries(status).id, true, true);
+    // this.props.changeNftStatus(status);
+    // this.props.openMintNftDrawer(true);
+    return;
     const { ISCN_WIDGET_ORIGIN } = this.state;
     const siteurl = window.location.href;
     const redirectString = encodeURIComponent(siteurl);
@@ -822,11 +831,12 @@ class ActionBar extends React.PureComponent {
             onClick={this.openISCN}
           >
             <IconButton
-              className={classNames('status__action-bar__button nft-icon', {
+              className={classNames('status__action-bar__button nft-badge', {
                 reblogPrivate,
               })}
               title={reblogTitle}
-              icon='hexagon-vertical-nft'
+              icon='nftIcon'
+              type='self'
               // onClick={this.openISCN}
             />
           </div>

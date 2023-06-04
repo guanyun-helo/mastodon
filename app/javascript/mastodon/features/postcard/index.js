@@ -53,7 +53,7 @@ import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import { ListGroup, InputGroup } from 'react-bootstrap';
 
-const serverErrorMsg = 'Twitter server error';
+const serverErrorMsg = 'server error';
 
 const blackFilter = `linear-gradient(
           rgba(0, 0, 0, 0.7),
@@ -144,7 +144,9 @@ function PostSo(props) {
     setImgFilter('default');
   };
 
-  useEffect(() => {}, [resultImg, ISCNId, uploadArweaveId, nftClassId]);
+  useEffect(() => {
+    console.log(props);
+  }, [resultImg, ISCNId, uploadArweaveId, nftClassId]);
 
   const estimateArweaveFee = async (fileBlob) => {
     const formData = new FormData();
@@ -318,61 +320,95 @@ function PostSo(props) {
   };
 
   async function onGenerate(e) {
-    e.preventDefault();
-    let temaddress = 'like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6';
-    let result = await axios.get(getAddressLikerIdMinApi(temaddress));
-    setLikerInfo(result.data);
-    setGenLoading(true);
-    const node = document.querySelector('#preview .sq-container');
-    // const node = document.getElementByID('form-input');
-    const exportSize = 4;
-
-    const width = node.offsetWidth * exportSize;
-    const height = node.offsetHeight * exportSize;
-
-    const config = {
-      style: {
-        transform: `scale(${exportSize})`,
-        transformOrigin: 'top-left',
-        width: 512 + 'px',
-        height: 512 + 'px',
-      },
-      width,
-      height,
-    };
-
-    htmlToImage
-      .toPng(node, {
-        quality: 1,
-        pixelRatio: exportSize,
-      })
-      .then(async (dataUrl) => {
-        setResultImg(dataUrl);
-        let blob = await dataURItoBlob(dataUrl);
-        setFileType(blob.type);
-        await setFileBlob(blob);
-        handleFiles(blob);
-        setExifInfo({
-          format: blob.type,
-          size: blob.size,
-        });
-
-        let ArFee = await estimateArweaveFee(blob);
-        // let newMint = await newMintInstance({
-        //   address: props.address,
-        //   signer: props.signer,
-        // });
-        let payload = getPayload(result.data, blob);
-        setPayload(payload);
-        let ISCNFee = await calculateISCNFee(payload);
-        await onSubmit(ArFee, ISCNFee, payload, blob);
-      })
-      .catch( (error)=> {
-        toast.info('估算價格失敗，區塊鏈網路是異步網路，我們正在努力哦，請稍後再試！');
-        resetNFTdata();
-        onCLoseNftDrawer();
-        console.error('dom-to-image: oops, something went wrong!', error);
+    if(props.connectMethods?.initIfNecessary===undefined) {
+      toast.info('必須鏈接錢包哦！');
+      return;
+    }
+    if(props.signer === null){
+      // let signer = await props.connectMethods.initIfNecessary();
+      await props.connectMethods.initWallet();
+      // await props.connectMethods.connect();
+      return;
+      // await props.changeSigner(signer.offlineSigner);
+    }
+    setTimeout(async ()=>{
+      e.preventDefault();
+      console.log(props);
+      let result = await axios.get(getAddressLikerIdMinApi(props.address)).catch(err=>{
+        console.log(err);
       });
+      if(result?.data){
+        setLikerInfo(result.data);
+      }else{
+        result = {
+          data:{
+            displayName: 'anonymous liker',
+            likeWallet: props.address,
+            user: 'anonymous liker',
+            description: '',
+          },
+        };
+        setLikerInfo(
+          {
+            displayName: 'anonymous liker',
+            likeWallet: props.address,
+            user: 'anonymous liker',
+            description: '',
+          },
+        );
+      }
+      setGenLoading(true);
+      const node = document.querySelector('#preview .sq-container');
+      // const node = document.getElementByID('form-input');
+      const exportSize = 4;
+
+      const width = node.offsetWidth * exportSize;
+      const height = node.offsetHeight * exportSize;
+
+      const config = {
+        style: {
+          transform: `scale(${exportSize})`,
+          transformOrigin: 'top-left',
+          width: 512 + 'px',
+          height: 512 + 'px',
+        },
+        width,
+        height,
+      };
+
+      htmlToImage
+        .toPng(node, {
+          quality: 1,
+          pixelRatio: exportSize,
+        })
+        .then(async (dataUrl) => {
+          setResultImg(dataUrl);
+          let blob = await dataURItoBlob(dataUrl);
+          setFileType(blob.type);
+          await setFileBlob(blob);
+          handleFiles(blob);
+          setExifInfo({
+            format: blob.type,
+            size: blob.size,
+          });
+
+          let ArFee = await estimateArweaveFee(blob);
+          // let newMint = await newMintInstance({
+          //   address: props.address,
+          //   signer: props.signer,
+          // });
+          let payload = getPayload(result.data, blob);
+          setPayload(payload);
+          let ISCNFee = await calculateISCNFee(payload);
+          await onSubmit(ArFee, ISCNFee, payload, blob);
+        })
+        .catch( (error)=> {
+          toast.info('估算價格失敗，區塊鏈網路是異步網路，我們正在努力哦，請稍後再試！');
+          resetNFTdata();
+          onCLoseNftDrawer();
+          console.error('dom-to-image: oops, something went wrong!', error);
+        });
+    }, 0);
   }
 
   const onSubmit = async (ArFee, ISCNFee, payload, fileBlob) => {
@@ -704,6 +740,7 @@ function PostSo(props) {
         },
       });
       if(result.data?.classId){
+        props.setISCN(props.nftStatus.id, result.data?.classId);
         props.changeNftResult(result.data);
         props.onMintResultNFTChange(true);
         resetNFTdata();
@@ -810,7 +847,7 @@ function PostSo(props) {
   };
 
   if (props.nftStatus === null) {
-    return <p>{serverErrorMsg}</p>;
+    return <div />;
   }
 
   let bgSection;

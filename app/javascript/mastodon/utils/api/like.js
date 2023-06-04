@@ -141,7 +141,6 @@ export async function getNFTmeta(nftid) {
   let url = `https://api.like.co/likernft/metadata?iscn_id&class_id=${nftid}`;
   let result = null;
   let cache = await localforage.getItem(url);
-  console.log('cache', cache);
   const getData = () => {
     return axios
       .get(url)
@@ -329,9 +328,9 @@ export async function getNFTmetaByISCN(nftid) {
   }
   return result;
 }
-
+// https://mainnet-node.like.co/likechain/likenft/v1/class?iscn_owner=like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6&reverse=true
 export async function getISCNListByOwner(address, next) {
-  let url = `https://mainnet-node.like.co/likechain/likenft/v1/class?iscn_owner=${address}&reverse=true&key=${
+  let url = `https://mainnet-node.like.co/likechain/likenft/v1/class?iscn_owner=${address}&limit=100&reverse=true&key=${
     next ? next : ''
   }`;
   let result = null;
@@ -458,7 +457,8 @@ export async function getNFTbyISCNID(ISCN) {
 
 // https://mainnet-node.like.co/cosmos/nft/v1beta1/nfts?owner=like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6
 export async function getNFTListByOwnerAddress(classId) {
-  let url = `https://mainnet-node.like.co/cosmos/nft/v1beta1/nfts?owner=${classId}`;
+  // https://mainnet-node.like.co/likechain/likenft/v1/owner?class_id=likenft1ku4ra0e7dgknhd0wckrkxspuultynl4mgkxa3j08xeshfr2l0ujqmmvy83
+  let url = `https://mainnet-node.like.co/likechain/likenft/v1/owner?class_id=${classId}`;
   let result = null;
   let cache = await localforage.getItem(url);
   const getData = () => {

@@ -1326,6 +1326,11 @@ body > [data-popper-placement] {
       color: #606984;
     }
   }
+  i{
+    .icon-nft-icon{
+      fill: $classic-secondary-color;
+    }
+  }
 }
 
 .detailed-status__action-bar-dropdown {
@@ -4294,6 +4299,11 @@ a.status-card.compact:hover {
 .detailed-status__button {
   flex: 1 1 auto;
   text-align: center;
+  i{
+    .icon-nft-icon{
+      fill: $white;
+    }
+  }
 }
 
 .column-settings__outer {

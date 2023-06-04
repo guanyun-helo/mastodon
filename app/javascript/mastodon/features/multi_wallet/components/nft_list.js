@@ -8,8 +8,10 @@ import ScrollContainer from 'mastodon/containers/scroll_container';
 import Column from 'mastodon/components/column';
 import ColumnHeader from 'mastodon/components/column_header';
 import _ from 'lodash';
-import { connect } from 'react-redux';
+import { focusApp, unfocusApp, changeLayout, changeNftResultModal, changeResultNft } from 'mastodon/actions/app';
 
+import { connect } from 'react-redux';
+import { toast } from 'material-react-toastify';
 import {
   getOwnerByISCN,
   getNFTbyID,
@@ -298,7 +300,7 @@ class NftList extends ImmutablePureComponent {
   };
   getCollected = async (address) => {
     let result = await getNFTListByOwner(
-      'like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6',
+      address,
     );
     // this.setState({
     //   rawNftList: result.nfts,
@@ -380,7 +382,7 @@ class NftList extends ImmutablePureComponent {
     this.setState({
       isLoading: true,
     });
-    getNFTListByOwner('like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6', next)
+    getNFTListByOwner(addres, next)
       .then((result) => {
         let nftList = new Map();
         if (result.nfts !== null) {
@@ -469,8 +471,8 @@ class NftList extends ImmutablePureComponent {
   goCollect = async (nft) => {
     let ownerNftList = new Map();
     const getNFTListByOwnerAddressFunction = async (address, next) => {
-      let result = await getNFTListByOwnerAddress(nft.ownerWallet, next);
-      result?.nfts.forEach((item) => {
+      let result = await getNFTListByOwnerAddress(nft.meta.iscn_owner, next);
+      result?.owners.forEach((item) => {
         ownerNftList.set(item.owner, item);
       });
     };
@@ -480,25 +482,28 @@ class NftList extends ImmutablePureComponent {
     let purchaseInfo = null;
     const getNFTPurchasedInfo = async ({ iscnId, classId }) => {
       let result = await getNFTPurchaseInfo({ iscnId, classId });
-      purchaseInfo = result;
+      purchaseInfo = result.data;
     };
+    if(purchaseInfo === undefined){
+      toast.info('此 nft 暫時不對外售賣');
+    }
     // await getNftListINfo(nft.id);
-    await getNFTListByOwnerAddressFunction(nft.iscn_owner);
-    await getNFTPurchasedInfo({ iscnId: nft.iscn_id, classId: nft.id });
+    await getNFTListByOwnerAddressFunction(nft.meta.iscn_owner);
+    await getNFTPurchasedInfo({ iscnId: nft.meta.iscn_id, classId: nft.id });
     let nftOne = ownerNftList.get(
       'like17m4vwrnhjmd20uu7tst7nv0kap6ee7js69jfrs',
     );
-    let nftDetail = await getNFTbyISCNID(nft.iscn_id);
+
+    let nftDetail = await getNFTbyISCNID(nft.meta.iscn_id);
     let params = {
       senderAddress: this.props.address,
       classId: nftDetail.classId,
       nftId: nftOne?.nfts[0],
       seller: nftDetail.ownerWallet,
-      memo: 'First nft purchased by LikerSocial',
+      memo: 'Purchased from LikerSocial',
       priceInLIKE: nftDetail.currentPrice,
       signer: this.props.signer,
     };
-
     let res;
     if (purchaseInfo === null) {
       res = await signBuyNFT(params);
@@ -507,26 +512,37 @@ class NftList extends ImmutablePureComponent {
         senderAddress: params.senderAddress,
         amountInLIKE: purchaseInfo.totalPrice,
         signer: this.props.signer,
-        memo: 'First nft purchased from LikerSocial',
+        memo: 'Purchased from LikerSocial',
       });
     }
     // let res = await signBuyNFT(params);
     const { txHash, code } = await broadcastTx(res, this.props.signer);
+    console.log(txHash, code);
     let purchasedRes = await postNFTPurchase({
       txHash,
       classId: nft.id,
       ts: Date.now(),
+    }).catch((err)=>{
+      if(err.response.data === 'GRANTER_AMOUNT_NOT_ENOUGH'){
+        toast.error('錢包餘額不足哦，請充值後再試！');
+      }else{
+        toast.error(err.response.data);
+      }
     });
-  };
+    if(purchasedRes.data?.classId){
+      this.props.changeResultNft(purchasedRes.data);
+      this.props.changeNftResultModal(true);
+    }
 
+  };
   componentDidMount() {
     const { address, contentType } = this.props;
 
     if (contentType === 'latest') {
-      this.getISCNListByOwner('like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6');
+      this.getISCNListByOwner(address);
     } else {
       this.getCollectRankByCollecterAddress(
-        'like13f4glvg80zvfrrs7utft5p68pct4mcq7t5atf6',
+        address,
       );
     }
     this.getCoinPrice();
@@ -639,7 +655,7 @@ class NftList extends ImmutablePureComponent {
             </div>
           ))}
           {rawNftList.length === nftList.length ? (
-            <div className='next'> Nothing more... </div>
+            <div className='next'> THE END... </div>
           ) : isLoading === true ? (
             <Spinner size={20} />
           ) : (

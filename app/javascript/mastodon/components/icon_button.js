@@ -28,6 +28,7 @@ export default class IconButton extends React.PureComponent {
     obfuscateCount: PropTypes.bool,
     href: PropTypes.string,
     ariaHidden: PropTypes.bool,
+    type: PropTypes.string,
   };
 
   static defaultProps = {
@@ -105,6 +106,7 @@ export default class IconButton extends React.PureComponent {
       obfuscateCount,
       href,
       ariaHidden,
+      type,
     } = this.props;
 
     const {
@@ -128,7 +130,7 @@ export default class IconButton extends React.PureComponent {
 
     let contents = (
       <React.Fragment>
-        <Icon id={icon} fixedWidth aria-hidden='true' /> {typeof counter !== 'undefined' && <span className='icon-button__counter'><AnimatedNumber value={counter} obfuscate={obfuscateCount} /></span>}
+        <Icon type={type} id={icon} fixedWidth aria-hidden='true' /> {typeof counter !== 'undefined' && <span className='icon-button__counter'><AnimatedNumber value={counter} obfuscate={obfuscateCount} /></span>}
       </React.Fragment>
     );
 

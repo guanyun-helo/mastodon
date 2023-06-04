@@ -15,7 +15,7 @@ import { expandHomeTimeline } from '../../actions/timelines';
 import { expandNotifications } from '../../actions/notifications';
 import { fetchServer } from '../../actions/server';
 import { clearHeight } from '../../actions/height_cache';
-import { focusApp, unfocusApp, changeLayout, changeNftResultModal, changeResultNft } from 'mastodon/actions/app';
+import { focusApp, unfocusApp, changeLayout, changeNftResultModal, changeResultNft, changeSigner } from 'mastodon/actions/app';
 import { synchronouslySubmitMarkers, submitMarkers, fetchMarkers } from 'mastodon/actions/markers';
 import { WrappedSwitch, WrappedRoute } from './util/react_router_helpers';
 import BundleColumnError from './components/bundle_column_error';
@@ -67,6 +67,7 @@ import {
 } from './util/async-components';
 import initialState, { me, owner, singleUserMode, showTrends, trendsAsLanding } from '../../initial_state';
 import { closeOnboarding, INTRODUCTION_VERSION } from 'mastodon/actions/onboarding';
+import { setISCN } from 'mastodon/actions/statuses';
 import Header from './components/header';
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
 // Without this it ends up in ~8 very commonly used bundles.
@@ -97,6 +98,8 @@ const mapStateToProps = state => ({
   signer: state.getIn(['meta', 'signer']),
   isNFTResultOpen: state.getIn(['meta', 'isNFTResultOpen']),
   nftResultData: state.getIn(['meta', 'nftResult']),
+  connectMethods: state.getIn(['meta', 'connectMethods']),
+
 });
 
 const keyMap = {
@@ -587,9 +590,17 @@ class UI extends React.PureComponent {
     this.props.dispatch(changeResultNft(params));
   };
 
+  onSetISCN = (params, classId)=>{
+    this.props.dispatch(setISCN(params, classId));
+  };
+
+  changeSigner = (params)=>{
+    this.props.dispatch(changeSigner(params));
+  };
+
   render() {
     const { draggingOver } = this.state;
-    const { nftResultData, isNFTResultOpen, address, signer, nftStatus, isMintNftOpen, dispatch, profileAddress, drawerType, drawerParams, children, isComposing, location, dropdownMenuIsOpen, layout } = this.props;
+    const { connectMethods, nftResultData, isNFTResultOpen, address, signer, nftStatus, isMintNftOpen, dispatch, profileAddress, drawerType, drawerParams, children, isComposing, location, dropdownMenuIsOpen, layout } = this.props;
     const handlers = {
       help: this.handleHotkeyToggleHelp,
       new: this.handleHotkeyNew,
@@ -671,9 +682,9 @@ class UI extends React.PureComponent {
           <LoadingBarContainer className='loading-bar' />
           <ModalContainer />
           <UploadArea active={draggingOver} onClose={this.closeUploadModal} />
-          <NftDrawer dispatch={dispatch} drawerType={drawerType} profileAddress={profileAddress} address={address} drawerParams={drawerParams} />
-          <PoetSo changeNftResult={this.changeNftResult} onMintResultNFTChange={this.onMintNFTResultChange} closeNftDrawer={this.onMintDrawerChange} address={address} isOpen={isMintNftOpen} nftStatus={nftStatus} signer={signer} />
-          <NftResult onMintResultNFTChange={this.onMintNFTResultChange} isOpen={isNFTResultOpen} nftResult={nftResultData} />
+          <NftDrawer connectMethods={connectMethods} dispatch={dispatch} drawerType={drawerType} profileAddress={profileAddress} address={address} drawerParams={drawerParams} />
+          <PoetSo changeSigner={this.changeSigner} connectMethods={connectMethods} setISCN={this.onSetISCN} changeNftResult={this.changeNftResult} onMintResultNFTChange={this.onMintNFTResultChange} closeNftDrawer={this.onMintDrawerChange} address={address} isOpen={isMintNftOpen} nftStatus={nftStatus} signer={signer} />
+          <NftResult changeSigner={this.changeSigner} connectMethods={connectMethods} onMintResultNFTChange={this.onMintNFTResultChange} isOpen={isNFTResultOpen} nftResult={nftResultData} />
         </div>
       </HotKeys>
     );

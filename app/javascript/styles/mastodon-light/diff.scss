@@ -294,6 +294,18 @@ html {
 .detailed-status,
 .detailed-status__action-bar {
   background: $white;
+  i{
+    .icon-nft-icon{
+      fill: $classic-highlight-color;
+    }
+  }
+}
+.status__action-bar{
+  i{
+    .icon-nft-icon{
+      fill: $classic-highlight-color;
+    }
+  }
 }
 
 // Change the background colors of status__content__spoiler-link
@@ -779,4 +791,10 @@ html {
 }
 .logo-slogn-path{
   fill: $black !important;
+}
+.nft-result{
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  border: 0 !important;
 }

@@ -129,9 +129,14 @@
                         line-height: 1.5;
                         width: 100%;
                         text-align: left;
-                        -webkit-line-clamp: 5;
                         display: -webkit-box;
                         margin-bottom: 10px;
+                        word-break: break-all;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 5;
+                        -webkit-box-orient: vertical;
                     }
                     .nft-labels {
                         display: flex;
@@ -371,7 +376,12 @@
                         -webkit-line-clamp: 5;
                         display: -webkit-box;
                         margin-bottom: 10px;
-
+                        word-break: break-all;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 5;
+                        -webkit-box-orient: vertical;
                     }
                     .nft-labels {
                         display: flex;
@@ -739,6 +749,12 @@
             word-break: break-all;
             overflow: hidden;
             height: 100px;
+            word-break: break-all;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
         }
         .author {
             display: flex;
@@ -778,4 +794,10 @@
     .left-side h2 span:last-child {
         font-family: acumin-pro, sans-serif;
     }
+}
+.type-tag{
+    background-color: $classic-highlight-color;
+    color: #fff;
+    width: fit-content;
+    border-radius: 4px;
 }

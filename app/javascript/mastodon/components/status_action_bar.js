@@ -471,7 +471,7 @@ class StatusActionBar extends ImmutablePureComponent {
 
   handleISCN = (iscn_id) => {
     window.open(
-      `https://app.like.co/view/${encodeURIComponent(iscn_id)}`,
+      `https://liker.land/zh-Hant/nft/class/${iscn_id}`,
       '_blank',
     );
   };
@@ -817,7 +817,8 @@ class StatusActionBar extends ImmutablePureComponent {
               reblogPrivate,
             })}
             title={reblogTitle}
-            icon='hexagon-vertical-nft'
+            icon='nftIcon'
+            type='self'
             onClick={this.handleISCN.bind(this, status.get('iscn_id'))}
           />
         ) : null}
