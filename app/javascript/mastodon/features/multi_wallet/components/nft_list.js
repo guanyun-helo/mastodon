@@ -469,6 +469,7 @@ class NftList extends ImmutablePureComponent {
   };
 
   goCollect = async (nft) => {
+    toast.info('請求購買中...');
     let ownerNftList = new Map();
     const getNFTListByOwnerAddressFunction = async (address, next) => {
       let result = await getNFTListByOwnerAddress(nft.meta.iscn_owner, next);

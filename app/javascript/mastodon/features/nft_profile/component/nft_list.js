@@ -571,6 +571,7 @@ class NftList extends ImmutablePureComponent {
   };
 
   goCollect = async (nft) => {
+    toast.info('請求購買中...');
     if(this.props.signer === null){
       // let signer = await props.connectMethods.initIfNecessary();
       await this.props.connectMethods.initWallet();
@@ -702,7 +703,7 @@ class NftList extends ImmutablePureComponent {
             ) : (
               <div class={'nft-container'} key={nft.id}>
                 <div className='nft-info'>
-                  <div className='type-tag'>{nft.type}</div>
+                  <div className='type-tag'>{'NFT'}</div>
                   <div class={'nft-title'}>{nft.name}</div>
                   <div class='nft-description '>{nft.description}</div>
                   {nft.type !== 'ISCN' ? (

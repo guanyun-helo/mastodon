@@ -714,8 +714,7 @@ class StatusActionBar extends ImmutablePureComponent {
     } else {
       reblogTitle = intl.formatMessage(messages.cannot_reblog);
     }
-    // let liker_id = account.get('liker_id') === null ? '' : account.get('liker_id');
-    let liker_id = 'guan';
+    let liker_id = account.get('liker_id') === null ? '' : account.get('liker_id');
     const { totalLike, selfLike } = this.state;
     const shareButton = 'share' in navigator && publicStatus && (
       <IconButton

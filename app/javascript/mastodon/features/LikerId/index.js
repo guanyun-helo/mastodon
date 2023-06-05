@@ -42,6 +42,7 @@ const mapStateToProps = (state) => ({
   lists: getOrderedLists(state),
   connectMethods: state.getIn(['meta', 'connectMethods']),
   address: state.getIn(['meta', 'address']),
+  signer: state.getIn(['meta', 'signer']),
 });
 const mapDispatchToProps = (dispatch) => ({
   openDrawer: (type, props) => dispatch(changeDrawer(true)),
@@ -110,7 +111,14 @@ class LikerId extends ImmutablePureComponent {
     });
   }
 
-  connectWallet = () => {
+  connectWallet = async() => {
+    if(this.props.signer === null){
+      // let signer = await props.connectMethods.initIfNecessary();
+      await this.props.connectMethods.initWallet();
+      // await props.connectMethods.connect();
+      return;
+      // await props.changeSigner(signer.offlineSigner);
+    }
     this.props.connectMethods.connect();
   };
 

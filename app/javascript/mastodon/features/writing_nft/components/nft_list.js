@@ -367,6 +367,15 @@ class NftList extends ImmutablePureComponent {
         let owner = await getOwnerByISCN(nft.parent.iscn_id_prefix);
         let likerInfo = await getLikerInfoByAddress(owner.owner);
         let meta = await getNFTmeta(nft.id);
+        if (owner === undefined) {
+          owner = this.getDummy(0);
+        }
+        if (likerInfo === undefined) {
+          likerInfo = this.getDummy(1);
+        }
+        if (meta === undefined) {
+          meta = this.getDummy(2);
+        }
         let temNft = { ...nft, meta: meta, owner: likerInfo };
         nftList.push(temNft);
       }
@@ -521,6 +530,7 @@ class NftList extends ImmutablePureComponent {
       return;
       // await props.changeSigner(signer.offlineSigner);
     }
+    toast.info('請求購買中...');
     let ownerNftList = new Map();
     const getNFTListByOwnerAddressFunction = async (address, next) => {
       let result = await getNFTListByOwnerAddress(nft.meta.iscn_owner, next);
