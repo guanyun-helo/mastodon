@@ -249,6 +249,7 @@ class LikeCoinWalletConnector extends ImmutablePureComponent {
   };
   disconnect = async () => {
     const session = this.loadSession();
+    this.props.changeSigner(null);
     if (session) {
       let wcConnector;
       switch (session.method) {
@@ -284,7 +285,7 @@ class LikeCoinWalletConnector extends ImmutablePureComponent {
       }
     }
     this.deleteSession();
-    this.state._events.removeAllListeners();
+    this.state._events.removeAllListeners('account_change');
     this.closeWalletDrawer();
   };
   getWCQRCodeDialog = (methodType) => ({
@@ -542,15 +543,6 @@ class LikeCoinWalletConnector extends ImmutablePureComponent {
   };
 
   componentDidMount = async () => {
-    this.props.initConnectMethods({
-      connect: async ()=> await this.connect.bind(this),
-      disconnect: this.disconnect.bind(this),
-      initIfNecessary: ()=> this.initIfNecessary.bind(this),
-      initWallet: async ()=>{
-        this.state._events.emit('initWallet');
-      },
-    });
-    this.initWallet();
     this.on('initWallet', async ()=>{
       let connection = await this.initIfNecessary();
       if(connection?.offlineSigner){
@@ -561,6 +553,15 @@ class LikeCoinWalletConnector extends ImmutablePureComponent {
         this.connect();
       }
     });
+    this.props.initConnectMethods({
+      connect: async ()=> await this.connect.bind(this),
+      disconnect: this.disconnect.bind(this),
+      initIfNecessary: ()=> this.initIfNecessary.bind(this),
+      initWallet: async ()=>{
+        this.state._events.emit('initWallet');
+      },
+    });
+    this.initWallet();
   };
   initWallet = async ()=>{
     this.setState({

@@ -535,12 +535,16 @@ class StatusActionBar extends ImmutablePureComponent {
     } else {
       reblogTitle = intl.formatMessage(messages.cannot_reblog);
     }
-    // let liker_id = account.get('liker_id') === null ? '' : account.get('liker_id');
-    let liker_id = 'guan';
-    const {totalLike, selfLike} = this.state;
-        const shareButton = ('share' in navigator) && publicStatus && (
-        <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.share)} icon='share-alt' onClick={this.handleShareClick} />
-        );
+    let liker_id = account.get('liker_id') === null ? '' : account.get('liker_id');
+    const { totalLike, selfLike } = this.state;
+    const shareButton = 'share' in navigator && publicStatus && (
+      <IconButton
+        className='status__action-bar__button'
+        title={intl.formatMessage(messages.share)}
+        icon='share-alt'
+        onClick={this.handleShareClick}
+      />
+    );
 
         const filterButton = this.props.onFilter && (
         <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.hide)} icon='eye' onClick={this.handleHideClick} />

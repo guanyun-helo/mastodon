@@ -60,6 +60,7 @@ export default class IconButton extends React.PureComponent {
     e.preventDefault();
 
     if (!this.props.disabled) {
+      if(!this.props.onClick) return;
       this.props.onClick(e);
     }
   };
