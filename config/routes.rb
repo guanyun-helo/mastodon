@@ -13,13 +13,18 @@ Rails.application.routes.draw do
     /public
     /public/local
     /conversations
+    /writingnft/(*any)
+    /liker-id/(*any)
+    /writingnft-detail/(*any)
+    /writingnft-frame/(*any)
+    /interests/(*any)
     /lists/(*any)
     /notifications
     /favourites
     /bookmarks
     /pinned
     /start
-    /directory
+    /directory@
     /explore/(*any)
     /search
     /publish
@@ -443,8 +448,16 @@ Rails.application.routes.draw do
           resource :reblog, only: :create
           post :unreblog, to: 'reblogs#destroy'
 
+
           resource :favourite, only: :create
           post :unfavourite, to: 'favourites#destroy'
+
+          resource :like, only: :create
+          resource :superlike, only: :create
+          post :count, to: 'likes#like_count'
+          resource :iscn, only: :create
+          post :support, to: 'likes#support'
+          resource :support_likers, to: 'likes#support_likers'
 
           resource :bookmark, only: :create
           post :unbookmark, to: 'bookmarks#destroy'
@@ -577,6 +590,8 @@ Rails.application.routes.draw do
         resource :search, only: :show, controller: :search
         resource :lookup, only: :show, controller: :lookup
         resources :relationships, only: :index
+        resources :like_auth, only: :index, controller: :like_identitys
+        resources :liker_id, to: 'like_identitys#show'
         resources :familiar_followers, only: :index
       end
 

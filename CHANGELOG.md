@@ -841,7 +841,10 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Fix spurious errors when receiving an Add activity for a private post ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/17425))
 
 ### Security
+<<<<<<< HEAD
 
+=======
+>>>>>>> feat/blocker
 - Fix error-prone SQL queries ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/15828))
 - Fix not compacting incoming signed JSON-LD activities ([puckipedia](https://github.com/mastodon/mastodon/pull/17426), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/17428)) (CVE-2022-24307)
 - Fix insufficient sanitization of report comments ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/17430))
@@ -850,12 +853,26 @@ Some of the features in this release have been funded through the [NGI0 Discover
 
 ## [3.4.5] - 2022-01-31
 ### Added
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Add more advanced migration tests ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/17393))
 - Add github workflow to build Docker images ([unasuke](https://github.com/mastodon/mastodon/pull/16973), [Gargron](https://github.com/mastodon/mastodon/pull/16980), [Gargron](https://github.com/mastodon/mastodon/pull/17000))
 
 ### Fixed
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Fix some old migrations failing when skipping releases ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/17394))
 - Fix migrations script failing in certain edge cases ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/17398))
 - Fix Docker build ([tribela](https://github.com/mastodon/mastodon/pull/17188))
@@ -918,7 +935,15 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Fix suspended accounts statuses being merged back into timelines ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/16628))
 - Fix crash when encountering invalid account fields ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/16598))
 - Fix invalid blurhash handling for remote activities ([noellabo](https://github.com/mastodon/mastodon/pull/16583))
+<<<<<<< HEAD
 - Fix newlines being added to account notes when an account moves ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/16415), [noellabo](https://github.com/mastodon/mastodon/pull/16576))
+=======
+<<<<<<< HEAD
+- Fix newlines being added to accout notes when an account moves ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/16415), [noellabo](https://github.com/mastodon/mastodon/pull/16576))
+=======
+- Fix newlines being added to account notes when an account moves ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/16415), [noellabo](https://github.com/mastodon/mastodon/pull/16576))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Fix crash when creating an announcement with links ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/16941))
 - Fix logging out from one browser logging out all other sessions ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/16943))
 
@@ -1251,7 +1276,15 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Fix inefficiency when fetching bookmarks ([akihikodaki](https://github.com/mastodon/mastodon/pull/14674))
 - Fix inefficiency when fetching favourites ([akihikodaki](https://github.com/mastodon/mastodon/pull/14673))
 - Fix inefficiency when fetching media-only account timeline ([akihikodaki](https://github.com/mastodon/mastodon/pull/14675))
+<<<<<<< HEAD
 - Fix inefficiency when deleting accounts ([Gargron](https://github.com/mastodon/mastodon/pull/15387), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15409), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15407), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15408), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15402), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15416), [Gargron](https://github.com/mastodon/mastodon/pull/15421))
+=======
+<<<<<<< HEAD
+- Fix inefficieny when deleting accounts ([Gargron](https://github.com/mastodon/mastodon/pull/15387), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15409), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15407), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15408), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15402), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15416), [Gargron](https://github.com/mastodon/mastodon/pull/15421))
+=======
+- Fix inefficiency when deleting accounts ([Gargron](https://github.com/mastodon/mastodon/pull/15387), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15409), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15407), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15408), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15402), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/15416), [Gargron](https://github.com/mastodon/mastodon/pull/15421))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Fix redundant query when processing batch actions on custom emojis ([niwatori24](https://github.com/mastodon/mastodon/pull/14534))
 - Fix slow distinct queries where grouped queries are faster ([Gargron](https://github.com/mastodon/mastodon/pull/15287))
 - Fix performance on instances list in admin UI ([Gargron](https://github.com/mastodon/mastodon/pull/15282))
@@ -1387,7 +1420,15 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Change boost button to no longer serve as visibility indicator in web UI ([noellabo](https://github.com/mastodon/mastodon/pull/14132), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/14373))
 - Change contrast of flash messages ([cchoi12](https://github.com/mastodon/mastodon/pull/13892))
 - Change wording from "Hide media" to "Hide image/images" in web UI ([ariasuni](https://github.com/mastodon/mastodon/pull/13834))
+<<<<<<< HEAD
 - Change appearance of settings pages to be more consistent ([ariasuni](https://github.com/mastodon/mastodon/pull/13938))
+=======
+<<<<<<< HEAD
+- Change appearence of settings pages to be more consistent ([ariasuni](https://github.com/mastodon/mastodon/pull/13938))
+=======
+- Change appearance of settings pages to be more consistent ([ariasuni](https://github.com/mastodon/mastodon/pull/13938))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Change "Add media" tooltip to not include long list of formats in web UI ([ariasuni](https://github.com/mastodon/mastodon/pull/13954))
 - Change how badly contrasting emoji are rendered in web UI ([leo60228](https://github.com/mastodon/mastodon/pull/13773), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/13772), [mfmfuyu](https://github.com/mastodon/mastodon/pull/14020), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/14015))
 - Change structure of unavailable content section on about page ([ariasuni](https://github.com/mastodon/mastodon/pull/13930))
@@ -1403,14 +1444,32 @@ Some of the features in this release have been funded through the [NGI0 Discover
     - `EMAIL_DOMAIN_WHITELIST` → `EMAIL_DOMAIN_ALLOWLIST`
   - CLI option changed:
     - `tootctl domains purge --whitelist-mode` → `tootctl domains purge --limited-federation-mode`
+<<<<<<< HEAD
 - Remove some unnecessary database indexes ([lfuelling](https://github.com/mastodon/mastodon/pull/13695), [noellabo](https://github.com/mastodon/mastodon/pull/14259))
+=======
+<<<<<<< HEAD
+- Remove some unnecessary database indices ([lfuelling](https://github.com/mastodon/mastodon/pull/13695), [noellabo](https://github.com/mastodon/mastodon/pull/14259))
+=======
+- Remove some unnecessary database indexes ([lfuelling](https://github.com/mastodon/mastodon/pull/13695), [noellabo](https://github.com/mastodon/mastodon/pull/14259))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Remove unnecessary Node.js version upper bound ([ykzts](https://github.com/mastodon/mastodon/pull/14139))
 
 ### Fixed
 
 - Fix `following` param not working when exact match is found in account search ([noellabo](https://github.com/mastodon/mastodon/pull/14394))
+<<<<<<< HEAD
 - Fix sometimes occurring duplicate mention notifications ([noellabo](https://github.com/mastodon/mastodon/pull/14378))
 - Fix RSS feeds not being cacheable ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/14368))
+=======
+<<<<<<< HEAD
+- Fix sometimes occuring duplicate mention notifications ([noellabo](https://github.com/mastodon/mastodon/pull/14378))
+- Fix RSS feeds not being cachable ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/14368))
+=======
+- Fix sometimes occurring duplicate mention notifications ([noellabo](https://github.com/mastodon/mastodon/pull/14378))
+- Fix RSS feeds not being cacheable ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/14368))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Fix lack of locking around processing of Announce activities in ActivityPub ([noellabo](https://github.com/mastodon/mastodon/pull/14365))
 - Fix boosted toots from blocked account not being retroactively removed from TL ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/14339))
 - Fix large shortened numbers (like 1.2K) using incorrect pluralization ([Sasha-Sorokin](https://github.com/mastodon/mastodon/pull/14061))
@@ -1422,7 +1481,15 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Fix new posts pushing down origin of opened dropdown in web UI ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/14271), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/14348))
 - Fix timeline markers not being saved sometimes ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/13887), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/13889), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/14155))
 - Fix CSV uploads being rejected ([noellabo](https://github.com/mastodon/mastodon/pull/13835))
+<<<<<<< HEAD
 - Fix incompatibility with Elasticsearch 7.x ([noellabo](https://github.com/mastodon/mastodon/pull/13828))
+=======
+<<<<<<< HEAD
+- Fix incompatibility with ElasticSearch 7.x ([noellabo](https://github.com/mastodon/mastodon/pull/13828))
+=======
+- Fix incompatibility with Elasticsearch 7.x ([noellabo](https://github.com/mastodon/mastodon/pull/13828))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Fix being able to search posts where you're in the target audience but not actively mentioned ([noellabo](https://github.com/mastodon/mastodon/pull/13829))
 - Fix non-local posts appearing on local-only hashtag timelines in web UI ([noellabo](https://github.com/mastodon/mastodon/pull/13827))
 - Fix `tootctl media remove-orphans` choking on unknown files in storage ([Gargron](https://github.com/mastodon/mastodon/pull/13765))
@@ -1537,7 +1604,15 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Fix poll refresh button not being debounced in web UI ([rasjonell](https://github.com/mastodon/mastodon/pull/13485), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/13490))
 - Fix confusing error when failing to add an alias to an unknown account ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/13480))
 - Fix "Email changed" notification sometimes having wrong e-mail ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/13475))
+<<<<<<< HEAD
 - Fix various issues on the account aliases page ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/13452))
+=======
+<<<<<<< HEAD
+- Fix varioues issues on the account aliases page ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/13452))
+=======
+- Fix various issues on the account aliases page ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/13452))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Fix API footer link in web UI ([bubblineyuri](https://github.com/mastodon/mastodon/pull/13441))
 - Fix pagination of following, followers, follow requests, blocks and mutes lists in web UI ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/13445))
 - Fix styling of polls in JS-less fallback on public pages ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/13436))
@@ -2026,7 +2101,15 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Fix URLs appearing twice in errors of ActivityPub::DeliveryWorker ([Gargron](https://github.com/mastodon/mastodon/pull/11231))
 - Fix support for HTTP proxies ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/11245))
 - Fix HTTP requests to IPv6 hosts ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/11240))
+<<<<<<< HEAD
 - Fix error in Elasticsearch index import ([mayaeh](https://github.com/mastodon/mastodon/pull/11192))
+=======
+<<<<<<< HEAD
+- Fix error in ElasticSearch index import ([mayaeh](https://github.com/mastodon/mastodon/pull/11192))
+=======
+- Fix error in Elasticsearch index import ([mayaeh](https://github.com/mastodon/mastodon/pull/11192))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Fix duplicate account error when seeding development database ([ysksn](https://github.com/mastodon/mastodon/pull/11366))
 - Fix performance of session clean-up scheduler ([abcang](https://github.com/mastodon/mastodon/pull/11871))
 - Fix older migrations not running ([zunda](https://github.com/mastodon/mastodon/pull/11377))
@@ -2036,8 +2119,18 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Fix muted text color not applying to all text ([trwnh](https://github.com/mastodon/mastodon/pull/11996))
 - Fix follower/following lists resetting on back-navigation in web UI ([Gargron](https://github.com/mastodon/mastodon/pull/11986))
 - Fix n+1 query when approving multiple follow requests ([abcang](https://github.com/mastodon/mastodon/pull/12004))
+<<<<<<< HEAD
 - Fix records not being indexed into Elasticsearch sometimes ([Gargron](https://github.com/mastodon/mastodon/pull/12024))
 - Fix needlessly indexing unsearchable statuses into Elasticsearch ([Gargron](https://github.com/mastodon/mastodon/pull/12041))
+=======
+<<<<<<< HEAD
+- Fix records not being indexed into ElasticSearch sometimes ([Gargron](https://github.com/mastodon/mastodon/pull/12024))
+- Fix needlessly indexing unsearchable statuses into ElasticSearch ([Gargron](https://github.com/mastodon/mastodon/pull/12041))
+=======
+- Fix records not being indexed into Elasticsearch sometimes ([Gargron](https://github.com/mastodon/mastodon/pull/12024))
+- Fix needlessly indexing unsearchable statuses into Elasticsearch ([Gargron](https://github.com/mastodon/mastodon/pull/12041))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Fix new user bootstrapping crashing when to-be-followed accounts are invalid ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/12037))
 - Fix featured hashtag URL being interpreted as media or replies tab ([Gargron](https://github.com/mastodon/mastodon/pull/12048))
 - Fix account counters being overwritten by parallel writes ([Gargron](https://github.com/mastodon/mastodon/pull/12045))
@@ -2327,7 +2420,15 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Change Docker image to use Ubuntu with jemalloc ([Sir-Boops](https://github.com/mastodon/mastodon/pull/10100), [BenLubar](https://github.com/mastodon/mastodon/pull/10212))
 - Change public pages to be cacheable by proxies ([BenLubar](https://github.com/mastodon/mastodon/pull/9059))
 - Change the 410 gone response for suspended accounts to be cacheable by proxies ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/10339))
+<<<<<<< HEAD
 - Change web UI to not empty timeline of blocked users on block ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/10359))
+=======
+<<<<<<< HEAD
+- Change web UI to not not empty timeline of blocked users on block ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/10359))
+=======
+- Change web UI to not empty timeline of blocked users on block ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/10359))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Change JSON serializer to remove unused `@context` values ([Gargron](https://github.com/mastodon/mastodon/pull/10378))
 - Change GIFV file size limit to be the same as for other videos ([rinsuki](https://github.com/mastodon/mastodon/pull/9924))
 - Change Webpack to not use @babel/preset-env to compile node_modules ([ykzts](https://github.com/mastodon/mastodon/pull/10289))
@@ -2504,7 +2605,15 @@ Some of the features in this release have been funded through the [NGI0 Discover
 - Limit maximum visibility of local silenced users to unlisted ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/9583))
 - Change API error message for unconfirmed accounts ([noellabo](https://github.com/mastodon/mastodon/pull/9625))
 - Change the icon to "reply-all" when it's a reply to other accounts ([mayaeh](https://github.com/mastodon/mastodon/pull/9378))
+<<<<<<< HEAD
 - Do not ignore federated reports targeting already-reported accounts ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/9534))
+=======
+<<<<<<< HEAD
+- Do not ignore federated reports targetting already-reported accounts ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/9534))
+=======
+- Do not ignore federated reports targeting already-reported accounts ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/9534))
+>>>>>>> v3.5.1
+>>>>>>> feat/blocker
 - Upgrade default Ruby version to 2.6.0 ([Gargron](https://github.com/mastodon/mastodon/pull/9688))
 - Change e-mail digest frequency ([Gargron](https://github.com/mastodon/mastodon/pull/9689))
 - Change Docker images for Tor support in docker-compose.yml ([Sir-Boops](https://github.com/mastodon/mastodon/pull/9438))

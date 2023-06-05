@@ -11,6 +11,7 @@ import ListPanel from './list_panel';
 import NotificationsCounterIcon from './notifications_counter_icon';
 import SignInBanner from './sign_in_banner';
 import NavigationPortal from 'mastodon/components/navigation_portal';
+import LikeCoinWalletConnector from 'mastodon/features/multi_wallet/index';
 
 const messages = defineMessages({
   home: { id: 'tabs_bar.home', defaultMessage: 'Home' },
@@ -26,6 +27,8 @@ const messages = defineMessages({
   followsAndFollowers: { id: 'navigation_bar.follows_and_followers', defaultMessage: 'Follows and followers' },
   about: { id: 'navigation_bar.about', defaultMessage: 'About' },
   search: { id: 'navigation_bar.search', defaultMessage: 'Search' },
+  // interests: { id: 'navigation_bar.interests', defaultMessage: 'Interests' },
+  writingnft: { id: 'navigation_bar.writingnft', defaultMessage: 'NFT BookStore' },
 });
 
 export default @injectIntl
@@ -40,20 +43,25 @@ class NavigationPanel extends React.Component {
     intl: PropTypes.object.isRequired,
   };
 
-  render () {
+  render() {
     const { intl } = this.props;
+    const props = this.props;
     const { signedIn, disabledAccountId } = this.context.identity;
 
     return (
       <div className='navigation-panel'>
         <div className='navigation-panel__logo'>
-          <Link to='/' className='column-link column-link--logo'><Logo /></Link>
+          {/* <Link to='/' className='column-link column-link--logo'><Logo /></Link> */}
+          {/* <Keplr /> */}
+          <LikeCoinWalletConnector></LikeCoinWalletConnector>
           <hr />
         </div>
 
         {signedIn && (
           <React.Fragment>
             <ColumnLink transparent to='/home' icon='home' text={intl.formatMessage(messages.home)} />
+            <ColumnLink type='self' transparent to='/writingnft' icon='nftIcon' text={intl.formatMessage(messages.writingnft)} />
+            {/* <ColumnLink transparent to='/interests' icon='star' text={intl.formatMessage(messages.interests)} /> */}
             <ColumnLink transparent to='/notifications' icon={<NotificationsCounterIcon className='column-link__icon' />} text={intl.formatMessage(messages.notifications)} />
             <FollowRequestsColumnLink />
           </React.Fragment>
@@ -66,7 +74,7 @@ class NavigationPanel extends React.Component {
         )}
 
         {(signedIn || timelinePreview) && (
-          <>
+          <> 
             <ColumnLink transparent to='/public/local' icon='users' text={intl.formatMessage(messages.local)} />
             <ColumnLink transparent exact to='/public' icon='globe' text={intl.formatMessage(messages.federated)} />
           </>
@@ -75,7 +83,7 @@ class NavigationPanel extends React.Component {
         {!signedIn && (
           <div className='navigation-panel__sign-in-banner'>
             <hr />
-            { disabledAccountId ? <DisabledAccountBanner /> : <SignInBanner /> }
+            {disabledAccountId ? <DisabledAccountBanner /> : <SignInBanner />}
           </div>
         )}
 
@@ -83,9 +91,13 @@ class NavigationPanel extends React.Component {
           <React.Fragment>
             <ColumnLink transparent to='/conversations' icon='at' text={intl.formatMessage(messages.direct)} />
             <ColumnLink transparent to='/bookmarks' icon='bookmark' text={intl.formatMessage(messages.bookmarks)} />
-            <ColumnLink transparent to='/favourites' icon='star' text={intl.formatMessage(messages.favourites)} />
+            <ColumnLink transparent to='/favourites' icon='heart' text={intl.formatMessage(messages.favourites)} />
             <ColumnLink transparent to='/lists' icon='list-ul' text={intl.formatMessage(messages.lists)} />
-
+            <ColumnLink type='self' transparent to='/liker-id' icon='clap' text={`Liker Id (${props.liker_id})`} />
+            {/* <div key="liker-id" onClick={props.bindLikeCoinId} className="liker-id column-link column-link--transparent">
+              <img className='column-link__icon' src={props.clapImg} />
+              <div className="bind">Liker Id ({props.liker_id})</div>
+            </div> */}
             <ListPanel />
 
             <hr />

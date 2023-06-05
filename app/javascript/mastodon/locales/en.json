@@ -657,5 +657,6 @@
   "video.mute": "Mute sound",
   "video.pause": "Pause",
   "video.play": "Play",
-  "video.unmute": "Unmute sound"
+  "video.unmute": "Unmute sound",
+  "liker.bind_id": "Bind Liker id"
 }

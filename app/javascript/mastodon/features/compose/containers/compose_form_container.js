@@ -9,6 +9,7 @@ import {
   changeComposeSpoilerText,
   insertEmojiCompose,
   uploadCompose,
+  destroyNft,
 } from '../../../actions/compose';
 
 const mapStateToProps = state => ({
@@ -27,39 +28,44 @@ const mapStateToProps = state => ({
   anyMedia: state.getIn(['compose', 'media_attachments']).size > 0,
   isInReply: state.getIn(['compose', 'in_reply_to']) !== null,
   lang: state.getIn(['compose', 'language']),
+  nft: state.getIn(['compose', 'nft']),
 });
 
 const mapDispatchToProps = (dispatch) => ({
 
-  onChange (text) {
+  onChange(text) {
     dispatch(changeCompose(text));
   },
 
-  onSubmit (router) {
-    dispatch(submitCompose(router));
+  destroyNft() {
+    dispatch(destroyNft());
   },
 
-  onClearSuggestions () {
+  onSubmit(router, isChecked) {
+    dispatch(submitCompose(router, isChecked));
+  },
+
+  onClearSuggestions() {
     dispatch(clearComposeSuggestions());
   },
 
-  onFetchSuggestions (token) {
+  onFetchSuggestions(token) {
     dispatch(fetchComposeSuggestions(token));
   },
 
-  onSuggestionSelected (position, token, suggestion, path) {
+  onSuggestionSelected(position, token, suggestion, path) {
     dispatch(selectComposeSuggestion(position, token, suggestion, path));
   },
 
-  onChangeSpoilerText (checked) {
+  onChangeSpoilerText(checked) {
     dispatch(changeComposeSpoilerText(checked));
   },
 
-  onPaste (files) {
+  onPaste(files) {
     dispatch(uploadCompose(files));
   },
 
-  onPickEmoji (position, data, needsSpace) {
+  onPickEmoji(position, data, needsSpace) {
     dispatch(insertEmojiCompose(position, data, needsSpace));
   },
 

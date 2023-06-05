@@ -7,11 +7,38 @@ class Api::V1::Timelines::HomeController < Api::BaseController
 
   def show
     @statuses = load_statuses
+    @response = 'SUCCESS'
+    if(params['code'])
+      @response = like_coin_auth(params)
+    end
 
-    render json: @statuses,
+    if params['code']
+      render json: {:data => @response,:user=>current_account['liker_id'],:code => 200}, status: 200
+    else 
+      render json: @statuses,
            each_serializer: REST::StatusSerializer,
            relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id),
            status: account_home_feed.regenerating? ? 206 : 200
+    end
+  end
+
+  def like_coin_auth(params)
+    url = URI("https://api.like.co/oauth/access_token?client_id=#{ENV['LIKECOIN_CLIENT_ID']}&client_secret=#{ENV['LIKECOIN_CLIENT_SECRET']}&grant_type=authorization_code&code=#{params['code']}&redirect_uri=#{params['url']}")
+    https = Net::HTTP.new(url.host, url.port)
+    https.use_ssl = true
+    request = Net::HTTP::Post.new(url)
+    response = https.request(request)
+    puts '=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..'
+    puts response.body
+    @data = 'SUCCESS'
+    if response.code == '200'
+      current_account.update_attribute(:liker_id, JSON.parse(response.body)['user'])
+      current_account.update_attribute(:access_token, JSON.parse(response.body)['access_token'])
+      current_account.update_attribute(:refresh_token, JSON.parse(response.body)['refresh_token'])
+    else
+        @data = 'ERROR'
+    end
+    @data
   end
 
   private

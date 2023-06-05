@@ -26,6 +26,8 @@
 #  edited_at                    :datetime
 #  trendable                    :boolean
 #  ordered_media_attachment_ids :bigint(8)        is an Array
+#  support_likers               :text             is an Array
+#  iscn_id                      :string
 #
 
 class Status < ApplicationRecord

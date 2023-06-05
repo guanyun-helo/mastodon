@@ -10,6 +10,7 @@ import { useEmoji } from './emojis';
 import { importFetchedAccounts, importFetchedStatus } from './importer';
 import { openModal } from './modal';
 import { updateTimeline } from './timelines';
+import { changeNftStatus, openMintNftDrawer } from './app';
 
 /** @type {AbortController | undefined} */
 let fetchComposeSuggestionsAccountsController;
@@ -76,6 +77,14 @@ export const COMPOSE_CHANGE_MEDIA_FOCUS       = 'COMPOSE_CHANGE_MEDIA_FOCUS';
 
 export const COMPOSE_SET_STATUS = 'COMPOSE_SET_STATUS';
 
+export const DESTROY_NFT = 'DESTROY_NFT';
+
+export function destroyNft(){
+  return {
+    type: DESTROY_NFT,
+  };
+}
+
 const messages = defineMessages({
   uploadErrorLimit: { id: 'upload_error.limit', defaultMessage: 'File upload limit exceeded.' },
   uploadErrorPoll:  { id: 'upload_error.poll', defaultMessage: 'File upload not allowed with polls.' },
@@ -137,29 +146,28 @@ export function mentionCompose(account, routerHistory) {
   };
 }
 
-export function directCompose(account, routerHistory) {
+export function directCompose(account, routerHistory, nft) {
   return (dispatch, getState) => {
     dispatch({
       type: COMPOSE_DIRECT,
       account: account,
+      nft: nft,
     });
 
     ensureComposeIsVisible(getState, routerHistory);
   };
 }
 
-export function submitCompose(routerHistory) {
+export function submitCompose(routerHistory, isChecked) {
   return function (dispatch, getState) {
-    const status   = getState().getIn(['compose', 'text'], '');
+    let status   = getState().getIn(['compose', 'text'], '');
     const media    = getState().getIn(['compose', 'media_attachments']);
     const statusId = getState().getIn(['compose', 'id'], null);
-
     if ((!status || !status.length) && media.size === 0) {
       return;
     }
 
     dispatch(submitComposeRequest());
-
     // If we're editing a post with media attachments, those have not
     // necessarily been changed on the server. Do it now in the same
     // API call.
@@ -198,6 +206,10 @@ export function submitCompose(routerHistory) {
         'Idempotency-Key': getState().getIn(['compose', 'idempotencyKey']),
       },
     }).then(function (response) {
+      if(isChecked){
+        dispatch(changeNftStatus(response.data));
+        dispatch(openMintNftDrawer(true));
+      }
       if (routerHistory && (routerHistory.location.pathname === '/publish' || routerHistory.location.pathname === '/statuses/new') && window.history.state) {
         routerHistory.goBack();
       }

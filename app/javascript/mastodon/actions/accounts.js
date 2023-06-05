@@ -1,3 +1,4 @@
+/* eslint-disable promise/catch-or-return */
 import api, { getLinks } from '../api';
 import { importFetchedAccount, importFetchedAccounts } from './importer';
 
@@ -140,6 +141,30 @@ export function fetchAccountFail(id, error) {
     id,
     error,
     skipAlert: true,
+  };
+}
+
+export function getLikeAuth(location, callback) {
+  return (dispatch, getState) => {
+    api(getState).get(`/api/v1/accounts/like_auth?origin=${location.origin}${location.pathname}`).then(response => {
+      callback(response);
+    });
+  };
+}
+
+export function getLikerId(callback) {
+  return (dispatch, getState) => {
+    api(getState).get('/api/v1/accounts/liker_id').then(response => {
+      callback(response);
+    });
+  };
+}
+
+export function getTimeLine(code, location, callback) {
+  return (dispatch, getState) => {
+    api(getState).get(`/api/v1/timelines/home?code=${code}&url=${location.origin}${location.pathname}`).then((response)=>{
+      callback(response);
+    });
   };
 }
 

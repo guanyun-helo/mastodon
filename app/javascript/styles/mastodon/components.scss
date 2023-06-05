@@ -733,9 +733,15 @@ body > [data-popper-placement] {
 
   .compose-form__publish {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-around;
+    align-items: center;
     min-width: 0;
     flex: 0 0 auto;
+    .bp4-control{
+      padding-top: 15px;
+      margin-bottom: 0px;
+      font-size: 10px;
+    }
 
     .compose-form__publish-button-wrapper {
       overflow: hidden;
@@ -1188,6 +1194,45 @@ body > [data-popper-placement] {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  .status__info_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .status-nft{
+      height: 22px;
+      width: 22px;
+      margin-left: 15px;
+      svg{
+        width: 100%;
+        height: 100%;
+        fill: $classic-highlight-color;
+      }
+    }
+    .status-nft:hover{
+      cursor: pointer;
+    }
+  }
+}
+
+@keyframes shine {
+  20% {
+    transform : rotate(25deg) translateY(25px);
+  }
+
+  50% {
+    background : rgba(255,255,255,0);
+    width: 25px;
+  }
+  51% {
+    background : rgba(255,255,255,0);
+    width: 0px;
+  }
+  
+  100% {
+    transform : rotate(25deg) translateY(25px);
+    background : rgba(255,255,255,0);
+    width: 0px;
+  }
 }
 
 .status-check-box__status {
@@ -1252,6 +1297,40 @@ body > [data-popper-placement] {
   align-items: center;
   gap: 18px;
   margin-top: 16px;
+
+  .like-button:hover{
+    cursor: pointer;
+  }
+  .like-button{
+    width: 23px;
+    height: 23px;
+    // margin-right: 28px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    img{
+      width: 23px;
+      height: 23px;
+      transition: all .1s ease-in-out;
+    }
+    img:active{
+      width: 30px;
+      height: 30px;
+      transition: all .1s ease-in-out;
+      transform: rotate(35deg);
+    }
+    .count{
+      height: 23px;
+      line-height: 23px;
+      margin-left: 4px;
+      color: #606984;
+    }
+  }
+  i{
+    .icon-nft-icon{
+      fill: $classic-secondary-color;
+    }
+  }
 }
 
 .detailed-status__action-bar-dropdown {
@@ -1300,6 +1379,61 @@ body > [data-popper-placement] {
     margin-top: 16px;
   }
 }
+.support-liker{
+  width: 100%;
+  margin-top: 10px;
+  // background: red;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  .supports{
+    width: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    img{
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+    }
+  }
+  .container:hover{
+    cursor: pointer;
+  }
+  .container{
+    color: #fff;
+    background: #c0a46b;
+    border-radius: 20px;
+    width: 180px;
+    height: 36px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    img{
+      margin-right: 5px;
+      width: 15px;
+      height: 15px;
+    }
+  }
+  .ISCN-container{
+    margin-top: 20px;
+    background-color: #aaf1e7;
+    color: #28646E;
+    border-radius: 20px;
+    width: 180px;
+    height: 36px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+}
 
 .detailed-status__meta {
   margin-top: 16px;
@@ -1315,6 +1449,45 @@ body > [data-popper-placement] {
   display: flex;
   flex-direction: row;
   padding: 10px 0;
+  .ISCN-bage{
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    color: #ffc107;
+    cursor: pointer;
+  }
+  .ISCN-bage:focus{
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    color: gold;
+    cursor: pointer;
+  }
+  .like-button:hover{
+    cursor: pointer;
+  }
+  .like-button{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    img{
+      margin-right: 5px;
+      width: 25px;
+      height: 25px;
+      transition: all .1s ease-in-out;
+
+    }
+    img:active{
+      width: 30px;
+      height: 30px;
+      transition: all .1s ease-in-out;
+      transform: rotate(35deg);
+    }
+    .count{
+      color: #606984;
+    }
+  }
 }
 
 .detailed-status__link {
@@ -1671,8 +1844,8 @@ a.account__display-name {
 }
 
 .status__avatar {
-  width: 46px;
-  height: 46px;
+  width: 50px;
+  height: 50px;
 }
 
 .muted {
@@ -1771,6 +1944,19 @@ a.account__display-name {
   color: $gold-star;
 }
 
+.icon-button.catpaw-icon.active {
+  color: $pink-paw;
+}
+.icon-button.nft-icon{
+  i{
+    color: $like-green;
+  }
+  i:hover{
+    color: $like-light;
+    scale: 1.5;
+  }
+}
+
 .icon-button.bookmark-icon.active {
   color: $red-bookmark;
 }
@@ -1786,6 +1972,20 @@ a.account__display-name {
     & > .fa-star {
       animation: spring-rotate-out 1s linear;
     }
+  }
+}
+.no-reduce-motion .icon-button.catpaw-icon i:hover{
+  scale: 1.5;
+  color: $pink-paw;
+  animation: swing 1s linear;
+}
+.no-reduce-motion .icon-button.catpaw-icon:active {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='218.086 0.58 15.078 15.09' width='15.078' height='15.09'%3E%3Cpath d='M3.42 2.38c-.07.06-.14.02-.2 0-.28-.13-1.43-.81-1.65-.98-.1-.08-.11-.17-.06-.26.05-.11.19-.24.42-.45.23-.2.38-.31.5-.36.1-.04.19-.02.26.1.13.25.65 1.47.75 1.76.01.06.04.14-.02.2v-.01zm-.45.8c.01.09-.05.12-.12.17-.25.17-1.42.8-1.68.9-.13.05-.21.01-.26-.07-.07-.12-.1-.3-.16-.6a2 2 0 01-.05-.63c.02-.1.08-.16.22-.15.29 0 1.6.19 1.9.26.05.01.13.03.15.12zm9.84 9.98c.09 0 .13.06.16.1.14.28.64 1.5.72 1.77.04.14-.02.21-.1.25-.13.06-.32.09-.62.1-.31.03-.5.03-.63-.01-.1-.03-.15-.1-.13-.23.04-.27.36-1.56.47-1.84.02-.06.05-.13.13-.14zm.74-.6c.04-.08.13-.07.18-.06.3.02 1.6.23 1.88.3.13.04.17.13.16.23-.02.12-.09.3-.23.57-.13.27-.24.43-.34.52-.07.07-.16.08-.26 0a19.92 19.92 0 01-1.34-1.37c-.04-.05-.09-.1-.05-.18v-.01z' fill-rule='nonzero' transform='matrix(1, 0, 0, 1, 217.392426, 0.268668)' style='fill: rgb(217, 55, 110);'%3E%3C/path%3E%3C/svg%3E");  background-repeat: no-repeat;
+  background-size: 25px;
+  scale: 1.5;
+  transition: 1s cubic-bezier(0.19, 1, 0.22, 1);
+  .fa-paw {
+      animation: swing 1s linear;
   }
 }
 
@@ -2290,8 +2490,11 @@ $ui-header-height: 55px;
     padding: 15px;
 
     .logo {
-      height: $ui-header-height - 30px;
+      height: $ui-header-height - 15px;
       width: auto;
+      .logo-slogn-path{
+        fill: $white;
+      }
     }
   }
 
@@ -2589,7 +2792,7 @@ $ui-header-height: 55px;
     }
 
     .column-link__icon {
-      font-size: 18px;
+      // font-size: 18px;
     }
   }
 
@@ -2620,7 +2823,9 @@ $ui-header-height: 55px;
     .columns-area__panels__pane__inner {
       width: $sidebar-width;
     }
-
+    .bind{
+      display: none;
+    }
     .column-link span {
       display: none;
     }
@@ -2676,6 +2881,20 @@ $ui-header-height: 55px;
 
 .column-link--transparent .icon-with-badge__badge {
   border-color: darken($ui-base-color, 8%);
+}
+.column-link--transparent{
+  .fa-svgs{
+    svg{
+      fill: $ui-secondary-color;
+    }
+  }
+}
+.active {
+  .fa-svgs{
+    svg{
+      fill: $highlight-text-color
+    }
+  }
 }
 
 .column-title {
@@ -2749,7 +2968,7 @@ $ui-header-height: 55px;
   display: flex;
   flex-direction: column;
   height: calc(100% - 10px);
-  overflow-y: hidden;
+  overflow-y: scroll;
 
   .hero-widget {
     box-shadow: none;
@@ -2808,7 +3027,18 @@ $ui-header-height: 55px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-
+  .liker-id{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    img{
+      width: 25px;
+      height: 25px;
+    }
+  }
+  .liker-id:hover{
+    cursor: pointer;
+  }
   & > a {
     flex: 0 0 auto;
   }
@@ -3193,6 +3423,16 @@ $ui-header-height: 55px;
 
 .getting-started__wrapper {
   flex: 0 0 auto;
+  .liker-id{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    img{
+      width: 21px;
+      height: 21px;
+      margin-right: 5px;
+    }
+  }
 }
 
 .flex-spacer {
@@ -4059,6 +4299,11 @@ a.status-card.compact:hover {
 .detailed-status__button {
   flex: 1 1 auto;
   text-align: center;
+  i{
+    .icon-nft-icon{
+      fill: $white;
+    }
+  }
 }
 
 .column-settings__outer {
@@ -7728,7 +7973,21 @@ noscript {
 .notification,
 .status__wrapper {
   position: relative;
-
+  .iscn-bage-disable{
+    display: none;
+  }
+  .iscn-bage{
+    z-index: 1000;
+    position: absolute;
+    right: 11px;
+    bottom: 5px;
+    a{
+      img{
+        width: 39px;
+        height: 39px;
+      }
+    }
+  }
   &.unread {
     &::before {
       content: "";

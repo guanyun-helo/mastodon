@@ -87,7 +87,6 @@ export function expandTimeline(timelineId, path, params = {}, done = noOp) {
   return (dispatch, getState) => {
     const timeline = getState().getIn(['timelines', timelineId], ImmutableMap());
     const isLoadingMore = !!params.max_id;
-
     if (timeline.get('isLoading')) {
       done();
       return;

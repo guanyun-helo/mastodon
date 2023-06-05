@@ -11,6 +11,10 @@ import LoadingIndicator from 'mastodon/components/loading_indicator';
 import DetailedStatus from './components/detailed_status';
 import ActionBar from './components/action_bar';
 import Column from '../ui/components/column';
+import Support from '../../../images/likebutton/support.svg';
+import LikePay from './containers/pay';
+import queryString from 'query-string';
+import api from '../../api';
 import {
   favourite,
   unfavourite,
@@ -20,6 +24,10 @@ import {
   unreblog,
   pin,
   unpin,
+  getLikeCount,
+  getSelfLikeCount,
+  like,
+  superLiked,
 } from '../../actions/interactions';
 import {
   replyCompose,
@@ -33,6 +41,8 @@ import {
   editStatus,
   hideStatus,
   revealStatus,
+  support,
+  getSupportLikers,
   translateStatus,
   undoStatusTranslation,
 } from '../../actions/statuses';
@@ -61,6 +71,7 @@ import { boostModal, deleteModal } from '../../initial_state';
 import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from '../ui/util/fullscreen';
 import { textForScreenReader, defaultMediaVisibility } from '../../components/status';
 import Icon from 'mastodon/components/icon';
+import { toast } from 'material-react-toastify';
 import { Helmet } from 'react-helmet';
 
 const messages = defineMessages({
@@ -106,7 +117,7 @@ const makeMapStateToProps = () => {
     const ids = [statusId];
 
     while (ids.length > 0) {
-      let id        = ids.pop();
+      let id = ids.pop();
       const replies = contextReplies.get(id);
 
       if (statusId !== id) {
@@ -136,12 +147,11 @@ const makeMapStateToProps = () => {
 
   const mapStateToProps = (state, props) => {
     const status = getStatus(state, { id: props.params.statusId });
-
-    let ancestorsIds   = Immutable.List();
+    let ancestorsIds = Immutable.List();
     let descendantsIds = Immutable.List();
 
     if (status) {
-      ancestorsIds   = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
+      ancestorsIds = getAncestorsIds(state, { id: status.get('in_reply_to_id') });
       descendantsIds = getDescendantsIds(state, { id: status.get('id') });
     }
 
@@ -206,17 +216,58 @@ class Status extends ImmutablePureComponent {
     fullscreen: false,
     showMedia: defaultMediaVisibility(this.props.status),
     loadedStatusId: undefined,
+    isPayShow: false,
+    supoortLikers: [],
+    isSupportSuccess: false,
   };
 
-  componentWillMount () {
+  componentWillMount() {
     this.props.dispatch(fetchStatus(this.props.params.statusId));
   }
 
-  componentDidMount () {
+  componentDidMount() {
     attachFullscreenListener(this.onFullScreenChange);
+
+    const tx_hash = queryString.parse(location.search).tx_hash;
+    const state = queryString.parse(location.search).state;
+    if (tx_hash && state) {
+      const loadedStatusId = JSON.parse(state).statusId;
+      if (!loadedStatusId) return;
+      api().get(`https://api.like.co/tx/id/${tx_hash}`).then((res) => {
+
+        if (res.data.remarks === 'Transaction from Liker Social') {
+          this.props.dispatch(support(loadedStatusId, res.data.fromId, (response) => {
+            for (const id of response.data.data) {
+              api().get(`https://api.like.co/users/id/${id}/min`).then((avatars) => {
+                const data = this.state.supoortLikers;
+                data.push(avatars.data.avatar);
+                this.setState({
+                  supoortLikers: [...data],
+                });
+              });
+            }
+            toast.success('鄉民，你的支持是對作者最大的鼓勵，感謝 🙌！');
+            if (this.props.status.get('reblogged')) return;
+          }));
+        }
+      });
+    } else {
+      this.props.dispatch(getSupportLikers(this.props.params.statusId, (response) => {
+        if (!response.data.data) return;
+        for (const id of response.data.data) {
+          api().get(`https://api.like.co/users/id/${id}/min`).then((avatars) => {
+            const data = this.state.supoortLikers;
+            data.push(avatars.data.avatar);
+            this.setState({
+              supoortLikers: [...data],
+            });
+          });
+        }
+      }));
+    }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.params.statusId !== this.props.params.statusId && nextProps.params.statusId) {
       this._scrolledIntoView = false;
       this.props.dispatch(fetchStatus(nextProps.params.statusId));
@@ -252,6 +303,23 @@ class Status extends ImmutablePureComponent {
         url: status.get('url'),
       }));
     }
+  };
+
+  handleLike = (status, count, location, callback) => {
+    this.props.dispatch(like(status, count, location, callback));
+  };
+
+  handleSuperLike = (status, location, params, callback) => {
+    this.props.dispatch(superLiked(status, location, params, callback));
+  };
+
+
+  handleLikeCount = (likerId, encodedURL, callback) => {
+    this.props.dispatch(getLikeCount(likerId, encodedURL, callback));
+  };
+
+  handleUserLikeCount = (id, href, origin, callback) => {
+    this.props.dispatch(getSelfLikeCount(id, href, origin, callback));
   };
 
   handlePin = (status) => {
@@ -516,7 +584,7 @@ class Status extends ImmutablePureComponent {
     }
   };
 
-  _selectChild (index, align_top) {
+  _selectChild(index, align_top) {
     const container = this.node;
     const element = container.querySelectorAll('.focusable')[index];
 
@@ -530,7 +598,7 @@ class Status extends ImmutablePureComponent {
     }
   }
 
-  renderChildren (list) {
+  renderChildren(list) {
     return list.map(id => (
       <StatusContainer
         key={id}
@@ -546,7 +614,7 @@ class Status extends ImmutablePureComponent {
     this.node = c;
   };
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     if (this._scrolledIntoView) {
       return;
     }
@@ -563,18 +631,47 @@ class Status extends ImmutablePureComponent {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     detachFullscreenListener(this.onFullScreenChange);
   }
 
   onFullScreenChange = () => {
     this.setState({ fullscreen: isFullscreen() });
   };
+  openPay = () => {
+    this.setState({
+      isPayShow: !this.state.isPayShow,
+    }, () => {
+      if (!this.state.isPayShow) {
+        this.setState({
+          isSupportSuccess: false,
+        });
+      } else {
+        let container = document.querySelector('.support-container');
+        if (!container) return;
+        container.scrollIntoView();
+      }
+    });
+    // if(this.state.)
+  };
 
-  render () {
+  fetchAsBlob = url => fetch(url)
+    .then(response => response.blob());
+
+  convertBlobToBase64 = blob => new Promise((resolve, reject) => {
+    const reader = new FileReader;
+    reader.onerror = reject;
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+  });
+
+
+  render() {
     let ancestors, descendants;
     const { isLoading, status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
-    const { fullscreen } = this.state;
+    const { fullscreen, isPayShow, supoortLikers, isSupportSuccess } = this.state;
 
     if (isLoading) {
       return (
@@ -616,7 +713,7 @@ class Status extends ImmutablePureComponent {
       toggleSensitive: this.handleHotkeyToggleSensitive,
       openMedia: this.handleHotkeyOpenMedia,
     };
-
+    const likerId = this.props.status.get('account').get('liker_id') || null;
     return (
       <Column bindToDocument={!multiColumn} label={intl.formatMessage(messages.detailedStatus)}>
         <ColumnHeader
@@ -667,7 +764,27 @@ class Status extends ImmutablePureComponent {
                   onReport={this.handleReport}
                   onPin={this.handlePin}
                   onEmbed={this.handleEmbed}
+                  onSuperLiked={this.handleSuperLike}
+                  onLike={this.handleLike}
+                  getLikeCount={this.handleLikeCount}
+                  getUserLikeCount={this.handleUserLikeCount}
                 />
+
+                {
+                  likerId ? (<div className='support-liker'>
+                    <div className='supports'>
+                      {
+                        supoortLikers.map((item) => (
+                          <img key={item} className='animate__animated animate__bounceIn' src={item} />
+                        ))
+                      }
+                    </div>
+                    <div className='container' onClick={this.openPay}>
+                      <img src={Support} /> Support Liker
+                    </div>
+                    <LikePay account={status.get('account').get('username')} username={status.get('account').get('username')} isSupportSuccess={isSupportSuccess} likerId={status.get('account').get('liker_id')} statusId={status.get('id')} isShow={isPayShow} handleLikePay={this.openPay} />
+                  </div>) : null
+                }
               </div>
             </HotKeys>
 

@@ -15,13 +15,18 @@ import { expandHomeTimeline } from '../../actions/timelines';
 import { expandNotifications } from '../../actions/notifications';
 import { fetchServer } from '../../actions/server';
 import { clearHeight } from '../../actions/height_cache';
-import { focusApp, unfocusApp, changeLayout } from 'mastodon/actions/app';
+import { focusApp, unfocusApp, changeLayout, changeNftResultModal, changeResultNft, changeSigner } from 'mastodon/actions/app';
 import { synchronouslySubmitMarkers, submitMarkers, fetchMarkers } from 'mastodon/actions/markers';
 import { WrappedSwitch, WrappedRoute } from './util/react_router_helpers';
 import BundleColumnError from './components/bundle_column_error';
 import UploadArea from './components/upload_area';
 import ColumnsAreaContainer from './containers/columns_area_container';
 import PictureInPicture from 'mastodon/features/picture_in_picture';
+import { ToastContainer } from 'material-react-toastify';
+import { NftDrawer } from '../nft_profile';
+import PoetSo from '../postcard/index';
+import NftResult from '../nft_result/index';
+// import 'material-react-toastify/dist/ReactToastify.css';
 import {
   Compose,
   Status,
@@ -54,18 +59,26 @@ import {
   FollowRecommendations,
   About,
   PrivacyPolicy,
+  Interests,
+  WritingNft,
+  WritingNftDetail,
+  WritingNftIframe,
+  LikerId,
 } from './util/async-components';
 import initialState, { me, owner, singleUserMode, showTrends, trendsAsLanding } from '../../initial_state';
 import { closeOnboarding, INTRODUCTION_VERSION } from 'mastodon/actions/onboarding';
+import { setISCN } from 'mastodon/actions/statuses';
 import Header from './components/header';
-
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
 // Without this it ends up in ~8 very commonly used bundles.
 import '../../components/status';
+import { changeDrawer, openMintNftDrawer } from '../../actions/app';
 
 const messages = defineMessages({
   beforeUnload: { id: 'ui.beforeunload', defaultMessage: 'Your draft will be lost if you leave Mastodon.' },
 });
+
+
 
 const mapStateToProps = state => ({
   layout: state.getIn(['meta', 'layout']),
@@ -76,6 +89,17 @@ const mapStateToProps = state => ({
   dropdownMenuIsOpen: state.getIn(['dropdown_menu', 'openId']) !== null,
   firstLaunch: state.getIn(['settings', 'introductionVersion'], 0) < INTRODUCTION_VERSION,
   username: state.getIn(['accounts', me, 'username']),
+  drawerParams: state.getIn(['meta', 'drawerParams']),
+  address: state.getIn(['meta', 'address']),
+  profileAddress: state.getIn(['meta', 'profileAddress']),
+  drawerType: state.getIn(['meta', 'drawerType']),
+  isMintNftOpen: state.getIn(['meta', 'isMintNftOpen']),
+  nftStatus: state.getIn(['meta', 'nftStatus']),
+  signer: state.getIn(['meta', 'signer']),
+  isNFTResultOpen: state.getIn(['meta', 'isNFTResultOpen']),
+  nftResultData: state.getIn(['meta', 'nftResult']),
+  connectMethods: state.getIn(['meta', 'connectMethods']),
+
 });
 
 const keyMap = {
@@ -123,7 +147,7 @@ class SwitchingColumnsArea extends React.PureComponent {
     mobile: PropTypes.bool,
   };
 
-  componentWillMount () {
+  componentWillMount() {
     if (this.props.mobile) {
       document.body.classList.toggle('layout-single-column', true);
       document.body.classList.toggle('layout-multiple-columns', false);
@@ -133,7 +157,7 @@ class SwitchingColumnsArea extends React.PureComponent {
     }
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     if (![this.props.location.pathname, '/'].includes(prevProps.location.pathname)) {
       this.node.handleChildrenContentChange();
     }
@@ -150,7 +174,7 @@ class SwitchingColumnsArea extends React.PureComponent {
     }
   };
 
-  render () {
+  render() {
     const { children, mobile } = this.props;
     const { signedIn } = this.context.identity;
 
@@ -188,6 +212,11 @@ class SwitchingColumnsArea extends React.PureComponent {
           <WrappedRoute path='/lists/:id' component={ListTimeline} content={children} />
           <WrappedRoute path='/notifications' component={Notifications} content={children} />
           <WrappedRoute path='/favourites' component={FavouritedStatuses} content={children} />
+          <WrappedRoute path='/interests' component={Interests} content={children} />
+          <WrappedRoute path='/writingnft' component={WritingNft} content={children} />
+          <WrappedRoute path='/writingnft-detail/:nftid' component={WritingNftDetail} content={children} />
+          <WrappedRoute path='/writingnft-frame/:nftid' component={WritingNftIframe} content={children} />
+          <WrappedRoute path='/liker-id' component={LikerId} content={children} />
 
           <WrappedRoute path='/bookmarks' component={BookmarkedStatuses} content={children} />
           <WrappedRoute path='/pinned' component={PinnedStatuses} content={children} />
@@ -252,6 +281,10 @@ class UI extends React.PureComponent {
     layout: PropTypes.string.isRequired,
     firstLaunch: PropTypes.bool,
     username: PropTypes.string,
+    drawerParams:PropTypes.object,
+    profileAddress: PropTypes.string,
+    address: PropTypes.string,
+    drawerType: PropTypes.string,
   };
 
   state = {
@@ -385,7 +418,7 @@ class UI extends React.PureComponent {
     document.addEventListener('dragleave', this.handleDragLeave, false);
     document.addEventListener('dragend', this.handleDragEnd, false);
 
-    if ('serviceWorker' in  navigator) {
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', this.handleServiceWorkerPostMessage);
     }
 
@@ -408,7 +441,7 @@ class UI extends React.PureComponent {
     };
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     window.removeEventListener('focus', this.handleWindowFocus);
     window.removeEventListener('blur', this.handleWindowBlur);
     window.removeEventListener('beforeunload', this.handleBeforeUnload);
@@ -456,7 +489,7 @@ class UI extends React.PureComponent {
   };
 
   handleHotkeyFocusColumn = e => {
-    const index  = (e.key * 1) + 1; // First child is drawer, skip that
+    const index = (e.key * 1) + 1; // First child is drawer, skip that
     const column = this.node.querySelector(`.column:nth-child(${index})`);
     if (!column) return;
     const container = column.querySelector('.scrollable');
@@ -541,10 +574,33 @@ class UI extends React.PureComponent {
     this.context.router.history.push('/follow_requests');
   };
 
-  render () {
-    const { draggingOver } = this.state;
-    const { children, isComposing, location, dropdownMenuIsOpen, layout } = this.props;
+  onDrawerChange = (params) => {
+    this.props.dispatch(changeDrawer(params));
+  };
 
+  onMintDrawerChange = (params) => {
+    this.props.dispatch(openMintNftDrawer(false));
+  };
+
+  onMintNFTResultChange = (params)=>{
+    this.props.dispatch(changeNftResultModal(params));
+  };
+
+  changeNftResult= (params)=>{
+    this.props.dispatch(changeResultNft(params));
+  };
+
+  onSetISCN = (params, classId)=>{
+    this.props.dispatch(setISCN(params, classId));
+  };
+
+  changeSigner = (params)=>{
+    this.props.dispatch(changeSigner(params));
+  };
+
+  render() {
+    const { draggingOver } = this.state;
+    const { connectMethods, nftResultData, isNFTResultOpen, address, signer, nftStatus, isMintNftOpen, dispatch, profileAddress, drawerType, drawerParams, children, isComposing, location, dropdownMenuIsOpen, layout } = this.props;
     const handlers = {
       help: this.handleHotkeyToggleHelp,
       new: this.handleHotkeyNew,
@@ -566,21 +622,69 @@ class UI extends React.PureComponent {
       goToMuted: this.handleHotkeyGoToMuted,
       goToRequests: this.handleHotkeyGoToRequests,
     };
+    const tweet = {
+      'media': 'https://dplsgtvuyo356.cloudfront.net/media_attachments/files/110/422/383/700/284/186/original/5643b77331166bd3.png',
+      'tweet': {
+        'id': '1468677317888348160',
+        'text': 'I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,',
+        'created_at': '2021-12-08T05:57:29.000Z',
+        'public_metrics': {
+          'retweet_count': 10701,
+          'reply_count': 12575,
+          'like_count': 190463,
+          'quote_count': 1009,
+        },
+        'author_id': '44196397',
+        'media': 'https://dplsgtvuyo356.cloudfront.net/media_attachments/files/110/422/383/700/284/186/original/5643b77331166bd3.png',
+      },
+      'data': {
+        'id': '1468677317888348160',
+        'text': 'I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,I’m an alien,',
+        'created_at': '2021-12-08T05:57:29.000Z',
+        'public_metrics': {
+          'retweet_count': 10701,
+          'reply_count': 12575,
+          'like_count': 190463,
+          'quote_count': 1009,
+        },
+        'author_id': '44196397',
+      },
 
+      'user': {
+        'id': '44196397',
+        'name': 'Editor',
+        'username': 'Editor',
+        'profile_image_url': 'https://dplsgtvuyo356.cloudfront.net/accounts/avatars/106/282/397/367/132/067/original/c742403531f5e530.jpeg',
+      },
+    };
     return (
       <HotKeys keyMap={keyMap} handlers={handlers} ref={this.setHotkeysRef} attach={window} focused>
         <div className={classNames('ui', { 'is-composing': isComposing })} ref={this.setRef} style={{ pointerEvents: dropdownMenuIsOpen ? 'none' : null }}>
           <Header />
-
           <SwitchingColumnsArea location={location} mobile={layout === 'mobile' || layout === 'single-column'}>
             {children}
           </SwitchingColumnsArea>
 
           {layout !== 'mobile' && <PictureInPicture />}
           <NotificationsContainer />
+          <ToastContainer
+            limit={2}
+            position='top-center'
+            autoClose={1000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
           <LoadingBarContainer className='loading-bar' />
           <ModalContainer />
           <UploadArea active={draggingOver} onClose={this.closeUploadModal} />
+          <NftDrawer connectMethods={connectMethods} dispatch={dispatch} drawerType={drawerType} profileAddress={profileAddress} address={address} drawerParams={drawerParams} />
+          <PoetSo changeSigner={this.changeSigner} connectMethods={connectMethods} setISCN={this.onSetISCN} changeNftResult={this.changeNftResult} onMintResultNFTChange={this.onMintNFTResultChange} closeNftDrawer={this.onMintDrawerChange} address={address} isOpen={isMintNftOpen} nftStatus={nftStatus} signer={signer} />
+          <NftResult changeSigner={this.changeSigner} connectMethods={connectMethods} onMintResultNFTChange={this.onMintNFTResultChange} isOpen={isNFTResultOpen} nftResult={nftResultData} />
         </div>
       </HotKeys>
     );

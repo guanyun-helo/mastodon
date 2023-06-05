@@ -46,6 +46,9 @@
 #  devices_url                   :string
 #  suspension_origin             :integer
 #  sensitized_at                 :datetime
+#  access_token                  :string
+#  refresh_token                 :string
+#  liker_id                      :string
 #  trendable                     :boolean
 #  reviewed_at                   :datetime
 #  requested_review_at           :datetime

@@ -131,7 +131,7 @@
   "compose_form.hashtag_warning": "由於這則嘟文設定為「不公開」，它將不被列於任何主題標籤下。只有公開的嘟文才能藉由主題標籤被找到。",
   "compose_form.lock_disclaimer": "您的帳號尚未 {locked}。任何人皆能跟隨您並看到您設定成只有跟隨者能看的嘟文。",
   "compose_form.lock_disclaimer.lock": "上鎖",
-  "compose_form.placeholder": "正在想些什麼嗎？",
+  "compose_form.placeholder": "點按下方 tag 加入興趣話題",
   "compose_form.poll.add_option": "新增選項",
   "compose_form.poll.duration": "投票期限",
   "compose_form.poll.option_placeholder": "第 {number} 個選項",
@@ -655,5 +655,6 @@
   "video.mute": "靜音",
   "video.pause": "暫停",
   "video.play": "播放",
-  "video.unmute": "解除靜音"
+  "video.unmute": "解除靜音",
+  "liker.bind_id": "綁定 Liker id"
 }

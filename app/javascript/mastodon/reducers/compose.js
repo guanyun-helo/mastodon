@@ -46,6 +46,7 @@ import {
   COMPOSE_CHANGE_MEDIA_DESCRIPTION,
   COMPOSE_CHANGE_MEDIA_FOCUS,
   COMPOSE_SET_STATUS,
+  DESTROY_NFT,
 } from '../actions/compose';
 import { TIMELINE_DELETE } from '../actions/timelines';
 import { STORE_HYDRATE } from '../actions/store';
@@ -282,6 +283,10 @@ const updateSuggestionTags = (state, token) => {
 
 export default function compose(state = initialState, action) {
   switch(action.type) {
+  case DESTROY_NFT:
+    return state.withMutations(map => {
+      map.set('nft', undefined);
+    });
   case STORE_HYDRATE:
     return hydrate(state, action.state.get('compose'));
   case COMPOSE_MOUNT:
@@ -420,6 +425,7 @@ export default function compose(state = initialState, action) {
       map.set('focusDate', new Date());
       map.set('caretPosition', null);
       map.set('idempotencyKey', uuid());
+      map.set('nft', action.nft);
     });
   case COMPOSE_SUGGESTIONS_CLEAR:
     return state.update('suggestions', ImmutableList(), list => list.clear()).set('suggestion_token', null);

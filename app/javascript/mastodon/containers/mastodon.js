@@ -5,6 +5,7 @@ import { IntlProvider, addLocaleData } from 'react-intl';
 import { Provider as ReduxProvider } from 'react-redux';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { ScrollContext } from 'react-router-scroll-4';
+import storage from 'localforage';
 import configureStore from 'mastodon/store/configureStore';
 import UI from 'mastodon/features/ui';
 import { fetchCustomEmojis } from 'mastodon/actions/custom_emojis';
@@ -59,12 +60,36 @@ export default class Mastodon extends React.PureComponent {
   }
 
   componentDidMount() {
+    storage.getItem('times', (err, value) => {
+      if (value >= 6) {
+        storage.clear().then(() => {
+          console.log('Database is now empty.');
+        }).catch(function (err) {
+          // This code runs if there were any errors
+          console.log(err);
+        });
+        return;
+      }
+
+      if (value === null) {
+        storage.setItem('times', 0);
+      } else if (typeof value === 'number') {
+        storage.setItem('times', value + 1);
+      }
+    });
     if (this.identity.signedIn) {
       this.disconnect = store.dispatch(connectUserStream());
     }
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-H8BRZ52MG8');
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.disconnect) {
       this.disconnect();
       this.disconnect = null;
@@ -75,7 +100,7 @@ export default class Mastodon extends React.PureComponent {
     return !(location.state?.mastodonModalKey && location.state?.mastodonModalKey !== prevRouterProps?.location?.state?.mastodonModalKey);
   }
 
-  render () {
+  render() {
     const { locale } = this.props;
 
     return (
