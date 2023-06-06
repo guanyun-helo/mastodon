@@ -335,7 +335,6 @@ class Header extends ImmutablePureComponent {
       memo: memo === undefined ? '' : memo,
       signer: this.props.signer,
     };
-    debugger
     const signData = await signTransferNFT(params);
     const { txHash, code } = await broadcastTx(signData, this.props.signer);
     this.setState({
