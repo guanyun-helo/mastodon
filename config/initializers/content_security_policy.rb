@@ -27,6 +27,8 @@ gam_http = "http://www.google-analytics.com/"
 vercel = "https://tags.vercel.app/"
 js_cdn = "https://cdn.jsdelivr.net/"
 wallet_connect = 'wss://*.bridge.walletconnect.org'
+cloud_front = 'https://*.cloudfront.net/'
+
 
 Rails.application.config.content_security_policy do |p|
   p.base_uri        :none
@@ -43,12 +45,12 @@ Rails.application.config.content_security_policy do |p|
   if Rails.env.development?
     webpacker_urls = %w(ws http).map { |protocol| "#{protocol}#{Webpacker.dev_server.https? ? 's' : ''}://#{Webpacker.dev_server.host_with_port}" }
 
-    p.connect_src :self, :data, :blob, wallet_connect, assets_host, js_cdn, like_co, mainnet_like, vercel, coingecko, like_pay, gam, gam_http, media_host, Rails.configuration.x.streaming_api_base_url, *webpacker_urls
+    p.connect_src :self, :data, :blob, cloud_front, wallet_connect, assets_host, js_cdn, like_co, mainnet_like, vercel, coingecko, like_pay, gam, gam_http, media_host, Rails.configuration.x.streaming_api_base_url, *webpacker_urls
     p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host, ga, ga_http, gam, gam_http
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host
   else
-    p.connect_src :self, :data, :blob, wallet_connect, assets_host, js_cdn, like_co, mainnet_like, coingecko, vercel, like_pay, gam, gam_http,media_host, like_co, Rails.configuration.x.streaming_api_base_url
+    p.connect_src :self, :data, :blob, cloud_front, wallet_connect, assets_host, js_cdn, like_co, mainnet_like, coingecko, vercel, like_pay, gam, gam_http,media_host, like_co, Rails.configuration.x.streaming_api_base_url
     p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host, ga, ga_http, gam, gam_http, "'wasm-unsafe-eval'"
     p.child_src   :self, :blob, assets_host
     p.worker_src  :self, :blob, assets_host
