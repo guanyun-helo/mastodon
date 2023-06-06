@@ -20,6 +20,8 @@ module.exports = (api) => {
       ['@babel/proposal-decorators', { legacy: true }],
       ['react-intl', { messagesDir: './build/messages' }],
       'preval',
+      '@babel/plugin-proposal-nullish-coalescing-operator',
+      '@babel/plugin-proposal-optional-chaining',
     ],
     overrides: [
       {

@@ -1,8 +1,9 @@
 import WalletConnect from '@walletconnect/client';
 import { payloadId } from '@walletconnect/utils';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
-import { LikeCoinWalletConnectorMethodType, } from '../types';
+import { LikeCoinWalletConnectorMethodType } from '../types';
 import { convertWalletConnectAccountResponse } from './wallet';
+
 export function getCosmostationMobileWCConnector(options = {}) {
     return new WalletConnect({
         signingMethods: [
