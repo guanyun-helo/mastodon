@@ -26,7 +26,7 @@ function Tweet(props){
       if (props.imageCrop){
         media = <div className='tweet-media media-1' style={{ backgroundImage: `url(${props.tweet.media_attachments[0].url})` }} />;
       } else {
-        media = <div className='tweet-media'><img crossOrigin='*' src={props.tweet.media_attachments[0].url} /></div>;
+        media = <div className='tweet-media'><img src={props.tweet.media_attachments[0].url} /></div>;
       }
     } else if (imgCount == 2){
       media = (<div className='tweet-media media-2'>
@@ -139,7 +139,7 @@ function Tweet(props){
 
     quotedDiv = (<div id='quoted'>
       <div>
-        <img className='avatar' crossOrigin='*' src={quoted.user.img} />
+        <img className='avatar'  src={quoted.user.img} />
         <div className='account-group'>
           <div className='name'>
             <span><b>{quoted.user.name}</b></span>
@@ -157,7 +157,7 @@ function Tweet(props){
   return (
     <div id='tweet' style={boxStyle}>
       <div>
-        <img className='avatar' crossOrigin='*' src={props.tweet.account.avatar} />
+        <img className='avatar'  src={props.tweet.account.avatar} />
         <div className='account-group'>
           <div className='name'>
             <span><b>{props.tweet.account.display_name}</b></span>
