@@ -253,11 +253,11 @@ class NftList extends ImmutablePureComponent {
             ...result,
             ...item,
           });
-        } else {
+        } else {          
           temNftList.push({
             ...result,
             ...nftDetail,
-            liker: liker,
+            liker: liker ? liker : this.getDummy(1),
             owner: owner,
           });
         }
@@ -405,7 +405,7 @@ class NftList extends ImmutablePureComponent {
         temNftList.push({
           ...result,
           ...nftDetail,
-          liker: liker,
+          liker: liker ? liker : this.getDummy(1),
           owner: owner,
         });
       }
@@ -667,6 +667,7 @@ class NftList extends ImmutablePureComponent {
     const { contentType, likerInfo, selected } = this.props;
     let rawLength =
       rawISCNList.length !== 0 ? rawISCNList.length : rawCollectedList.length;
+
     if (rawLength === 0 && isLoading === false)
       return (
         <div

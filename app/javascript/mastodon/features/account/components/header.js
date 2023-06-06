@@ -69,6 +69,7 @@ import {
 } from '../../../utils/api/like';
 import Macy from 'macy';
 import { LikerId } from 'mastodon/features/ui/util/async-components';
+import { toast } from 'material-react-toastify';
 
 const messages = defineMessages({
   unfollow: { id: 'account.unfollow', defaultMessage: 'Unfollow' },
@@ -335,6 +336,7 @@ class Header extends ImmutablePureComponent {
       memo: memo === undefined ? '' : memo,
       signer: this.props.signer,
     };
+    toast.info('贈送 NFT 中...');
     const signData = await signTransferNFT(params);
     const { txHash, code } = await broadcastTx(signData, this.props.signer);
     this.setState({
@@ -678,6 +680,13 @@ class Header extends ImmutablePureComponent {
   getNftList = async () => {
     const { address } = this.props;
     let nftList = await getISCNListByOwner(address);
+    if(nftList.classes.length === 0){
+      toast.error('你鏈接的錢包沒有 NFT 哦！');
+      this.setState({
+        isSendNftDrawerOpen: false,
+      });
+      return;
+    }
     this.setState(
       {
         rawISCNList: nftList.classes,
@@ -1385,8 +1394,8 @@ class Header extends ImmutablePureComponent {
             title='是否通過私信告訴他此次贈送！'
             icon='info-sign'
           >
-            <BlueButton onClick={this.tellGift}>告訴他！</BlueButton>
-            <BlueButton onCLick={this.handleCloseTX}> 不啦！</BlueButton>
+            <BlueButton style={{ backgroundColor: '#f6f7f9' }} onClick={this.tellGift}>告訴他！</BlueButton>
+            <BlueButton style={{ backgroundColor: '#f6f7f9' }} onCLick={this.handleCloseTX}> 不啦！</BlueButton>
           </Dialog>
           {!(suspended || hidden) && (
             <div className='account__header__extra'>
