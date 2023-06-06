@@ -44,7 +44,7 @@ export function formatISCNTxPayload(payload) {
     contentFingerprints.push(`num://${numbersProtocolAssetId}`);
   if (authorNames.length) {
     const authorName = authorNames[0];
-    const description = authorDescriptions[0];
+    const description = authorDescriptions ? authorDescriptions[0] : '';
     const url = authorUrls[0];
     const identifiers = [{
       '@type': 'PropertyValue',
