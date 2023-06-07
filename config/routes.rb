@@ -593,6 +593,7 @@ Rails.application.routes.draw do
         resources :like_auth, only: :index, controller: :like_identitys
         resources :liker_id, to: 'like_identitys#show'
         resources :familiar_followers, only: :index
+        resources :accounts_liker_id, to: 'like_identitys#accounts_liker_id'
       end
 
       resources :accounts, only: [:create, :show] do
