@@ -34,6 +34,14 @@ class Api::V1::Accounts::LikeIdentitysController < Api::BaseController
     res
   end
 
+
+  def accounts_liker_id
+    @found_account = Account.where(liker_id: params['liker_id'])
+    @liker_id_result = @found_account[0].nil? ? 'null' : @found_account[0]['username']
+    @code = @found_account[0].nil? ? 404 : 200
+    render json: {:data=> @liker_id_result, :code => @code }, status: @code
+  end
+
   def access_token()
     refresh_url = URI("https://api.like.co/oauth/access_token")
 
