@@ -320,7 +320,7 @@ class Header extends ImmutablePureComponent {
   };
 
   transferNft = async (nft) => {
-    if(this.props.signer === null){
+    if (this.props.signer === null) {
       // let signer = await props.connectMethods.initIfNecessary();
       await this.props.connectMethods.initWallet();
       // await props.connectMethods.connect();
@@ -466,7 +466,7 @@ class Header extends ImmutablePureComponent {
   }
 
   changeNftDrawer = async () => {
-    if(this.props.signer === null){
+    if (this.props.signer === null) {
       // let signer = await props.connectMethods.initIfNecessary();
       await this.props.connectMethods.initWallet();
       // await props.connectMethods.connect();
@@ -519,9 +519,9 @@ class Header extends ImmutablePureComponent {
               rect.top >= 0 &&
               rect.left >= 0 &&
               rect.bottom <=
-                (window.innerHeight || document.documentElement.clientHeight) &&
+              (window.innerHeight || document.documentElement.clientHeight) &&
               rect.right <=
-                (window.innerWidth || document.documentElement.clientWidth);
+              (window.innerWidth || document.documentElement.clientWidth);
 
             // Change the background color of the box element if it is in view
             if (inView) {
@@ -680,7 +680,7 @@ class Header extends ImmutablePureComponent {
   getNftList = async () => {
     const { address } = this.props;
     let nftList = await getISCNListByOwner(address);
-    if(nftList.classes.length === 0){
+    if (nftList.classes.length === 0) {
       toast.error('你鏈接的錢包沒有 NFT 哦！');
       this.setState({
         isSendNftDrawerOpen: false,
@@ -717,10 +717,12 @@ class Header extends ImmutablePureComponent {
 
   tellGift = () => {
     const { sentNft } = this.state;
+    const { account } = this.props;
+    let nft = { userName: account.get('username'), ...sentNft }
     this.props.onDirect(
       this.props.account,
       this.context.router.history,
-      sentNft,
+      nft,
     );
   };
 
@@ -1061,7 +1063,7 @@ class Header extends ImmutablePureComponent {
         (permissions & PERMISSION_MANAGE_USERS) === PERMISSION_MANAGE_USERS) ||
       (isRemote &&
         (permissions & PERMISSION_MANAGE_FEDERATION) ===
-          PERMISSION_MANAGE_FEDERATION)
+        PERMISSION_MANAGE_FEDERATION)
     ) {
       menu.push(null);
       if ((permissions & PERMISSION_MANAGE_USERS) === PERMISSION_MANAGE_USERS) {
@@ -1075,7 +1077,7 @@ class Header extends ImmutablePureComponent {
       if (
         isRemote &&
         (permissions & PERMISSION_MANAGE_FEDERATION) ===
-          PERMISSION_MANAGE_FEDERATION
+        PERMISSION_MANAGE_FEDERATION
       ) {
         menu.push({
           text: intl.formatMessage(messages.admin_domain, {
@@ -1125,8 +1127,8 @@ class Header extends ImmutablePureComponent {
       >
         {!(suspended || hidden || account.get('moved')) &&
           account.getIn(['relationship', 'requested_by']) && (
-          <FollowRequestNoteContainer account={account} />
-        )}
+            <FollowRequestNoteContainer account={account} />
+          )}
 
         <div className='account__header__image'>
           <div className='account__header__info'>{!suspended && info}</div>
@@ -1406,11 +1408,11 @@ class Header extends ImmutablePureComponent {
 
                 {account.get('note').length > 0 &&
                   account.get('note') !== '<p></p>' && (
-                  <div
-                    className='account__header__content translate'
-                    dangerouslySetInnerHTML={content}
-                  />
-                )}
+                    <div
+                      className='account__header__content translate'
+                      dangerouslySetInnerHTML={content}
+                    />
+                  )}
 
                 <div className='account__header__fields'>
                   <dl>

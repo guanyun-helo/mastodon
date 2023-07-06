@@ -249,7 +249,7 @@ class ComposeForm extends ImmutablePureComponent {
       let blob = res.data;
       this.props.onPaste([blob]);
       this.props.onChange(`
-      😘 嗨嗨，我送了你這個 NFT，快來看看吧！
+      😘 @${nft.userName} 嗨嗨，我送了你這個 NFT，快來看看吧！
       https://liker.land/zh-Hant/nft/class/${nft.classId}
       `);
       this.props.destroyNft();
