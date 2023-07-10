@@ -145,7 +145,6 @@ function PostSo(props) {
   };
 
   useEffect(() => {
-    console.log(props);
   }, [resultImg, ISCNId, uploadArweaveId, nftClassId]);
 
   const estimateArweaveFee = async (fileBlob) => {
@@ -320,28 +319,27 @@ function PostSo(props) {
   };
 
   async function onGenerate(e) {
-    if(props.connectMethods?.initIfNecessary===undefined) {
+    if (props.connectMethods?.initIfNecessary === undefined) {
       toast.info('必須鏈接錢包哦！');
       return;
     }
-    if(props.signer === null){
+    if (props.signer === null) {
       // let signer = await props.connectMethods.initIfNecessary();
       await props.connectMethods.initWallet();
       // await props.connectMethods.connect();
       return;
       // await props.changeSigner(signer.offlineSigner);
     }
-    setTimeout(async ()=>{
+    setTimeout(async () => {
       e.preventDefault();
-      console.log(props);
-      let result = await axios.get(getAddressLikerIdMinApi(props.address)).catch(err=>{
+      let result = await axios.get(getAddressLikerIdMinApi(props.address)).catch(err => {
         console.log(err);
       });
-      if(result?.data){
+      if (result?.data) {
         setLikerInfo(result.data);
-      }else{
+      } else {
         result = {
-          data:{
+          data: {
             displayName: 'anonymous liker',
             likeWallet: props.address,
             user: 'anonymous liker',
@@ -402,13 +400,50 @@ function PostSo(props) {
           let ISCNFee = await calculateISCNFee(payload);
           await onSubmit(ArFee, ISCNFee, payload, blob);
         })
-        .catch( (error)=> {
+        .catch((error) => {
           toast.info('估算價格失敗，區塊鏈網路是異步網路，我們正在努力哦，請稍後再試！');
           resetNFTdata();
           onCLoseNftDrawer();
           console.error('dom-to-image: oops, something went wrong!', error);
         });
     }, 0);
+  }
+
+  async function onSendToot(e) {
+    console.log(props);
+    if (props.nftStatus.media_ids) {
+      props.nftStatus.media_ids.forEach(async item => {
+        await props.deleteUpload(item)
+      })
+    }
+    const node = document.querySelector('#preview .sq-container');
+    // const node = document.getElementByID('form-input');
+    const exportSize = 4;
+
+    const width = node.offsetWidth * exportSize;
+    const height = node.offsetHeight * exportSize;
+
+    const config = {
+      style: {
+        transform: `scale(${exportSize})`,
+        transformOrigin: 'top-left',
+        width: 512 + 'px',
+        height: 512 + 'px',
+      },
+      width,
+      height,
+    };
+
+    htmlToImage
+      .toBlob(node, {
+        quality: 1,
+        pixelRatio: exportSize,
+      }).then(async (blob) => {
+        console.log('proops', props)
+        setTimeout(() => {
+          props.submitToot(props.nftStatus, [blob]);
+        }, 0)
+      })
   }
 
   const onSubmit = async (ArFee, ISCNFee, payload, fileBlob) => {
@@ -636,7 +671,7 @@ function PostSo(props) {
         props.address,
         mintMessages,
       );
-      if(mintNFTResult !== undefined){
+      if (mintNFTResult !== undefined) {
         toast.success('NFT mint 成功，下一步要上架到 Liker.Land，請稍後！');
       }
       setMintNftRestult(true);
@@ -645,7 +680,7 @@ function PostSo(props) {
         sendMessages,
       );
 
-      if(sendNFTResult !== undefined){
+      if (sendNFTResult !== undefined) {
         toast.success('NFT 上架成功！');
       }
       await postMintInfo(ISCNData, iscnId, classId);
@@ -669,7 +704,7 @@ function PostSo(props) {
     }
   };
 
-  const resetNFTdata = ()=>{
+  const resetNFTdata = () => {
     setGenLoading(false);
     setResultImg(null);
     setUploadArweaveId('');
@@ -689,7 +724,7 @@ function PostSo(props) {
     setListNftRestult(false);
   };
 
-  const onCLoseNftDrawer = ()=>{
+  const onCLoseNftDrawer = () => {
     resetNFTdata();
     props.closeNftDrawer();
   };
@@ -726,7 +761,7 @@ function PostSo(props) {
     }
   };
 
-  const getMintInfo = async(iscnData, iscnId, classId)=> {
+  const getMintInfo = async (iscnData, iscnId, classId) => {
     const axiosInstance = axios.create({
       paramsSerializer: {
         encode: parse,
@@ -739,7 +774,7 @@ function PostSo(props) {
           iscn_id: iscnId,
         },
       });
-      if(result.data?.classId){
+      if (result.data?.classId) {
         props.setISCN(props.nftStatus.id, result.data?.classId);
         props.changeNftResult(result.data);
         props.onMintResultNFTChange(true);
@@ -878,14 +913,14 @@ function PostSo(props) {
   }
 
   let content;
-  let tick =  <Icon id={'check'} style={{ color: 'green' }} />;
-  let refresh =  <Icon id={'refresh'} style={{ color: 'blue' }} />;
+  let tick = <Icon id={'check'} style={{ color: 'green' }} />;
+  let refresh = <Icon id={'refresh'} style={{ color: 'blue' }} />;
   // if (resultImg) {
   content = (
     <div style={{ maxWidth: '100%', margin: '0 auto', minWidth: '60%', backgroundColor: '#fff', padding: '30px' }}>
       <div
         className='preview-area'
-        style={{ display: resultImg ? 'flex' : 'none', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'  }}
+        style={{ display: resultImg ? 'flex' : 'none', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
       >
         <img
           id='tweet-img'
@@ -905,12 +940,12 @@ function PostSo(props) {
         <div>
           <label className='section'>NFT 鑄造需要簽署 6～7 次，花費約 10 LIKE，🙏請在彈窗後簽署</label>
           <ListGroup>
-            <ListGroup.Item><label className='section'>RawNft</label>: {resultImg !== null ? tick: refresh}</ListGroup.Item>
-            <ListGroup.Item><label className='section'>arweaveId</label>: {uploadArweaveId !== null ? tick: refresh}</ListGroup.Item>
-            <ListGroup.Item><label className='section'>ISCNId</label>: {ISCNId !== null ? tick: refresh}</ListGroup.Item>
-            <ListGroup.Item><label className='section'>nft classId</label>: {nftClassId !== null ? tick: refresh}</ListGroup.Item>
-            <ListGroup.Item><label className='section'>Mint NFT</label>: {mintNFTResult !== false ? tick: refresh}</ListGroup.Item>
-            <ListGroup.Item><label className='section'>List NFT</label>: {listNFTResult !== false ? tick: refresh}</ListGroup.Item>
+            <ListGroup.Item><label className='section'>RawNft</label>: {resultImg !== null ? tick : refresh}</ListGroup.Item>
+            <ListGroup.Item><label className='section'>arweaveId</label>: {uploadArweaveId !== null ? tick : refresh}</ListGroup.Item>
+            <ListGroup.Item><label className='section'>ISCNId</label>: {ISCNId !== null ? tick : refresh}</ListGroup.Item>
+            <ListGroup.Item><label className='section'>nft classId</label>: {nftClassId !== null ? tick : refresh}</ListGroup.Item>
+            <ListGroup.Item><label className='section'>Mint NFT</label>: {mintNFTResult !== false ? tick : refresh}</ListGroup.Item>
+            <ListGroup.Item><label className='section'>List NFT</label>: {listNFTResult !== false ? tick : refresh}</ListGroup.Item>
           </ListGroup>
         </div>
       </div>
@@ -940,11 +975,12 @@ function PostSo(props) {
 
         <SideBar
           onGenerate={onGenerate}
+          onSendToot={onSendToot}
           onSwitchRounded={() => setBoxRounded(!boxRounded)}
           onSwitchBorder={() => setBoxBorder(!boxBorder)}
           onSwitchBoxBackground={() => setBoxBackground(!boxBackground)}
           onSwitchShadow={() => setBoxShadow(!boxShadow)}
-          imageCropDisabled={props.nftStatus.media_attachments}
+          imageCropDisabled={props.nftStatus.medias}
           onSwitchImageCrop={() => setImageCrop(!imageCrop)}
           onSwitchImageSize={(e) => {
             setImageSize(e.target.value);

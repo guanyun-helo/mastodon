@@ -184,6 +184,7 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onSubmit(
       this.context.router ? this.context.router.history : null,
       this.state.isChecked,
+      this.props.account
     );
     if (e) {
       e.preventDefault();
@@ -233,6 +234,7 @@ class ComposeForm extends ImmutablePureComponent {
     });
   };
   componentDidMount = async () => {
+    console.log(this.props);
     this.getTags();
     let result = await localforage.getItem('isSetNft');
     if (result !== null) {
@@ -452,7 +454,7 @@ class ComposeForm extends ImmutablePureComponent {
             <Checkbox
               onChange={this.onCheckBoxChange}
               checked={this.state.isChecked}
-              label='Mint to NFT postcard'
+              label='鑄造 NFT 明信片'
             />
             <div className='compose-form__publish-button-wrapper'>
               <Button

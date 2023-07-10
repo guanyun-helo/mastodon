@@ -113,6 +113,10 @@ function Result(props){
       });
   };
 
+  const sendToot = e =>{
+    
+  }
+
   const useImageURL = (e) => {
     e.preventDefault();
 
@@ -217,6 +221,7 @@ function Result(props){
 
       <SideBar
         onGenerate={onGenerate}
+        sendToot={sendToot}
         onSwitchRounded={() => setBoxRounded(!boxRounded)}
         onSwitchBorder={() => setBoxBorder(!boxBorder)}
         onSwitchBoxBackground={() => setBoxBackground(!boxBackground)}

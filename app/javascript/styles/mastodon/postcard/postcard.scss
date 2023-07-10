@@ -985,6 +985,12 @@
             img {
                 width: 100%;
                 display: block;
+                border-radius: 4px;
+            }
+            .media-grid{
+                div{
+                    border-radius: 4px;
+                }
             }
         }
 
