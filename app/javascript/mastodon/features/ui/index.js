@@ -10,7 +10,7 @@ import LoadingBarContainer from './containers/loading_bar_container';
 import ModalContainer from './containers/modal_container';
 import { layoutFromWindow } from 'mastodon/is_mobile';
 import { debounce } from 'lodash';
-import { uploadCompose, resetCompose, changeComposeSpoilerness } from '../../actions/compose';
+import { submitComposeDirect, uploadCompose, undoUploadCompose, resetCompose, changeComposeSpoilerness } from '../../actions/compose';
 import { expandHomeTimeline } from '../../actions/timelines';
 import { expandNotifications } from '../../actions/notifications';
 import { fetchServer } from '../../actions/server';
@@ -281,7 +281,7 @@ class UI extends React.PureComponent {
     layout: PropTypes.string.isRequired,
     firstLaunch: PropTypes.bool,
     username: PropTypes.string,
-    drawerParams:PropTypes.object,
+    drawerParams: PropTypes.object,
     profileAddress: PropTypes.string,
     address: PropTypes.string,
     drawerType: PropTypes.string,
@@ -404,7 +404,7 @@ class UI extends React.PureComponent {
     }
   };
 
-  componentDidMount () {
+  componentDidMount() {
     const { signedIn } = this.context.identity;
 
     window.addEventListener('focus', this.handleWindowFocus, false);
@@ -582,21 +582,35 @@ class UI extends React.PureComponent {
     this.props.dispatch(openMintNftDrawer(false));
   };
 
-  onMintNFTResultChange = (params)=>{
+  onMintNFTResultChange = (params) => {
     this.props.dispatch(changeNftResultModal(params));
   };
 
-  changeNftResult= (params)=>{
+  changeNftResult = (params) => {
     this.props.dispatch(changeResultNft(params));
   };
 
-  onSetISCN = (params, classId)=>{
+  onSetISCN = (params, classId) => {
     this.props.dispatch(setISCN(params, classId));
   };
 
-  changeSigner = (params)=>{
+  changeSigner = (params) => {
     this.props.dispatch(changeSigner(params));
   };
+
+  deleteUpload = async (id) => {
+    this.props.dispatch(await undoUploadCompose(id))
+  }
+  uploadFile = async (file) =>{
+    return new Promise(async (resolve,reject)=>{
+      let res = await this.props.dispatch(uploadCompose(file));
+      resolve(true)
+    })
+  }
+
+  submitToot = (compose, blob) => {
+    this.props.dispatch(submitComposeDirect(compose, blob))
+  }
 
   render() {
     const { draggingOver } = this.state;
@@ -683,7 +697,7 @@ class UI extends React.PureComponent {
           <ModalContainer />
           <UploadArea active={draggingOver} onClose={this.closeUploadModal} />
           <NftDrawer connectMethods={connectMethods} dispatch={dispatch} drawerType={drawerType} profileAddress={profileAddress} address={address} drawerParams={drawerParams} />
-          <PoetSo changeSigner={this.changeSigner} connectMethods={connectMethods} setISCN={this.onSetISCN} changeNftResult={this.changeNftResult} onMintResultNFTChange={this.onMintNFTResultChange} closeNftDrawer={this.onMintDrawerChange} address={address} isOpen={isMintNftOpen} nftStatus={nftStatus} signer={signer} />
+          <PoetSo submitToot={this.submitToot} deleteUpload={this.deleteUpload} uploadFile={this.uploadFile} changeSigner={this.changeSigner} connectMethods={connectMethods} setISCN={this.onSetISCN} changeNftResult={this.changeNftResult} onMintResultNFTChange={this.onMintNFTResultChange} closeNftDrawer={this.onMintDrawerChange} address={address} isOpen={isMintNftOpen} nftStatus={nftStatus} signer={signer} />
           <NftResult changeSigner={this.changeSigner} connectMethods={connectMethods} onMintResultNFTChange={this.onMintNFTResultChange} isOpen={isNFTResultOpen} nftResult={nftResultData} />
         </div>
       </HotKeys>

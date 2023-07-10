@@ -29,6 +29,7 @@ class TweetImagePreview extends Component {
 
   // A render method to return the JSX elements
   render() {
+
     return (
       <div className='tweet-image-preview'>
         <div
@@ -90,7 +91,7 @@ class TweetImagePreview extends Component {
             >
               {this.props.tweet.data.text}
             </p>
-            <img src="https://dplsgtvuyo356.cloudfront.net/media_attachments/files/110/417/337/230/877/829/original/b949d9da55604f05.png"/>
+            <img src=""/>
           </div>
           <div className='tweet-footer'>
             <p

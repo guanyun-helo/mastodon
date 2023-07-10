@@ -101,6 +101,9 @@ function SideBar(props) {
           '鑄造成 NFT 明信片'
         )}
       </button>
+      <button onClick={props.onSendToot}>
+        直接发嘟嘟
+      </button>
     </div>
   );
 }

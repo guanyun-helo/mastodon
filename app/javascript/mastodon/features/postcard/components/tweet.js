@@ -8,48 +8,48 @@ const verifiedIcon = <img id='badge' src='/verified.png' />;
 function Tweet(props){
   const verified = props.user.verified ? verifiedIcon : null;
 
-  let tweetText = props.tweet.content;
+  let tweetText = props.tweet.status;
 
   let media;
 
-  if (props.tweet.media_attachments){
-    const imgCount = props.tweet.media_attachments.length;
+  if (props.tweet.medias){
+    const imgCount = props.tweet.medias.length;
 
     // remove attachment urls from tweet text
     for (var i = 0; i < imgCount; i++){
-      const urlIndex = props.tweet.content.lastIndexOf('https://t.co/');
-      tweetText = props.tweet.content.slice(0, urlIndex);
+      const urlIndex = props.tweet.status.lastIndexOf('https://t.co/');
+      tweetText = props.tweet.status.slice(0, urlIndex);
     }
 
     if (imgCount == 1){
       // assuming there is only 1 image
       if (props.imageCrop){
-        media = <div className='tweet-media media-1' style={{ backgroundImage: `url(${props.tweet.media_attachments[0].url})` }} />;
+        media = <div className='tweet-media media-1' style={{ backgroundImage: `url(${props.tweet.medias[0]})` }} />;
       } else {
-        media = <div className='tweet-media'><img src={props.tweet.media_attachments[0].url} /></div>;
+        media = <div className='tweet-media'><img src={props.tweet.medias[0]} /></div>;
       }
     } else if (imgCount == 2){
       media = (<div className='tweet-media media-2'>
         <div className='media-grid'>
-          <div style={{ backgroundImage: `url(${props.tweet.media_attachments[0].url})` }} />
-          <div style={{ backgroundImage: `url(${props.tweet.media_attachments[1].url})` }} />
+          <div style={{ backgroundImage: `url(${props.tweet.medias[0]})` }} />
+          <div style={{ backgroundImage: `url(${props.tweet.medias[1]})` }} />
         </div>
       </div>);
     } else if (imgCount == 3){
       media = (<div className='tweet-media media-3'>
         <div className='media-grid'>
-          <div style={{ backgroundImage: `url(${props.tweet.media_attachments[0].url})`, gridRow: '1 / 3' }} />
-          <div style={{ backgroundImage: `url(${props.tweet.media_attachments[1].url})` }} />
-          <div style={{ backgroundImage: `url(${props.tweet.media_attachments[2].url})` }} />
+          <div style={{ backgroundImage: `url(${props.tweet.medias[0]})`, gridRow: '1 / 3' }} />
+          <div style={{ backgroundImage: `url(${props.tweet.medias[1]})` }} />
+          <div style={{ backgroundImage: `url(${props.tweet.medias[2]})` }} />
         </div>
       </div>);
     } else if (imgCount == 4){
       media = (<div className='tweet-media media-4'>
         <div className='media-grid'>
-          <div style={{ backgroundImage: `url(${props.tweet.media_attachments[0].url})` }} />
-          <div style={{ backgroundImage: `url(${props.tweet.media_attachments[1].url})` }} />
-          <div style={{ backgroundImage: `url(${props.tweet.media_attachments[2].url})` }} />
-          <div style={{ backgroundImage: `url(${props.tweet.media_attachments[3].url})` }} />
+          <div style={{ backgroundImage: `url(${props.tweet.medias[0]})` }} />
+          <div style={{ backgroundImage: `url(${props.tweet.medias[1]})` }} />
+          <div style={{ backgroundImage: `url(${props.tweet.medias[2]})` }} />
+          <div style={{ backgroundImage: `url(${props.tweet.medias[3]})` }} />
         </div>
       </div>);
     }
@@ -99,7 +99,7 @@ function Tweet(props){
         }
         return <span className='blue' key={'blue ' + index}>{content}</span>;
       },
-      input: tweetText,
+      input: props.tweet.status,
     });
 
     let key = 0;
@@ -120,6 +120,8 @@ function Tweet(props){
     color: props.boxText ? props.boxText.color : '#000',
     borderColor: props.boxText ? props.boxText.color : '#14171a',
     boxShadow: props.boxShadow ? 'rgba(0,0,0,0.1) 0px 8px 24px 0px' : 'none',
+    display: 'flex',
+    flexDirection: 'column'
   };
 
   const quoted = props.quoted;
@@ -129,12 +131,12 @@ function Tweet(props){
 
     let quotedText = quoted.tweet.content;
     let quotedMedia = null;
-    if (quoted.tweet.media_attachments){
+    if (quoted.tweet.medias){
       // remove attachment urls from tweet text
       const urlIndex = quoted.tweet.content.lastIndexOf('https://t.co/');
       quotedText = quoted.tweet.content.slice(0, urlIndex);
 
-      quotedMedia = <div className='tweet-media media-1' style={{ backgroundImage: `url(${quoted.tweet.media_attachments})` }} />;
+      quotedMedia = <div className='tweet-media media-1' style={{ backgroundImage: `url(${quoted.tweet.medias[0]})` }} />;
     }
 
     quotedDiv = (<div id='quoted'>
@@ -172,7 +174,7 @@ function Tweet(props){
       {quotedDiv}
       {props.tweet.poll === null ? null : <Poll poll={props.tweet.poll} />}
 
-      <div className='date' style={props.boxText ? { color: props.boxText.color } : ''}>{format(new Date(props.tweet.created_at).getTime(), 'H:mm:ss')} {format(new Date(props.tweet.created_at).getTime(), 'MMM d,yyyy')}</div>
+      <div className='date' style={props.boxText ? { color: props.boxText.color } : ''}>{format(new Date(props.tweet.created_at).getTime(), 'H:mm:ss')} {format(new Date(props.tweet.created_at).getTime(), ' MMM d yyyy')}</div>
     </div>
   );
 }

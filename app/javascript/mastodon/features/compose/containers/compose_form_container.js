@@ -3,6 +3,7 @@ import ComposeForm from '../components/compose_form';
 import {
   changeCompose,
   submitCompose,
+  editNft,
   clearComposeSuggestions,
   fetchComposeSuggestions,
   selectComposeSuggestion,
@@ -29,9 +30,10 @@ const mapStateToProps = state => ({
   isInReply: state.getIn(['compose', 'in_reply_to']) !== null,
   lang: state.getIn(['compose', 'language']),
   nft: state.getIn(['compose', 'nft']),
+  account: state.getIn(['accounts', state.getIn(['meta', 'me'])]),
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch, params) => ({
 
   onChange(text) {
     dispatch(changeCompose(text));
@@ -41,8 +43,12 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(destroyNft());
   },
 
-  onSubmit(router, isChecked) {
-    dispatch(submitCompose(router, isChecked));
+  onSubmit(router, isChecked, account) {
+    if(isChecked){
+      dispatch(editNft(router, isChecked, account))
+    }else{
+      dispatch(submitCompose(router, isChecked, account));
+    }
   },
 
   onClearSuggestions() {
