@@ -170,6 +170,7 @@ export function editNft(routerHistory, isChecked, account, isMintDirect) {
     let data = {
       account: Object.fromEntries(account),
       status,
+      content: status,
       in_reply_to_id: getState().getIn(['compose', 'in_reply_to'], null),
       media_ids: media.map(item => item.get('id')),
       medias: [...media.map(item => item.get('url'))],
