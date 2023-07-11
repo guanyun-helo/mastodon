@@ -8,7 +8,7 @@ const verifiedIcon = <img id='badge' src='/verified.png' />;
 function Tweet(props){
   const verified = props.user.verified ? verifiedIcon : null;
 
-  let tweetText = props.tweet.status;
+  let tweetText = props.tweet.content;
 
   let media;
 
@@ -17,8 +17,8 @@ function Tweet(props){
 
     // remove attachment urls from tweet text
     for (var i = 0; i < imgCount; i++){
-      const urlIndex = props.tweet.status.lastIndexOf('https://t.co/');
-      tweetText = props.tweet.status.slice(0, urlIndex);
+      const urlIndex = props.tweet.content.lastIndexOf('https://t.co/');
+      tweetText = props.tweet.content.slice(0, urlIndex);
     }
 
     if (imgCount == 1){
@@ -99,7 +99,7 @@ function Tweet(props){
         }
         return <span className='blue' key={'blue ' + index}>{content}</span>;
       },
-      input: props.tweet.status,
+      input: props.tweet.content,
     });
 
     let key = 0;

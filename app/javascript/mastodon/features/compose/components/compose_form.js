@@ -454,7 +454,7 @@ class ComposeForm extends ImmutablePureComponent {
             <Checkbox
               onChange={this.onCheckBoxChange}
               checked={this.state.isChecked}
-              label='鑄造 NFT 明信片'
+              label='將嘟嘟變成明信片'
             />
             <div className='compose-form__publish-button-wrapper'>
               <Button

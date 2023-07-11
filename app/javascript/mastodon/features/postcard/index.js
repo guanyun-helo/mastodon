@@ -181,6 +181,7 @@ function PostSo(props) {
 
   function getPayload(likerInfo, file) {
     let tagString = '';
+    if(!props.nftStatus.tags) props.nftStatus.tags = []
     props.nftStatus.tags.forEach((item) => {
       tagString = item.name + ',' + tagString;
     });
@@ -410,7 +411,6 @@ function PostSo(props) {
   }
 
   async function onSendToot(e) {
-    console.log(props);
     if (props.nftStatus.media_ids) {
       props.nftStatus.media_ids.forEach(async item => {
         await props.deleteUpload(item)
@@ -442,6 +442,8 @@ function PostSo(props) {
         console.log('proops', props)
         setTimeout(() => {
           props.submitToot(props.nftStatus, [blob]);
+          resetNFTdata();
+          props.closeNftDrawer();
         }, 0)
       })
   }

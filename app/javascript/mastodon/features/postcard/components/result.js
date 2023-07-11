@@ -185,7 +185,7 @@ function Result(props){
 
 
   let content;
-
+  console.log('resultImg', resultImg)
   if (resultImg){
     content =(<div style={{ maxWidth: '530px', margin: '0 auto' }}>
 
