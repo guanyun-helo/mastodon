@@ -19,6 +19,14 @@ module Webpacker::HelperExtensions
     javascript_tag('',{ src: src, async: true })
   end
 
+  def gad_pack_tag(src)
+    javascript_tag('',{ src: src, async: true, crossorigin: 'anonymous'})
+  end
+
+  def umami_pack_tag(src)
+    javascript_tag('',{ src: src, async: true, 'data-website-id': '02a8473b-5bb7-47fe-8868-80eb330c43ec' })
+  end
+
   def stylesheet_pack_tag(name, **options)
     src, integrity = current_webpacker_instance.manifest.lookup!(name, type: :stylesheet, with_integrity: true)
     stylesheet_link_tag(src, options.merge(integrity: integrity))
