@@ -23,6 +23,7 @@
     %link{ rel: 'manifest', href: manifest_path(format: :json) }/
     %meta{ name: 'theme-color', content: '#191b22' }/
     %meta{ name: 'apple-mobile-web-app-capable', content: 'yes' }/
+    %meta{ name: 'google-adsense-account', content: 'ca-pub-8575447765690857' }/
 
     %title= content_for?(:page_title) ? safe_join([yield(:page_title).chomp.html_safe, title], ' - ') : title
 
@@ -33,6 +34,8 @@
     = javascript_pack_tag "locale_#{I18n.locale}", crossorigin: 'anonymous'
     = gam_pack_tag 'https://www.googletagmanager.com/gtag/js?id=UA-197581231-1'
     = ga_pack_tag nonce: request.content_security_policy_nonce
+    = gad_pack_tag 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8575447765690857'
+    = umami_pack_tag 'https://eu.umami.is/script.js'
     = csrf_meta_tags
     %meta{ name: 'style-nonce', content: request.content_security_policy_nonce }
 
