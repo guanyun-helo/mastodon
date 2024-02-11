@@ -70,7 +70,7 @@ Rails.application.configure do
   # use letter_opener_web, accessible at  /letter_opener.
   # Otherwise, use letter_opener, which launches a browser window to view sent mail.
   config.action_mailer.delivery_method = (ENV['HEROKU'] || ENV['VAGRANT'] || ENV['REMOTE_DEV']) ? :letter_opener_web : :letter_opener
-
+  config.hosts << /[a-z0-9]+\.liker\.social/
   config.after_initialize do
     Bullet.enable        = true
     Bullet.bullet_logger = true

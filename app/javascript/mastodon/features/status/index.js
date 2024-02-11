@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import { Adsense } from '@ctrl/react-adsense';
 import { createSelector } from 'reselect';
 import { fetchStatus } from '../../actions/statuses';
 import MissingIndicator from '../../components/missing_indicator';
@@ -673,6 +674,14 @@ class Status extends ImmutablePureComponent {
     const { isLoading, status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
     const { fullscreen, isPayShow, supoortLikers, isSupportSuccess } = this.state;
 
+    let globalTheme = 'dark';
+    if (
+      document.body &&
+      document.body.classList.contains('theme-mastodon-light')
+    ) {
+      globalTheme = 'light';
+    }
+
     if (isLoading) {
       return (
         <Column>
@@ -785,6 +794,24 @@ class Status extends ImmutablePureComponent {
                     <LikePay account={status.get('account').get('username')} username={status.get('account').get('username')} isSupportSuccess={isSupportSuccess} likerId={status.get('account').get('liker_id')} statusId={status.get('id')} isShow={isPayShow} handleLikePay={this.openPay} />
                   </div>) : null
                 }
+
+                {globalTheme === 'light' ? <Adsense
+                  client='ca-pub-8575447765690857'
+                  slot='4023331835'
+                  style={{ display: 'block' }}
+                  layout='in-article'
+                  format='fluid'
+                  className='adsbygoogle'
+                  layoutKey='-fb+5w+4e-db+86'
+                /> : <Adsense
+                  client='ca-pub-8575447765690857'
+                  slot='7375171918'
+                  style={{ display: 'block' }}
+                  layout='in-article'
+                  format='fluid'
+                  className='adsbygoogle'
+                  layoutKey='-fc+56+8s-cu-6p'
+                />}
               </div>
             </HotKeys>
 
