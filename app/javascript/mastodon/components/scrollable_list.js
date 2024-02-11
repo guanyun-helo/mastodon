@@ -3,6 +3,7 @@ import ScrollContainer from 'mastodon/containers/scroll_container';
 import PropTypes from 'prop-types';
 import IntersectionObserverArticleContainer from '../containers/intersection_observer_article_container';
 import LoadMore from './load_more';
+import { Adsense } from '@ctrl/react-adsense';
 import LoadPending from './load_pending';
 import IntersectionObserverWrapper from '../features/ui/util/intersection_observer_wrapper';
 import { throttle } from 'lodash';
@@ -292,7 +293,13 @@ class ScrollableList extends PureComponent {
     const { children, scrollKey, trackScroll, showLoading, isLoading, hasMore, numPending, prepend, alwaysPrepend, append, emptyMessage, onLoadMore } = this.props;
     const { fullscreen } = this.state;
     const childrenCount = React.Children.count(children);
-
+    let globalTheme = 'dark';
+    if (
+      document.body &&
+      document.body.classList.contains('theme-mastodon-light')
+    ) {
+      globalTheme = 'light';
+    }
     const loadMore     = (hasMore && onLoadMore) ? <LoadMore visible={!isLoading} onClick={this.handleLoadMore} /> : null;
     const loadPending  = (numPending > 0) ? <LoadPending count={numPending} onClick={this.handleLoadPending} /> : null;
     let scrollableArea = null;
@@ -336,7 +343,23 @@ class ScrollableList extends PureComponent {
             ))}
 
             {loadMore}
-
+            {globalTheme === 'light' ? <Adsense
+              client='ca-pub-8575447765690857'
+              slot='4023331835'
+              style={{ display: 'block' }}
+              layout='in-article'
+              format='fluid'
+              className='adsbygoogle'
+              layoutKey='-fb+5w+4e-db+86'
+            /> : <Adsense
+              client='ca-pub-8575447765690857'
+              slot='7375171918'
+              style={{ display: 'block' }}
+              layout='in-article'
+              format='fluid'
+              className='adsbygoogle'
+              layoutKey='-fc+56+8s-cu-6p'
+            />}
             {!hasMore && append}
           </div>
         </div>

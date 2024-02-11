@@ -37,6 +37,7 @@
     "@blueprintjs/popover2": "^1.14.1",
     "@cosmjs/crypto": "^0.30.1",
     "@cosmjs/stargate": "^0.30.1",
+    "@ctrl/react-adsense": "^1.7.0",
     "@gamestdio/websocket": "^0.3.2",
     "@github/webauthn-json": "^0.5.7",
     "@headlessui/react": "^1.7.14",
