@@ -1,4 +1,12 @@
 <policymap>
+  <!-- WARNING: This file is specifically meant for the
+    ImageMagick version shipped with Ubuntu 18.04 and may not
+    be as secure with other versions.
+
+    If possible, update to ImageMagick 6.9.7-7 or newer and use
+    the file shipped with Mastodon.
+  -->
+
   <!-- Set some basic system resource limits -->
   <policy domain="resource" name="time" value="60" />
 
@@ -21,7 +29,5 @@
   <policy domain="path" rights="none" pattern="@*" />
 
   <!-- Disallow any coder by default, and only enable ones required by Mastodon -->
-  <policy domain="coder" rights="none" pattern="*" />
-  <policy domain="coder" rights="read | write" pattern="{PNG,JPEG,GIF,HEIC,WEBP}" />
-  <policy domain="coder" rights="write" pattern="{HISTOGRAM,RGB,INFO}" />
+  <policy domain="coder" rights="none" pattern="{BGR,BMP,BRAILLE,CALS,CMYK,DDS,DNG,DOT,EPT,FAX,FITS,GRADIENT,HTML,ICON,INLINE,JBIG,JP2,MAGICK,META,MPEG,MPR,PCD,PCX,PDF,PICT,PLASMA,PNM,PS,PS2,PS3,PSD,RAW,SIXEL,SUN,SVG,TGA,TIFF,TTF,TXT,URL,UYVY,VIFF,WMF,XC,XPM,XTRN,YCbCr,EPHEMERAL,HTTPS,MVG,MSL,TEXT,SHOW,WIN,PLT}" />
 </policymap>
