@@ -3,6 +3,63 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.13] - 2024-02-01
+
+### Security
+
+- Fix insufficient origin validation (CVE-2024-23832, [GHSA-3fjr-858r-92rw](https://github.com/mastodon/mastodon/security/advisories/GHSA-3fjr-858r-92rw))
+
+## [4.1.12] - 2024-01-24
+
+### Fixed
+
+- Fix error when processing remote files with unusually long names ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/28823))
+- Fix processing of compacted single-item JSON-LD collections ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/28816))
+- Retry 401 errors on replies fetching ([ShadowJonathan](https://github.com/mastodon/mastodon/pull/28788))
+- Fix `RecordNotUnique` errors in LinkCrawlWorker ([tribela](https://github.com/mastodon/mastodon/pull/28748))
+- Fix Mastodon not correctly processing HTTP Signatures with query strings ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/28443), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/28476))
+- Fix potential redirection loop of streaming endpoint ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/28665))
+- Fix streaming API redirection ignoring the port of `streaming_api_base_url` ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/28558))
+- Fix `Undo Announce` activity not being sent to non-follower authors ([MitarashiDango](https://github.com/mastodon/mastodon/pull/18482))
+- Fix `LinkCrawlWorker` error when encountering empty OEmbed response ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/28268))
+
+### Security
+
+- Add rate-limit of TOTP authentication attempts at controller level ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/28801))
+
+## [4.1.11] - 2023-12-04
+
+### Changed
+
+- Change GIF max matrix size error to explicitly mention GIF files ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27927))
+- Change `Follow` activities delivery to bypass availability check ([ShadowJonathan](https://github.com/mastodon/mastodon/pull/27586))
+- Change Content-Security-Policy to be tighter on media paths ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/26889))
+
+### Fixed
+
+- Fix incoming status creation date not being restricted to standard ISO8601 ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27655), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/28081))
+- Fix posts from force-sensitized accounts being able to trend ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27620))
+- Fix processing LDSigned activities from actors with unknown public keys ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27474))
+- Fix error and incorrect URLs in `/api/v1/accounts/:id/featured_tags` for remote accounts ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27459))
+- Fix report processing notice not mentioning the report number when performing a custom action ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27442))
+- Fix some link anchors being recognized as hashtags ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27271), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/27584))
+
+## [4.1.10] - 2023-10-10
+
+### Changed
+
+- Change some worker lock TTLs to be shorter-lived ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27246))
+- Change user archive export allowed period from 7 days to 6 days ([suddjian](https://github.com/mastodon/mastodon/pull/27200))
+
+### Fixed
+
+- Fix mentions being matched in some URL query strings ([mjankowski](https://github.com/mastodon/mastodon/pull/25656))
+- Fix multiple instances of the trend refresh scheduler sometimes running at once ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27253))
+- Fix importer returning negative row estimates ([jgillich](https://github.com/mastodon/mastodon/pull/27258))
+- Fix filtering audit log for entries about disabling 2FA ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27186))
+- Fix tIME chunk not being properly removed from PNG uploads ([TheEssem](https://github.com/mastodon/mastodon/pull/27111))
+- Fix inefficient queries in “Follows and followers” as well as several admin pages ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/27116), [ClearlyClaire](https://github.com/mastodon/mastodon/pull/27306))
+
 ## [4.1.9] - 2023-09-20
 
 ### Fixed
