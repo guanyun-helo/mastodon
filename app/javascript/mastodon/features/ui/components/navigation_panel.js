@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { defineMessages, injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import Logo from 'mastodon/components/logo';
+import { Adsense } from '@ctrl/react-adsense';
 import { timelinePreview, showTrends } from 'mastodon/initial_state';
 import ColumnLink from './column_link';
 import DisabledAccountBanner from './disabled_account_banner';
@@ -47,13 +48,19 @@ class NavigationPanel extends React.Component {
     const { intl } = this.props;
     const props = this.props;
     const { signedIn, disabledAccountId } = this.context.identity;
-
+    let globalTheme = 'dark';
+    if (
+      document.body &&
+      document.body.classList.contains('theme-mastodon-light')
+    ) {
+      globalTheme = 'light';
+    }
     return (
       <div className='navigation-panel'>
         <div className='navigation-panel__logo'>
           {/* <Link to='/' className='column-link column-link--logo'><Logo /></Link> */}
           {/* <Keplr /> */}
-          <LikeCoinWalletConnector></LikeCoinWalletConnector>
+          <LikeCoinWalletConnector />
           <hr />
         </div>
 
@@ -74,7 +81,7 @@ class NavigationPanel extends React.Component {
         )}
 
         {(signedIn || timelinePreview) && (
-          <> 
+          <>
             <ColumnLink transparent to='/public/local' icon='users' text={intl.formatMessage(messages.local)} />
             <ColumnLink transparent exact to='/public' icon='globe' text={intl.formatMessage(messages.federated)} />
           </>
@@ -112,6 +119,24 @@ class NavigationPanel extends React.Component {
         </div>
 
         <NavigationPortal />
+
+        {globalTheme === 'light' ? <Adsense
+          client='ca-pub-8575447765690857'
+          slot='4023331835'
+          style={{ display: 'block' }}
+          layout='in-article'
+          format='fluid'
+          className='adsbygoogle'
+          layoutKey='-fb+5w+4e-db+86'
+        /> : <Adsense
+          client='ca-pub-8575447765690857'
+          slot='7375171918'
+          style={{ display: 'block' }}
+          layout='in-article'
+          format='fluid'
+          className='adsbygoogle'
+          layoutKey='-fc+56+8s-cu-6p'
+        />}
       </div>
     );
   }

@@ -4,6 +4,7 @@ import CharacterCounter from './character_counter';
 import Button from '../../../components/button';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
+import { Adsense } from '@ctrl/react-adsense';
 import ReplyIndicatorContainer from '../containers/reply_indicator_container';
 import AutosuggestTextarea from '../../../components/autosuggest_textarea';
 import AutosuggestInput from '../../../components/autosuggest_input';
@@ -184,7 +185,7 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onSubmit(
       this.context.router ? this.context.router.history : null,
       this.state.isChecked,
-      this.props.account
+      this.props.account,
     );
     if (e) {
       e.preventDefault();
@@ -356,7 +357,13 @@ class ComposeForm extends ImmutablePureComponent {
     const disabled = this.props.isSubmitting;
 
     let publishText = '';
-
+    let globalTheme = 'dark';
+    if (
+      document.body &&
+      document.body.classList.contains('theme-mastodon-light')
+    ) {
+      globalTheme = 'light';
+    }
     if (this.props.isEditing) {
       publishText = intl.formatMessage(messages.saveChanges);
     } else if (
@@ -466,40 +473,25 @@ class ComposeForm extends ImmutablePureComponent {
             </div>
           </div>
         </form>
-        <div className='interests-zone-form'>
-          {tags.length === 0 ? (
-            <Spinner size={30} />
-          ) : (
-            <div
-              className='cards-container'
-              variant='outlined'
-              sx={{ width: 320 }}
-            >
-              {tags.map((card) => (
-                <Card interactive elevation={Elevation.TWO} key={card.name}>
-                  {card.name}
-                  <div className='card-area'>
-                    {card.children.map((tag) => (
-                      // eslint-disable-next-line react/jsx-no-bind
-                      <Tag
-                        onClick={this.toTag.bind(this, tag)}
-                        minimal
-                        round
-                        key={tag.name}
-                      >
-                        {tag.name}
-                      </Tag>
-                    ))}
-                  </div>
-                </Card>
-                // <Card onClick={this.toTag.bind(this, tag)} large minimal round key={tag.name} >{tag.name}</Card>
-              ))}
-              <Callout intent='success' title={'TIPS'}>
-                <Icon id='star' /> 點按 Tag 會自動出現在輸入框哦
-              </Callout>
-            </div>
-          )}
-        </div>
+        {/* <div className='interests-zone-form'> */}
+        {globalTheme === 'light' ? <Adsense
+          client='ca-pub-8575447765690857'
+          slot='4023331835'
+          style={{ display: 'block' }}
+          layout='in-article'
+          format='fluid'
+          className='adsbygoogle'
+          layoutKey='-fb+5w+4e-db+86'
+        /> : <Adsense
+          client='ca-pub-8575447765690857'
+          slot='7375171918'
+          style={{ display: 'block' }}
+          layout='in-article'
+          format='fluid'
+          className='adsbygoogle'
+          layoutKey='-fc+56+8s-cu-6p'
+        />}
+        {/* </div> */}
         {/* <Divider /> */}
 
         {/* <Callout intent='success' title={'TIPS'}>

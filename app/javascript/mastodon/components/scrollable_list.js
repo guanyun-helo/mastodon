@@ -343,7 +343,7 @@ class ScrollableList extends PureComponent {
             ))}
 
             {loadMore}
-            {globalTheme === 'light' ? <Adsense
+            {/* {globalTheme === 'light' ? <Adsense
               client='ca-pub-8575447765690857'
               slot='4023331835'
               style={{ display: 'block' }}
@@ -359,7 +359,7 @@ class ScrollableList extends PureComponent {
               format='fluid'
               className='adsbygoogle'
               layoutKey='-fc+56+8s-cu-6p'
-            />}
+            />} */}
             {!hasMore && append}
           </div>
         </div>
@@ -372,6 +372,23 @@ class ScrollableList extends PureComponent {
           <div className='empty-column-indicator'>
             {emptyMessage}
           </div>
+          {globalTheme === 'light' ? <Adsense
+            client='ca-pub-8575447765690857'
+            slot='4023331835'
+            style={{ display: 'block' }}
+            layout='in-article'
+            format='fluid'
+            className='adsbygoogle'
+            layoutKey='-fb+5w+4e-db+86'
+          /> : <Adsense
+            client='ca-pub-8575447765690857'
+            slot='7375171918'
+            style={{ display: 'block' }}
+            layout='in-article'
+            format='fluid'
+            className='adsbygoogle'
+            layoutKey='-fc+56+8s-cu-6p'
+          />}
         </div>
       );
     }

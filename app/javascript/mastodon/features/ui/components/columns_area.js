@@ -244,7 +244,7 @@ export default class ColumnsArea extends ImmutablePureComponent {
           </div>
 
           <div className='columns-area__panels__pane columns-area__panels__pane--start columns-area__panels__pane--navigational'>
-            <div className='columns-area__panels__pane__inner'>
+            <div className='columns-area__panels__pane__inner' style={{ width: '400px' }}>
               <NavigationPanel bindLikeCoinId={this.bindLikeCoinId.bind(this)} clapImg={this.state.clapImg} liker_id={this.state.liker_id} />
             </div>
           </div>
