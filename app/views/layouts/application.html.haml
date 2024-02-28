@@ -34,7 +34,6 @@
     = javascript_pack_tag "locale_#{I18n.locale}", crossorigin: 'anonymous'
     = gam_pack_tag 'https://www.googletagmanager.com/gtag/js?id=UA-197581231-1'
     = ga_pack_tag nonce: request.content_security_policy_nonce
-    = gad_pack_tag 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8575447765690857'
     = umami_pack_tag 'https://eu.umami.is/script.js'
     = csrf_meta_tags
     %meta{ name: 'style-nonce', content: request.content_security_policy_nonce }

@@ -372,7 +372,7 @@ class ScrollableList extends PureComponent {
           <div className='empty-column-indicator'>
             {emptyMessage}
           </div>
-          {globalTheme === 'light' ? <Adsense
+          {/* {globalTheme === 'light' ? <Adsense
             client='ca-pub-8575447765690857'
             slot='4023331835'
             style={{ display: 'block' }}
@@ -388,7 +388,7 @@ class ScrollableList extends PureComponent {
             format='fluid'
             className='adsbygoogle'
             layoutKey='-fc+56+8s-cu-6p'
-          />}
+          />} */}
         </div>
       );
     }

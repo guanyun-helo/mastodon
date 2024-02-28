@@ -19,10 +19,6 @@ module Webpacker::HelperExtensions
     javascript_tag('',{ src: src, async: true })
   end
 
-  def gad_pack_tag(src)
-    javascript_tag('',{ src: src, async: true, crossorigin: 'anonymous'})
-  end
-
   def umami_pack_tag(src)
     javascript_tag('',{ src: src, async: true, 'data-website-id': '02a8473b-5bb7-47fe-8868-80eb330c43ec' })
   end
