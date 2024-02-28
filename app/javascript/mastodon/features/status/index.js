@@ -795,7 +795,7 @@ class Status extends ImmutablePureComponent {
                   </div>) : null
                 }
 
-                {globalTheme === 'light' ? <Adsense
+                {/* {globalTheme === 'light' ? <Adsense
                   client='ca-pub-8575447765690857'
                   slot='4023331835'
                   style={{ display: 'block' }}
@@ -811,7 +811,7 @@ class Status extends ImmutablePureComponent {
                   format='fluid'
                   className='adsbygoogle'
                   layoutKey='-fc+56+8s-cu-6p'
-                />}
+                />} */}
               </div>
             </HotKeys>
 

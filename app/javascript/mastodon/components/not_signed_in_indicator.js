@@ -14,7 +14,7 @@ const NotSignedInIndicator = () => (
     <div className='empty-column-indicator'>
       <FormattedMessage id='not_signed_in_indicator.not_signed_in' defaultMessage='You need to sign in to access this resource.' />
     </div>
-    {globalTheme === 'light' ? <Adsense
+    {/* {globalTheme === 'light' ? <Adsense
       client='ca-pub-8575447765690857'
       slot='4023331835'
       style={{ display: 'block' }}
@@ -30,7 +30,7 @@ const NotSignedInIndicator = () => (
       format='fluid'
       className='adsbygoogle'
       layoutKey='-fc+56+8s-cu-6p'
-    />}
+    />} */}
   </div>
 );
 
