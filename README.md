@@ -156,3 +156,19 @@ You should have received a copy of the GNU Affero General Public License along w
 [Docker]: https://docs.docker.com
 [GitHub Codespaces]: https://docs.github.com/en/codespaces
 [Homebrew]: https://brew.sh
+
+## Mac
+
+> Yes, you can do it without any specific issue.
+>
+> You need:
+>
+> - a working Ruby 3.2 install (you can use https://github.com/rbenv/rbenv to easily install and manage ruby versions)
+> - postgresql (`brew install postgresql@15`)
+> - redis (`brew install redis`)
+> - imagemagick (`brew install imagemagick`)
+> - Foreman or a similar tool to launch multiple processes using the `Procfile.dev` file, I use https://github.com/DarthSim/overmind
+> - Node.js version 16 (18+ does not work yet). Easiest way is to use nvm (`brew install nvm` then run `nvm use` in Mastodon's root directory to have the correct version installed)
+> - yarn: `corepack enable && yarn set version classic`
+>
+> I think that should be all, you should now be able to run `bundle exec rails db:setup`, then `overmind start -f Procfile.dev` to start the various processes.
