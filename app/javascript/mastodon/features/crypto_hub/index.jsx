@@ -1,7 +1,4 @@
-//A PAGE WITH instagram style  of top 30 crypto currencies prices
-
 import React, { useEffect, useState } from 'react';
-
 import axios from 'axios';
 import './index.scss';
 
@@ -9,6 +6,7 @@ const CryptoHub = () => {
   const [cryptoData, setCryptoData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   useEffect(() => {
     const fetchCryptoData = async () => {
@@ -32,13 +30,32 @@ const CryptoHub = () => {
 
     fetchCryptoData();
 
+    const detectTheme = () => {
+      const isDark = !document.body?.classList.contains('theme-mastodon-light');
+      setIsDarkTheme(isDark);
+    };
+
+    detectTheme();
+    window.addEventListener('theme-changed', detectTheme);
+
+    return () => {
+      window.removeEventListener('theme-changed', detectTheme);
+    };
   }, []);
 
   return (
-    <div className='crypto-hub'>
+    <div className={`crypto-hub ${isDarkTheme ? 'dark-theme' : ''}`}>
       <header className='crypto-hub__header'>
         <h1 className='crypto-hub__title'>Crypto Hub</h1>
       </header>
+      
+      <div className='crypto-hub__tips'>
+        <h2 className='crypto-hub__tips-title'>開發中</h2>
+        <p className='crypto-hub__tips-content'>
+        我們正在積極開發加密貨幣中心，以提供您最佳的體驗。您的反饋對於塑造這個功能至關重要。如果您有任何建議或改進的想法，請不要猶豫與我們分享。
+        </p>
+      </div>
+
       {loading && <div className='crypto-hub__loader'>Loading...</div>}
       {error && <div className='crypto-hub__error'>Error: {error}</div>}
       <div className='crypto-hub__table'>

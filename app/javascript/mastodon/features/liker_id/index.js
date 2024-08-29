@@ -78,6 +78,7 @@ class LikerId extends ImmutablePureComponent {
       likeWallet: 'default',
       isSubscribedCivicLiker: true,
       description: 'civicLikerSince: default',
+      isDarkTheme: false,
     },
   };
 
@@ -96,8 +97,14 @@ class LikerId extends ImmutablePureComponent {
     });
   }
 
+  detectTheme = () => {
+    const isDark = !document.body?.classList.contains('theme-mastodon-light');
+    this.setState({ isDarkTheme: isDark });
+  };
+
   componentDidMount() {
     this.getLikerId();
+    this.detectTheme();
   }
 
   bindLikeCoinId() {
@@ -127,8 +134,8 @@ class LikerId extends ImmutablePureComponent {
   };
 
   render() {
-    const { intl, lists, multiColumn, openDrawer, address } = this.props;
-    const { user } = this.state;
+    const { intl, lists, multiColumn } = this.props;
+    const { user, isDarkTheme } = this.state;
 
     if (!lists) {
       return (
@@ -146,7 +153,7 @@ class LikerId extends ImmutablePureComponent {
     );
     return (
       <Column
-        className='liker-id-bind'
+        className={`liker-id-bind`}
         bindToDocument={!multiColumn}
         label={intl.formatMessage(messages.heading)}
       >
@@ -162,7 +169,7 @@ class LikerId extends ImmutablePureComponent {
           emptyMessage={emptyMessage}
           bindToDocument={!multiColumn}
         >
-          <div className='liker-id-container instagram-style'>
+          <div className={`liker-id-container instagram-style ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
             <div className='liker-id-content'>
               <div className='liker-id-profile'>
                 <div className='profile-picture'>

@@ -234,6 +234,105 @@
   }
 }
 
+.account-role {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+
+  &__label {
+    margin: 0 4px;
+  }
+
+  &__domain {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  &--owner {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+    border: 2px solid #FFD700;
+    padding: 6px 10px;  // Slightly larger padding
+
+    &:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.7);
+    }
+
+    .account-role__label {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    &::before {
+      content: '★';
+      margin-right: 5px;
+      font-size: 18px;
+    }
+  }
+  &--commander {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+    }
+  }
+
+  &--cadet {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.5);
+    }
+  }
+
+  &--lieutenant {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+    box-shadow: 0 2px 10px rgba(33, 150, 243, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.5);
+    }
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+  }
+}
+
+// Dark theme adjustments
+.theme-mastodon-dark {
+  .account-role {
+    &--owner {
+      color: #1a1a1a;  // Keep text dark for contrast
+      border-color: #FFD700;
+    }
+    &--commander {
+      color: #1a1a1a;
+    }
+
+    &--cadet,
+    &--lieutenant {
+      color: white;
+    }
+  }
+}
+
 .information-badge {
   &.superapp {
     color: $success-green;
