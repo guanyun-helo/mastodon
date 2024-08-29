@@ -1,0 +1,84 @@
+.crypto-hub {
+    font-family: 'Arial', sans-serif;
+    max-width: 1200px;
+    margin: 0;
+    padding: 20px;
+  
+    &__header {
+      margin-bottom: 30px;
+    }
+  
+    &__title {
+      font-size: 28px;
+      color: #1e2026;
+    }
+  
+    &__table {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      overflow-x: scroll;
+    }
+  
+    &__table-header {
+      display: flex;
+      background-color: #f8fafd;
+      font-weight: bold;
+      padding: 15px 0;
+    }
+  
+    &__table-row {
+      display: flex;
+      border-top: 1px solid #e0e3eb;
+      transition: background-color 0.3s ease;
+  
+      &:hover {
+        background-color: #f8fafd;
+      }
+    }
+  
+    &__table-cell {
+      flex: 1;
+      padding: 15px 10px;
+      display: flex;
+      align-items: center;
+    }
+  
+    &__coin-info {
+      display: flex;
+      align-items: center;
+    }
+  
+    &__coin-image {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+    }
+  
+    &__coin-name {
+      font-weight: 500;
+      margin-right: 5px;
+    }
+  
+    &__coin-symbol {
+      color: #808a9d;
+      font-size: 0.8em;
+    }
+  
+    &__price-change {
+      &.positive {
+        color: #16c784;
+      }
+      &.negative {
+        color: #ea3943;
+      }
+    }
+  
+    &__loader,
+    &__error {
+      text-align: center;
+      padding: 20px;
+      font-size: 18px;
+    }
+  }

@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+
 import ColumnsArea from '../components/columns_area';
 import { getLikeAuth,getTimeLine} from '../../../actions/accounts'
 import { getLikerId } from '../../../actions/accounts'

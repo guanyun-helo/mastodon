@@ -8,8 +8,8 @@ class Api::V1::Accounts::LikeIdentitysController < Api::BaseController
   
   before_action -> { doorkeeper_authorize! :write, :'write:favourites' }
   before_action :require_user!
-  before_action :set_status, only: [:create,:like_coin_auth]
-  print ENV['LIKE_CLIENT_ID']
+  # before_action :set_status
+  before_action :like_coin_auth, only: [:index]
 
   def index
     response = like_coin_auth()
@@ -17,7 +17,7 @@ class Api::V1::Accounts::LikeIdentitysController < Api::BaseController
   end
 
   def show
-    render json: {:liker_id => current_account['liker_id'],:data=>@status,:code => 200}, status: 200
+    render json: {:liker_id => current_account['liker_id'],:data=>@status,:code => 100}, status: 200
   end
 
   def like_coin_auth

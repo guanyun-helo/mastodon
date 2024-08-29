@@ -1,6 +1,10 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe ActivityPub::FetchRepliesService, type: :service do
+RSpec.describe ActivityPub::FetchRepliesService do
+  subject { described_class.new }
+
   let(:actor)          { Fabricate(:account, domain: 'example.com', uri: 'http://example.com/account') }
   let(:status)         { Fabricate(:status, account: actor) }
   let(:collection_uri) { 'http://example.com/replies/1' }
@@ -28,8 +32,6 @@ RSpec.describe ActivityPub::FetchRepliesService, type: :service do
     }.with_indifferent_access
   end
 
-  subject { described_class.new }
-
   describe '#call' do
     context 'when the payload is a Collection with inlined replies' do
       context 'when there is a single reply, with the array compacted away' do
@@ -46,8 +48,11 @@ RSpec.describe ActivityPub::FetchRepliesService, type: :service do
 
       context 'when passing the collection itself' do
         it 'spawns workers for up to 5 replies on the same server' do
-          expect(FetchReplyWorker).to receive(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
+          allow(FetchReplyWorker).to receive(:push_bulk)
+
           subject.call(status, payload)
+
+          expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
       end
 
@@ -57,8 +62,11 @@ RSpec.describe ActivityPub::FetchRepliesService, type: :service do
         end
 
         it 'spawns workers for up to 5 replies on the same server' do
-          expect(FetchReplyWorker).to receive(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
+          allow(FetchReplyWorker).to receive(:push_bulk)
+
           subject.call(status, collection_uri)
+
+          expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
       end
     end
@@ -75,8 +83,11 @@ RSpec.describe ActivityPub::FetchRepliesService, type: :service do
 
       context 'when passing the collection itself' do
         it 'spawns workers for up to 5 replies on the same server' do
-          expect(FetchReplyWorker).to receive(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
+          allow(FetchReplyWorker).to receive(:push_bulk)
+
           subject.call(status, payload)
+
+          expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
       end
 
@@ -86,8 +97,11 @@ RSpec.describe ActivityPub::FetchRepliesService, type: :service do
         end
 
         it 'spawns workers for up to 5 replies on the same server' do
-          expect(FetchReplyWorker).to receive(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
+          allow(FetchReplyWorker).to receive(:push_bulk)
+
           subject.call(status, collection_uri)
+
+          expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
       end
     end
@@ -102,14 +116,17 @@ RSpec.describe ActivityPub::FetchRepliesService, type: :service do
             type: 'CollectionPage',
             partOf: collection_uri,
             items: items,
-          }
+          },
         }.with_indifferent_access
       end
 
       context 'when passing the collection itself' do
         it 'spawns workers for up to 5 replies on the same server' do
-          expect(FetchReplyWorker).to receive(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
+          allow(FetchReplyWorker).to receive(:push_bulk)
+
           subject.call(status, payload)
+
+          expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
       end
 
@@ -119,8 +136,11 @@ RSpec.describe ActivityPub::FetchRepliesService, type: :service do
         end
 
         it 'spawns workers for up to 5 replies on the same server' do
-          expect(FetchReplyWorker).to receive(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
+          allow(FetchReplyWorker).to receive(:push_bulk)
+
           subject.call(status, collection_uri)
+
+          expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
       end
     end

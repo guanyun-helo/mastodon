@@ -5,16 +5,13 @@
 </picture></h1>
 
 [![GitHub release](https://img.shields.io/github/release/mastodon/mastodon.svg)][releases]
-[![Build Status](https://img.shields.io/circleci/project/github/mastodon/mastodon.svg)][circleci]
-[![Code Climate](https://img.shields.io/codeclimate/maintainability/mastodon/mastodon.svg)][code_climate]
+[![Ruby Testing](https://github.com/mastodon/mastodon/actions/workflows/test-ruby.yml/badge.svg)](https://github.com/mastodon/mastodon/actions/workflows/test-ruby.yml)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/mastodon/localized.svg)][crowdin]
 
 [releases]: https://github.com/mastodon/mastodon/releases
-[circleci]: https://circleci.com/gh/mastodon/mastodon
-[code_climate]: https://codeclimate.com/github/mastodon/mastodon
 [crowdin]: https://crowdin.com/project/mastodon
 
-Mastodon is a **free, open-source social network server** based on ActivityPub where users can follow friends and discover new ones. On Mastodon, users can publish anything they want: links, pictures, text, video. All Mastodon servers are interoperable as a federated network (users on one server can seamlessly communicate with users from another one, including non-Mastodon software that implements ActivityPub!)
+Mastodon is a **free, open-source social network server** based on ActivityPub where users can follow friends and discover new ones. On Mastodon, users can publish anything they want: links, pictures, text, and video. All Mastodon servers are interoperable as a federated network (users on one server can seamlessly communicate with users from another one, including non-Mastodon software that implements ActivityPub!)
 
 Click below to **learn more** in a video:
 
@@ -29,6 +26,7 @@ Click below to **learn more** in a video:
 - [View sponsors](https://joinmastodon.org/sponsors)
 - [Blog](https://blog.joinmastodon.org)
 - [Documentation](https://docs.joinmastodon.org)
+- [Roadmap](https://joinmastodon.org/roadmap)
 - [Official Docker image](https://github.com/mastodon/mastodon/pkgs/container/mastodon)
 - [Browse Mastodon servers](https://joinmastodon.org/communities)
 - [Browse Mastodon apps](https://joinmastodon.org/apps)
@@ -53,7 +51,7 @@ Upload and view images and WebM/MP4 videos attached to the updates. Videos with 
 
 ### Safety and moderation tools
 
-Mastodon includes private posts, locked accounts, phrase filtering, muting, blocking and all sorts of other features, along with a reporting and moderation system. [Learn more](https://blog.joinmastodon.org/2018/07/cage-the-mastodon/)
+Mastodon includes private posts, locked accounts, phrase filtering, muting, blocking, and all sorts of other features, along with a reporting and moderation system. [Learn more](https://blog.joinmastodon.org/2018/07/cage-the-mastodon/)
 
 ### OAuth2 and a straightforward REST API
 
@@ -61,28 +59,78 @@ Mastodon acts as an OAuth2 provider, so 3rd party apps can use the REST and Stre
 
 ## Deployment
 
-### Tech stack:
+### Tech stack
 
 - **Ruby on Rails** powers the REST API and other web pages
-- **React.js** and Redux are used for the dynamic parts of the interface
+- **React.js** and **Redux** are used for the dynamic parts of the interface
 - **Node.js** powers the streaming API
 
-### Requirements:
+### Requirements
 
-- **PostgreSQL** 9.5+
+- **PostgreSQL** 12+
 - **Redis** 4+
-- **Ruby** 2.7+
-- **Node.js** 14+
+- **Ruby** 3.1+
+- **Node.js** 18+
 
-The repository includes deployment configurations for **Docker and docker-compose** as well as specific platforms like **Heroku**, **Scalingo**, and **Nanobox**. For Helm charts, reference the [mastodon/chart repository](https://github.com/mastodon/chart). The [**standalone** installation guide](https://docs.joinmastodon.org/admin/install/) is available in the documentation.
+The repository includes deployment configurations for **Docker and docker-compose** as well as specific platforms like **Heroku**, and **Scalingo**. For Helm charts, reference the [mastodon/chart repository](https://github.com/mastodon/chart). The [**standalone** installation guide](https://docs.joinmastodon.org/admin/install/) is available in the documentation.
 
-A **Vagrant** configuration is included for development purposes. To use it, complete following steps:
+## Development
+
+### Vagrant
+
+A **Vagrant** configuration is included for development purposes. To use it, complete the following steps:
 
 - Install Vagrant and Virtualbox
 - Install the `vagrant-hostsupdater` plugin: `vagrant plugin install vagrant-hostsupdater`
 - Run `vagrant up`
-- Run `vagrant ssh -c "cd /vagrant && foreman start"`
+- Run `vagrant ssh -c "cd /vagrant && bin/dev"`
 - Open `http://mastodon.local` in your browser
+
+### macOS
+
+To set up **macOS** for native development, complete the following steps:
+
+- Install [Homebrew] and run `brew install postgresql@14 redis imagemagick
+libidn nvm` to install the required project dependencies
+- Use a Ruby version manager to activate the ruby in `.ruby-version` and run
+  `nvm use` to activate the node version from `.nvmrc`
+- Run the `bin/setup` script, which will install the required ruby gems and node
+  packages and prepare the database for local development
+- Finally, run the `bin/dev` script which will launch services via `overmind`
+  (if installed) or `foreman`
+
+### Docker
+
+For production hosting and deployment with **Docker**, use the `Dockerfile` and
+`docker-compose.yml` in the project root directory.
+
+For local development, install and launch [Docker], and run:
+
+```shell
+docker compose -f .devcontainer/compose.yaml up -d
+docker compose -f .devcontainer/compose.yaml exec app bin/setup
+docker compose -f .devcontainer/compose.yaml exec app bin/dev
+```
+
+### Dev Containers
+
+Within IDEs that support the [Development Containers] specification, start the
+"Mastodon on local machine" container from the editor. The necessary `docker
+compose` commands to build and setup the container should run automatically. For
+**Visual Studio Code** this requires installing the [Dev Container extension].
+
+### GitHub Codespaces
+
+[GitHub Codespaces] provides a web-based version of VS Code and a cloud hosted
+development environment configured with the software needed for this project.
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)][codespace]
+
+- Click the button to create a new codespace, and confirm the options
+- Wait for the environment to build (takes a few minutes)
+- When the editor is ready, run `bin/dev` in the terminal
+- Wait for an _Open in Browser_ prompt. This will open Mastodon
+- On the _Ports_ tab "stream" setting change _Port visibility_ → _Public_
 
 ## Contributing
 
@@ -94,7 +142,7 @@ You can open issues for bugs you've found or features you think are missing. You
 
 ## License
 
-Copyright (C) 2016-2022 Eugen Rochko & other Mastodon contributors (see [AUTHORS.md](AUTHORS.md))
+Copyright (C) 2016-2024 Eugen Rochko & other Mastodon contributors (see [AUTHORS.md](AUTHORS.md))
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -102,31 +150,25 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+[codespace]: https://codespaces.new/mastodon/mastodon?quickstart=1&devcontainer_path=.devcontainer%2Fcodespaces%2Fdevcontainer.json
+[Dev Container extension]: https://containers.dev/supporting#dev-containers
+[Development Containers]: https://containers.dev/supporting
+[Docker]: https://docs.docker.com
+[GitHub Codespaces]: https://docs.github.com/en/codespaces
+[Homebrew]: https://brew.sh
 
-Liker.Social 超級功能上新
-1. 探索功能(重磅)
- a. 熱門分享
- b. 熱門標籤
- c. 最新新聞
- d. 推介用戶
-2. 定時嘟文
-   現在嘟文可以定時刪除了
+## Mac
 
-如何支持 Liker.Social
-
-本次更新，Mastodon 引入 1000+ 修改，經過幾天的代碼審查，Liker.Social 終於引入了一系列新功能。
-
-如果你想繼續支持我們保持快速的更新運作，可以通過以下幾種方式：
-1. 委託你的 LIKE 到 Liker.Social
-2. 支持我們的 Patreon https://www.patreon.com/liker_social?fan_landing=true
-3. 直接捐款：
-
-ATOM
-cosmos1ul4c57anu9q00vhr3lh8rjdrhqzx8g6cq2csx0
-
-OSMO
-osmo1ul4c57anu9q00vhr3lh8rjdrhqzx8g6cg3tqsa
-
-LIKE
-cosmos1ul4c57anu9q00vhr3lh8rjdrhqzx8g6cq2csx0
-
+> Yes, you can do it without any specific issue.
+>
+> You need:
+>
+> - a working Ruby 3.2 install (you can use https://github.com/rbenv/rbenv to easily install and manage ruby versions)
+> - postgresql (`brew install postgresql@15`)
+> - redis (`brew install redis`)
+> - imagemagick (`brew install imagemagick`)
+> - Foreman or a similar tool to launch multiple processes using the `Procfile.dev` file, I use https://github.com/DarthSim/overmind
+> - Node.js version 16 (18+ does not work yet). Easiest way is to use nvm (`brew install nvm` then run `nvm use` in Mastodon's root directory to have the correct version installed)
+> - yarn: `corepack enable && yarn set version classic`
+>
+> I think that should be all, you should now be able to run `bundle exec rails db:setup`, then `overmind start -f Procfile.dev` to start the various processes.

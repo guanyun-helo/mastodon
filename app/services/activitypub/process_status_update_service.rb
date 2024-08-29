@@ -36,7 +36,7 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
     last_edit_date = @status.edited_at.presence || @status.created_at
 
     # Only allow processing one create/update per status at a time
-    with_lock("create:#{@uri}") do
+    with_redis_lock("create:#{@uri}") do
       Status.transaction do
         record_previous_edit!
         update_media_attachments!
@@ -59,7 +59,7 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
   end
 
   def handle_implicit_update!
-    with_lock("create:#{@uri}") do
+    with_redis_lock("create:#{@uri}") do
       update_poll!(allow_significant_changes: false)
       queue_poll_notifications!
     end
@@ -73,7 +73,7 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
     as_array(@json['attachment']).each do |attachment|
       media_attachment_parser = ActivityPub::Parser::MediaAttachmentParser.new(attachment)
 
-      next if media_attachment_parser.remote_url.blank? || @next_media_attachments.size > 4
+      next if media_attachment_parser.remote_url.blank? || @next_media_attachments.size > Status::MEDIA_ATTACHMENTS_LIMIT
 
       begin
         media_attachment   = previous_media_attachments.find { |previous_media_attachment| previous_media_attachment.remote_url == media_attachment_parser.remote_url }
@@ -81,9 +81,7 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
 
         # If a previously existing media attachment was significantly updated, mark
         # media attachments as changed even if none were added or removed
-        if media_attachment_parser.significantly_changes?(media_attachment)
-          @media_attachments_changed = true
-        end
+        @media_attachments_changed = true if media_attachment_parser.significantly_changes?(media_attachment)
 
         media_attachment.description          = media_attachment_parser.description
         media_attachment.focus                = media_attachment_parser.focus
@@ -98,8 +96,6 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
         Rails.logger.debug { "Invalid URL in attachment: #{e}" }
       end
     end
-
-    added_media_attachments = @next_media_attachments - previous_media_attachments
 
     @status.ordered_media_attachment_ids = @next_media_attachments.map(&:id)
 
@@ -174,9 +170,9 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
 
     as_array(@json['tag']).each do |tag|
       if equals_or_includes?(tag['type'], 'Hashtag')
-        @raw_tags << tag['name']
+        @raw_tags << tag['name'] if tag['name'].present?
       elsif equals_or_includes?(tag['type'], 'Mention')
-        @raw_mentions << tag['href']
+        @raw_mentions << tag['href'] if tag['href'].present?
       elsif equals_or_includes?(tag['type'], 'Emoji')
         @raw_emojis << tag
       end
@@ -284,7 +280,7 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
   end
 
   def reset_preview_card!
-    @status.preview_cards.clear
+    @status.reset_preview_card!
     LinkCrawlWorker.perform_in(rand(1..59).seconds, @status.id)
   end
 

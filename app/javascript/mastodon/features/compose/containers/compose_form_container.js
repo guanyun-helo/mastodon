@@ -1,17 +1,18 @@
 import { connect } from 'react-redux';
-import ComposeForm from '../components/compose_form';
+
 import {
   changeCompose,
   submitCompose,
-  editNft,
+  // editNft,
   clearComposeSuggestions,
   fetchComposeSuggestions,
   selectComposeSuggestion,
   changeComposeSpoilerText,
   insertEmojiCompose,
-  uploadCompose,
-  destroyNft,
+  // uploadCompose,
+  // destroyNft,
 } from '../../../actions/compose';
+import ComposeForm from '../components/compose_form';
 
 const mapStateToProps = state => ({
   text: state.getIn(['compose', 'text']),
@@ -29,6 +30,7 @@ const mapStateToProps = state => ({
   anyMedia: state.getIn(['compose', 'media_attachments']).size > 0,
   isInReply: state.getIn(['compose', 'in_reply_to']) !== null,
   lang: state.getIn(['compose', 'language']),
+  maxChars: state.getIn(['server', 'server', 'configuration', 'statuses', 'max_characters'], 500),
   nft: state.getIn(['compose', 'nft']),
   account: state.getIn(['accounts', state.getIn(['meta', 'me'])]),
 });
@@ -39,13 +41,16 @@ const mapDispatchToProps = (dispatch, params) => ({
     dispatch(changeCompose(text));
   },
 
-  destroyNft() {
-    dispatch(destroyNft());
-  },
+  // onSubmit () {
+  //   dispatch(submitCompose());
+  // },
+  // destroyNft() {
+  //   dispatch(destroyNft());
+  // },
 
   onSubmit(router, isChecked, account) {
     if(isChecked){
-      dispatch(editNft(router, isChecked, account))
+      // dispatch(editNft(router, isChecked, account))
     }else{
       dispatch(submitCompose(router, isChecked, account));
     }
@@ -68,7 +73,7 @@ const mapDispatchToProps = (dispatch, params) => ({
   },
 
   onPaste(files) {
-    dispatch(uploadCompose(files));
+    // dispatch(uploadCompose(files));
   },
 
   onPickEmoji(position, data, needsSpace) {

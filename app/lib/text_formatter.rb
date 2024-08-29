@@ -5,7 +5,7 @@ class TextFormatter
   include ERB::Util
   include RoutingHelper
 
-  URL_PREFIX_REGEX = /\A(https?:\/\/(www\.)?|xmpp:)/.freeze
+  URL_PREFIX_REGEX = %r{\A(https?://(www\.)?|xmpp:)}
 
   DEFAULT_REL = %w(nofollow noopener noreferrer).freeze
 
@@ -50,6 +50,7 @@ class TextFormatter
 
   class << self
     include ERB::Util
+    include ActionView::Helpers::TagHelper
 
     def shortened_link(url, rel_me: false)
       url = Addressable::URI.parse(url).to_s
@@ -57,12 +58,14 @@ class TextFormatter
 
       prefix      = url.match(URL_PREFIX_REGEX).to_s
       display_url = url[prefix.length, 30]
-      suffix      = url[prefix.length + 30..-1]
-      cutoff      = url[prefix.length..-1].length > 30
+      suffix      = url[prefix.length + 30..]
+      cutoff      = url[prefix.length..].length > 30
 
-      <<~HTML.squish.html_safe # rubocop:disable Rails/OutputSafety
-        <a href="#{h(url)}" target="_blank" rel="#{rel.join(' ')}"><span class="invisible">#{h(prefix)}</span><span class="#{cutoff ? 'ellipsis' : ''}">#{h(display_url)}</span><span class="invisible">#{h(suffix)}</span></a>
-      HTML
+      tag.a href: url, target: '_blank', rel: rel.join(' '), translate: 'no' do
+        tag.span(prefix, class: 'invisible') +
+          tag.span(display_url, class: (cutoff ? 'ellipsis' : '')) +
+          tag.span(suffix, class: 'invisible')
+      end
     rescue Addressable::URI::InvalidURIError, IDN::Idna::IdnaError
       h(url)
     end
@@ -75,7 +78,7 @@ class TextFormatter
       entity[:indices].first
     end
 
-    result = ''.dup
+    result = +''
 
     last_index = entities.reduce(0) do |index, entity|
       indices = entity[:indices]
@@ -84,7 +87,7 @@ class TextFormatter
       indices.last
     end
 
-    result << h(text[last_index..-1])
+    result << h(text[last_index..])
 
     result
   end
@@ -130,7 +133,7 @@ class TextFormatter
     display_username = same_username_hits&.positive? || with_domains? ? account.pretty_acct : account.username
 
     <<~HTML.squish
-      <span class="h-card"><a href="#{h(url)}" class="u-url mention">@<span>#{h(display_username)}</span></a></span>
+      <span class="h-card" translate="no"><a href="#{h(url)}" class="u-url mention">@<span>#{h(display_username)}</span></a></span>
     HTML
   end
 

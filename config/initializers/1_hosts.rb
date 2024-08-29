@@ -23,12 +23,12 @@ Rails.application.configure do
     if Rails.env.production?
       "ws#{https ? 's' : ''}://#{web_host}"
     else
-      "ws://#{ENV['REMOTE_DEV'] == 'true' ? host.split(':').first : 'localhost'}:4000"
+      "ws://#{host.split(':').first}:4000"
     end
   end
 
   unless Rails.env.test?
-    config.hosts << host if host.present?
+    config.hosts << "liker.social:3000"
     config.hosts << web_host if web_host.present?
     config.hosts.concat(alternate_domains) if alternate_domains.present?
     config.host_authorization = { exclude: ->(request) { request.path == '/health' } }
