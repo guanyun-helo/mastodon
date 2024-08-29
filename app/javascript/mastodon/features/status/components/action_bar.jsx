@@ -12,10 +12,12 @@ import storage from 'localforage';
 import { debounce } from 'lodash';
 import { toast } from 'material-react-toastify';
 import { nanoid } from 'nanoid';
+import { NotificationManager} from 'react-notification';
 
 import BookmarkIcon from '@/material-icons/400-24px/bookmark-fill.svg?react';
 import BookmarkBorderIcon from '@/material-icons/400-24px/bookmark.svg?react';
 import MoreHorizIcon from '@/material-icons/400-24px/more_horiz.svg?react';
+import PetIcon from '@/material-icons/400-24px/pet.svg?react';
 import RepeatIcon from '@/material-icons/400-24px/repeat.svg?react';
 import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
 import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
@@ -29,7 +31,6 @@ import { identityContextPropShape, withIdentity } from 'mastodon/identity_contex
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION ,
 } from 'mastodon/permissions';
 
-import PetIcon from '@/material-icons/400-24px/pet.svg?react';
 
 import ISCN_dark from '../../../../images/likebutton/ISCN_dark';
 import ISCN_light from '../../../../images/likebutton/ISCN_light';
@@ -40,7 +41,6 @@ import { me } from '../../../initial_state';
 
 //like
 
-import { NotificationManager} from 'react-notification';
 
 
 
@@ -511,7 +511,7 @@ class ActionBar extends PureComponent {
     const liker_id = account.get('liker_id');
     const url = `${location.origin}/web/statuses/${id}`;
     this.setState({
-      liker_id: liker_id,
+      liker_id: liker_id || '',
     });
     setTimeout(() => {
       this.props.getLikeCount(liker_id, url, (count) => {
@@ -665,8 +665,8 @@ class ActionBar extends PureComponent {
         <div className='detailed-status__button'><IconButton title={intl.formatMessage(messages.reply)} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} iconComponent={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? ReplyIcon : replyIconComponent}  onClick={this.handleReplyClick} /></div>
         <div className='detailed-status__button'><IconButton className={classNames({ reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' iconComponent={reblogIconComponent} onClick={this.handleReblogClick} /></div>
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon} onClick={this.handleFavouriteClick} /></div>
-        <div className='detailed-status__button'>
-          {publicStatus === true && liker_id.length > 0 && (
+        {publicStatus === true && liker_id && liker_id.length > 0 && (
+          <div className='detailed-status__button'>
             <IconButton
               className='status__action-bar__button catpaw-icon'
               animate
@@ -676,8 +676,8 @@ class ActionBar extends PureComponent {
               onClick={this.handleLikeContent}
               counter={totalLike <= 0 ? 0 : totalLike}
             />
-          )}
-        </div>
+          </div>
+        )}
         <div className='detailed-status__button'><IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} /></div>
 
         <div className='detailed-status__action-bar-dropdown'>
