@@ -2,11 +2,15 @@ import React from 'react';
 
 import type { List } from 'immutable';
 
-import type { Account } from 'mastodon/models/account';
+import VerifiedUser from '@/material-icons/400-24px/verified_user.svg?react';
+import { Icon } from 'mastodon/components/icon';
+import type { Account, AccountRole } from 'mastodon/models/account';
 
 import { autoPlayGif } from '../initial_state';
 
 import { Skeleton } from './skeleton';
+
+//like
 
 interface Props {
   account?: Account;
@@ -46,7 +50,17 @@ export class DisplayName extends React.PureComponent<Props> {
       if (staticSrc != null) emoji.src = staticSrc;
     });
   };
+  getRoleClass = (role: string | undefined) => {
+    switch (role) {
+      case 'Owner': return 'display-name--owner';
+      case '少校艦長': return 'display-name--commander';
+      case '學員艦長': return 'display-name--cadet';
+      case '中尉艦長': return 'display-name--lieutenant';
+      default: return '';
+      }
+  };
 
+  
   render() {
     const { others, localDomain } = this.props;
 
@@ -59,7 +73,8 @@ export class DisplayName extends React.PureComponent<Props> {
     } else if (this.props.account) {
       account = this.props.account;
     }
-
+    const roles:List<AccountRole> | undefined = account?.get('roles', []);
+    const roleName = roles?.get(0)?.get('name');
     if (others && others.size > 1) {
       displayName = others
         .take(2)
@@ -69,6 +84,7 @@ export class DisplayName extends React.PureComponent<Props> {
               className='display-name__html'
               dangerouslySetInnerHTML={{ __html: a.get('display_name_html') }}
             />
+            {roleName && <Icon className={this.getRoleClass(roleName)}id='VerifiedUser' icon={VerifiedUser}  />}
           </bdi>
         ))
         .reduce((prev, cur) => [prev, ', ', cur]);
@@ -91,6 +107,7 @@ export class DisplayName extends React.PureComponent<Props> {
               __html: account.get('display_name_html'),
             }}
           />
+            {roleName && <Icon className={this.getRoleClass(roleName)}id='VerifiedUser' icon={VerifiedUser}  />}
         </bdi>
       );
       suffix = <span className='display-name__account'>@{acct}</span>;
