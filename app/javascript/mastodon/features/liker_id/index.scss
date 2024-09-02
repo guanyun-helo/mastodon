@@ -86,6 +86,91 @@
     }
   }
 
+  // ... existing styles ...
+
+.patreon-container {
+  background-color: #f6f6f6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .patreon-title {
+    font-size: 1.5em;
+    color: #052D49;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    .icon path{
+      fill: #0027ff !important;
+    }
+  }
+
+  .patreon-description {
+    font-size: 1em;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  .patreon-button {
+    display: inline-block;
+    background-color: #F96854;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #FF424D;
+    }
+  }
+
+  .benefits-container {
+    margin-top: 20px;
+
+    .benefits-title {
+      font-size: 1.2em;
+      color: #052D49;
+      margin-bottom: 10px;
+    }
+
+    .benefits-list {
+      list-style-type: none;
+      padding-left: 0;
+
+      li {
+        margin-bottom: 5px;
+        color: #333;
+        &:before {
+          content: "✓ ";
+          color: #F96854;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+// Add this for dark theme support
+.dark-theme {
+  .patreon-container {
+    background-color: #2c2c2c;
+    .patreon-title,
+    .benefits-title {
+      color: #e6e6e6;
+    }
+
+    .patreon-description,
+    .benefits-list li {
+      color: #b8b8b8;
+    }
+  }
+}
+
   &.dark-theme {
     .tips-container {
       background-color: #1e1e1e;

@@ -19,7 +19,9 @@ import ColumnHeader from 'mastodon/components/column_header';
 import { LoadingIndicator } from 'mastodon/components/loading_indicator';
 import ScrollableList from 'mastodon/components/scrollable_list';
 
-import api from '../../api';
+// import vips from 'images/vips/vips.png';
+import VerifiedUser from '@/material-icons/400-24px/verified_user.svg?react';
+import { Icon } from 'mastodon/components/icon'; import api from '../../api';
 import './index.scss';
 
 const messages = defineMessages({
@@ -118,8 +120,8 @@ class LikerId extends ImmutablePureComponent {
     });
   }
 
-  connectWallet = async() => {
-    if(this.props.signer === null){
+  connectWallet = async () => {
+    if (this.props.signer === null) {
       // let signer = await props.connectMethods.initIfNecessary();
       await this.props.connectMethods.initWallet();
       // await props.connectMethods.connect();
@@ -203,6 +205,30 @@ class LikerId extends ImmutablePureComponent {
                     的設計是沙盒式的，其不留存個人資料。你可以任意綁定。
                   </li>
                 </ul>
+              </div>
+
+              <div className='patreon-container'>
+                <h3 className='patreon-title'>Subscribe to Our Patreon - 贊助我們，獲得藍勾勾 <Icon id='VerifiedUser' icon={VerifiedUser} /></h3>
+                <p className='patreon-description'>Support us on Patreon and enjoy exclusive benefits - 享受獨特權益!</p>
+                <a href='https://www.patreon.com/liker_social?fan_landing=true&rel=me' target='_blank' rel='noopener noreferrer' className='patreon-button'>
+                  Become a Patron
+                </a>
+                <div className='benefits-container'>
+                  <h4 className='benefits-title'>Patron Benefits:</h4>
+                  <ul className='benefits-list'>
+                    <li>學員 (Cadet)：@Editor 幫你推廣嘟文</li>
+                    <li>中尉 (Lieutenant)：在 Liker.Social 的公告欄發布公告</li>
+                    <li>艦長 (Captain)：
+                      <ul style={{marginLeft: '10px',marginTop: '5px'}}>
+                        <li>你可以在 Liker.Social 的公告欄發布公告</li>
+                        <li>你可以自定義伺服器表情符號的權利</li>
+                      </ul>
+                    </li>
+                    <li>不同會員等級專享不同徽章</li>
+                    <li>平台特別藍勾認證</li>
+                    <li>優先支援服務</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>

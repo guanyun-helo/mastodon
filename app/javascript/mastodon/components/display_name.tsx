@@ -107,7 +107,7 @@ export class DisplayName extends React.PureComponent<Props> {
               __html: account.get('display_name_html'),
             }}
           />
-            {roleName && <Icon className={this.getRoleClass(roleName)}id='VerifiedUser' icon={VerifiedUser}  />}
+            {roleName && <Icon className={this.getRoleClass(roleName)} id='VerifiedUser' icon={VerifiedUser}  />}
         </bdi>
       );
       suffix = <span className='display-name__account'>@{acct}</span>;
